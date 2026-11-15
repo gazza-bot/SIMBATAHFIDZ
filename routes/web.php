@@ -1,0 +1,137 @@
+<?php
+
+use App\Http\Controllers\Auth\LoginController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/', function () {
+    return redirect()->route('login');
+})->name('home');
+
+Route::get('/login', [LoginController::class, 'show'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+/*
+|--------------------------------------------------------------------------
+| Password Reset Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password', ['title' => 'Lupa Password']);
+})->name('password.request');
+
+Route::post('/forgot-password', function () {
+    return back()->with('success', 'Link reset password dikirim ke email.');
+})->name('password.email');
+
+Route::get('/reset-password/{token}', function ($token) {
+    return view('auth.reset-password', ['title' => 'Reset Password', 'token' => $token]);
+})->name('password.reset');
+
+Route::post('/reset-password', function () {
+    return redirect()->route('login')->with('success', 'Password berhasil direset.');
+})->name('password.update');
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard', ['title' => 'Dashboard Admin']);
+    })->name('dashboard');
+
+    Route::resource('santris', \App\Http\Controllers\Admin\SantriController::class);
+    Route::resource('walis', \App\Http\Controllers\Admin\WaliController::class);
+    Route::resource('ustadzs', \App\Http\Controllers\Admin\UstadzController::class);
+    Route::resource('kelompoks', \App\Http\Controllers\Admin\KelompokController::class);
+    Route::resource('angkatans', \App\Http\Controllers\Admin\AngkatanController::class);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Ustadz Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:ustadz'])->prefix('ustadz')->name('ustadz.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('ustadz.dashboard', ['title' => 'Dashboard Ustadz']);
+    })->name('dashboard');
+
+    Route::resource('setorans', \App\Http\Controllers\Ustadz\SetoranController::class)->except(['show']);
+    Route::get('setorans/validasi', [\App\Http\Controllers\Ustadz\SetoranController::class, 'validasi'])->name('setorans.validasi');
+    Route::patch('setorans/{setoran}/approve', [\App\Http\Controllers\Ustadz\SetoranController::class, 'approve'])->name('setorans.approve');
+    Route::patch('setorans/{setoran}/reject', [\App\Http\Controllers\Ustadz\SetoranController::class, 'reject'])->name('setorans.reject');
+
+    Route::resource('absensis', \App\Http\Controllers\Ustadz\AbsensiController::class)->only(['index', 'create', 'store']);
+    Route::get('absensi/rekap', [\App\Http\Controllers\Ustadz\AbsensiController::class, 'rekap'])->name('absensi.rekap');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Kepala Tahfidz Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:kepala_tahfidz'])->prefix('kepala')->name('kepala.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('kepala.dashboard', ['title' => 'Dashboard Kepala Tahfidz']);
+    })->name('dashboard');
+
+    Route::get('/peta-juz', function () {
+        return view('kepala.peta-juz', ['title' => 'Peta Hafalan 30 Juz']);
+    })->name('peta-juz');
+
+    Route::get('/murajaah/bulanan', function () {
+        return view('kepala.murajaah-bulanan', ['title' => 'Daftar Murajaah Bulanan']);
+    })->name('murajaah.bulanan');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Wali Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:wali'])->prefix('wali')->name('wali.')->group(function () {
+    Route::get('/mutabaah/{santri?}', function () {
+        return view('wali.mutabaah', ['title' => 'Mutaba\'ah Anak']);
+    })->name('mutabaah');
+
+    Route::get('/riwayat/{santri?}', function () {
+        return view('wali.riwayat', ['title' => 'Riwayat Setoran']);
+    })->name('riwayat');
+
+    Route::get('/peta-juz/{santri?}', function () {
+        return view('wali.peta-juz', ['title' => 'Peta Hafalan']);
+    })->name('peta-juz');
+
+    Route::get('/profile', function () {
+        return view('wali.profile', ['title' => 'Profil Wali']);
+    })->name('profile');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Shared Routes (Ustadz, Kepala, Wali)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:ustadz|kepala_tahfidz|wali'])->group(function () {
+    Route::get('/peta-juz/{santri?}', [\App\Http\Controllers\Shared\PetaJuzController::class, 'index'])->name('peta-juz.index');
+    Route::get('/murajaah/bulanan', [\App\Http\Controllers\Shared\MurajaahController::class, 'index'])->name('murajaah.index');
+});
+
+/*
+|--------------------------------------------------------------------------
+| PDF Export Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+    Route::get('/santri/{santri}/rapor/pdf', [\App\Http\Controllers\Admin\SantriController::class, 'exportRaporPdf'])->name('santris.rapor.pdf');
+    Route::get('/santri/{santri}/sertifikat/pdf', [\App\Http\Controllers\Admin\SantriController::class, 'exportSertifikatPdf'])->name('santris.sertifikat.pdf');
+});
