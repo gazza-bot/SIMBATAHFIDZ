@@ -61,7 +61,7 @@ class LoginController extends Controller
             'admin' => redirect()->intended(route('admin.dashboard')),
             'ustadz' => redirect()->intended(route('ustadz.dashboard')),
             'kepala_tahfidz' => redirect()->intended(route('kepala.dashboard')),
-            'wali' => redirect()->intended(route('wali.dashboard')),
+            'wali' => redirect()->intended(route('wali.mutabaah')),
             default => redirect()->route('login')->with('error', 'Peran tidak dikenali.'),
         };
     }

@@ -1,0 +1,52 @@
+# SIMBA TAHFIDZ - Sprint Roadmap
+
+Sistem Informasi Mutaba'ah & Belajar Al-Qur'an — Pondok Pesantren Darut Taqwa Ponorogo.
+
+## Sprint 0 — Fondasi
+- [x] Laravel 12 + Tailwind CSS v4 + design tokens (`resources/css/app.css`)
+- [x] Custom auth username/password + role middleware (admin, ustadz, kepala_tahfidz, wali)
+- [x] Migrasi 11 tabel + seeder (114 surah, data dev, 4 akun login)
+- [x] Blade components (button, card, badge, avatar, table, dst.) + 3 layouts
+- [x] Halaman login tampil + redirect per peran
+- [x] Dashboard placeholder 4 peran (data nyata dari seed)
+
+## Sprint 1 — Kelola Data Master (Admin)
+- [ ] CRUD Santri (+ cari, filter kelompok)
+- [ ] CRUD Wali & Ustadz (+ relasi wali-santri)
+- [ ] CRUD Kelompok Halaqah & Angkatan
+- [ ] Daftar & edit profil diri
+
+## Sprint 2 — Input Setoran (Ustadz)
+- [ ] Form input setoran hafalan (santri, surah, ayat awal-akhir, nilai)
+- [ ] Pilih Mutqin: cover penuh atau parsial
+- [ ] Validasi setoran (approve/reject + catatan)
+
+## Sprint 3 — Absensi Kelompok (Ustadz)
+- [ ] Presensi harian (Hadir/Izin/Sakit/Alpa)
+- [ ] Rekap absensi kelompok
+
+## Sprint 4 — Dasbor Kepala Tahfidz
+- [ ] Statistik keseluruhan + grafik (Chart.js)
+- [ ] Daftar santri perlu perhatian
+
+## Sprint 5 — Dasbor Wali
+- [ ] Mutaba'ah anak (tab multi-anak)
+- [ ] Riwayat setoran & absensi
+
+## Sprint 6 — Peta Hafalan 30 Juz
+- [ ] Grid 30 juz (Mutqin cover penuh / parsial)
+- [ ] Read-only untuk wali
+
+## Sprint 7 — Murajaah Bulanan
+- [ ] Daftar murajaah bulanan + filter bulan
+- [ ] Tandai sudah/belum murajaah
+
+## Sprint 8 — PDF & Penyempurnaan
+- [ ] Export Rapor Hafalan PDF
+- [ ] Export Sertifikat Khatam PDF
+- [ ] Dark mode? (dirahalkan) — validasi aksesibilitas & responsif
+
+---
+
+Konvensi commit: `feat(...)` untuk fitur, `bug:` untuk perbaikan, `chore:` untuk pemeliharaan.
+Seed dev: admin/ustadz/kepala/wali, password `password`.

@@ -45,7 +45,14 @@ Route::post('/reset-password', function () {
 */
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('admin.dashboard', ['title' => 'Dashboard Admin']);
+        return view('admin.dashboard', [
+            'title' => 'Dashboard Admin',
+            'pageTitle' => 'Dashboard',
+            'totalSantri' => \App\Models\Santri::count(),
+            'totalUstadz' => \App\Models\Ustadz::count(),
+            'totalWali' => \App\Models\Wali::count(),
+            'totalKelompok' => \App\Models\Kelompok::count(),
+        ]);
     })->name('dashboard');
 
     Route::resource('santris', \App\Http\Controllers\Admin\SantriController::class);
@@ -62,7 +69,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 */
 Route::middleware(['auth', 'role:ustadz'])->prefix('ustadz')->name('ustadz.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('ustadz.dashboard', ['title' => 'Dashboard Ustadz']);
+        return view('ustadz.dashboard', [
+            'title' => 'Dashboard Ustadz',
+            'pageTitle' => 'Dashboard',
+            'totalSantri' => \App\Models\Santri::count(),
+            'totalSetoran' => \App\Models\Setoran::count(),
+            'totalMenunggu' => \App\Models\Setoran::where('status', 'menunggu_validasi')->count(),
+        ]);
     })->name('dashboard');
 
     Route::resource('setorans', \App\Http\Controllers\Ustadz\SetoranController::class)->except(['show']);
@@ -81,7 +94,13 @@ Route::middleware(['auth', 'role:ustadz'])->prefix('ustadz')->name('ustadz.')->g
 */
 Route::middleware(['auth', 'role:kepala_tahfidz'])->prefix('kepala')->name('kepala.')->group(function () {
     Route::get('/dashboard', function () {
-        return view('kepala.dashboard', ['title' => 'Dashboard Kepala Tahfidz']);
+        return view('kepala.dashboard', [
+            'title' => 'Dashboard Kepala Tahfidz',
+            'pageTitle' => 'Dashboard',
+            'totalSantri' => \App\Models\Santri::count(),
+            'totalKelompok' => \App\Models\Kelompok::count(),
+            'totalSetoran' => \App\Models\Setoran::count(),
+        ]);
     })->name('dashboard');
 
     Route::get('/peta-juz', function () {
@@ -100,7 +119,11 @@ Route::middleware(['auth', 'role:kepala_tahfidz'])->prefix('kepala')->name('kepa
 */
 Route::middleware(['auth', 'role:wali'])->prefix('wali')->name('wali.')->group(function () {
     Route::get('/mutabaah/{santri?}', function () {
-        return view('wali.mutabaah', ['title' => 'Mutaba\'ah Anak']);
+        return view('wali.mutabaah', [
+            'title' => "Mutaba'ah Anak",
+            'pageTitle' => "Mutaba'ah Anak",
+            'anakans' => auth()->user()->wali?->santris ?? collect(),
+        ]);
     })->name('mutabaah');
 
     Route::get('/riwayat/{santri?}', function () {

@@ -50,7 +50,7 @@ $iconSvg = $icons[$variant] ?? $icons['info'];
         <button
             type="button"
             class="flex-shrink-0 p-1 rounded-lg hover:bg-black/10 focus:outline-none focus:ring-2 focus:ring-current focus:ring-offset-2"
-            @if ($onDismiss) wire:click="{{ $onDismiss }}" @else onclick="this.closest('[role=\"alert\"]').remove()"
+            @if ($onDismiss) wire:click="{{ $onDismiss }}" @else onclick="this.closest('[role=alert]').remove()" @endif
             aria-label="Tutup notifikasi"
         >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>

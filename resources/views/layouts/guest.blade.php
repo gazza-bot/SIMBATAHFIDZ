@@ -54,7 +54,7 @@
                 </x-alert>
             @endif
 
-            {{ $slot }}
+            @yield('content')
         </x-card>
 
         {{-- Footer Links --}}
