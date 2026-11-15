@@ -49,7 +49,7 @@ $sizeClass = $sizes[$size] ?? $sizes['md'];
     @endif
 
     @if ($icon)
-        <span class="flex-shrink-0" aria-hidden="true">{{ $icon }}</span>
+        <span class="flex-shrink-0" aria-hidden="true">{!! $icon !!}</span>
     @endif
 
     {{ $slot }}

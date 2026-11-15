@@ -46,7 +46,7 @@ $iconRightClasses = $iconRight ? 'pr-10' : '';
     <div class="relative">
         @if ($iconLeft)
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400" aria-hidden="true">
-                {{ $iconLeft }}
+                {!! $iconLeft !!}
             </div>
         @endif
 
@@ -67,7 +67,7 @@ $iconRightClasses = $iconRight ? 'pr-10' : '';
 
         @if ($iconRight)
             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-neutral-400" aria-hidden="true">
-                {{ $iconRight }}
+                {!! $iconRight !!}
             </div>
         @endif
 

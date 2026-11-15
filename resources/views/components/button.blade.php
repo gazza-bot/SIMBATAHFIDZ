@@ -44,13 +44,13 @@ $widthClass = $fullWidth ? 'w-full' : '';
         </svg>
     @elseif ($iconLeft)
         {{-- Icon Left Slot --}}
-        <span class="flex-shrink-0" aria-hidden="true">{{ $iconLeft }}</span>
+        <span class="flex-shrink-0" aria-hidden="true">{!! $iconLeft !!}</span>
     @endif
 
     {{ $slot }}
 
     @if ($iconRight && !$loading)
         {{-- Icon Right Slot --}}
-        <span class="flex-shrink-0" aria-hidden="true">{{ $iconRight }}</span>
+        <span class="flex-shrink-0" aria-hidden="true">{!! $iconRight !!}</span>
     @endif
 </button>

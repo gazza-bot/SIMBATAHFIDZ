@@ -8,7 +8,7 @@
 <div class="relative inline-block" data-dropdown>
     {{-- Trigger --}}
     <div class="inline-block">
-        {{ $trigger ?? '<x-button variant="ghost" size="sm"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg></x-button>' }}
+        {!! $trigger ?? '<button type="button" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-primary-500 hover:bg-primary-50 active:bg-primary-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2" aria-label="Menu"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/></svg></button>' !!}
     </div>
 
     {{-- Dropdown Menu --}}
