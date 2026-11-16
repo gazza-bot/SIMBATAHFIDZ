@@ -50,18 +50,47 @@
                     Pondok Pesantren Darut Taqwa Ponorogo
                 </p>
 
-                {{-- Sorotan fitur (ikon placeholder kosong) --}}
-                <div class="mt-8 flex flex-wrap gap-2.5">
-                    <div class="inline-flex items-center gap-2.5 rounded-xl border border-white/15 bg-white/5 px-3 py-2">
-                        <span class="h-8 w-8 rounded-lg border border-dashed border-white/35 bg-white/5" aria-hidden="true"></span>
-                        <span class="text-sm font-medium text-white/90">Terpadu &amp; Terukur</span>
-                    </div>
-                    <div class="inline-flex items-center gap-2.5 rounded-xl border border-white/15 bg-white/5 px-3 py-2">
-                        <span class="h-8 w-8 rounded-lg border border-dashed border-white/35 bg-white/5" aria-hidden="true"></span>
-                        <span class="text-sm font-medium text-white/90">30 Juz Mutqin</span>
+                {{-- Foto suasana pesantren + badge overlay --}}
+                <div class="mt-8 relative">
+                    {{-- Ornamen geometris dekoratif (lingkaran + kotak garis) --}}
+                    <svg class="pointer-events-none absolute -top-4 -left-4 w-72 h-72 opacity-10" aria-hidden="true" viewBox="0 0 288 288" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="144" cy="144" r="130" stroke="white" stroke-width="1"/>
+                        <circle cx="144" cy="144" r="90" stroke="white" stroke-width="1"/>
+                        <rect x="54" y="54" width="180" height="180" rx="4" stroke="white" stroke-width="1"/>
+                        <rect x="84" y="84" width="120" height="120" rx="4" stroke="white" stroke-width="1"/>
+                    </svg>
+
+                    {{-- Kartu foto --}}
+                    <div class="relative rounded-2xl overflow-hidden ring-1 ring-white/10 bg-neutral-900">
+                        <img
+                            src="{{ asset('images/gambar_login.png') }}"
+                            alt="Suasana pesantren: santri belajar Al-Qur'an di perpustakaan"
+                            width="406"
+                            height="176"
+                            class="w-full h-auto object-cover"
+                        />
+
+                        {{-- Overlay gradien bawah agar badge terbaca --}}
+                        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-neutral-950/90 to-transparent" aria-hidden="true"></div>
+
+                        {{-- Badge overlay di atas foto --}}
+                        <div class="absolute bottom-4 left-4 right-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 pb-4">
+                            {{-- Badge kiri: Terpadu & Terukur --}}
+                            <div class="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 backdrop-blur-sm px-4 py-2.5 text-white/95">
+                                <svg class="w-5 h-5 text-accent-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <circle cx="12" cy="12" r="3"/>
+                                    <path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>
+                                </svg>
+                                <span class="text-sm font-medium tracking-wide">Terpadu & Terukur</span>
+                            </div>
+
+                            {{-- Badge kanan: 30 JUZ MUTQIN --}}
+                            <div class="inline-flex items-center gap-2 rounded-xl bg-primary-800/80 px-4 py-2.5 text-white">
+                                <span class="text-[10px] font-semibold uppercase tracking-[0.2em]">30 JUZ MUTQIN</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
             {{-- Kartu kutipan --}}
             <div class="relative mt-10 rounded-2xl border border-white/10 bg-neutral-950/25 p-6 backdrop-blur-sm">
