@@ -24,6 +24,14 @@
   animation: notification-in var(--motion-normal) ease-out both;
 }
 
+.table-loading-overlay {
+  display: none;
+}
+
+[data-table-container][data-loading="true"] .table-loading-overlay {
+  display: flex;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-notification-in {
     animation: none;

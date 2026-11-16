@@ -18,8 +18,8 @@ Sistem Informasi Mutaba'ah & Belajar Al-Qur'an — Pondok Pesantren Darut Taqwa 
 - [x] CRUD Kelompok Halaqah: index/create/store/edit/update/destroy (+ relasi ustadz musyrif, angkatan, kapasitas)
 - [x] CRUD Angkatan: index/create/store/edit/update/destroy (+ nama, tahun, status aktif)
 - [x] Validasi relasi: santri↔wali↔kelompok↔ustadz↔angkatan (FK integrity)
-- [ ] Daftar & edit profil diri (Admin)
-- [ ] Empty/loading/error states pada semua tabel (R-27)
+- [x] Daftar & edit profil diri (Admin)
+- [x] Empty/loading/error states pada semua tabel (R-27)
 
 ## Sprint 2 — Input Setoran (Ustadz)
 - [ ] Form input setoran hafalan (santri, surah, ayat awal-akhir, nilai)

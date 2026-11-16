@@ -121,6 +121,12 @@
             <h1 class="text-base sm:text-lg font-semibold text-neutral-900 truncate">{{ $pageTitle ?? '' }}</h1>
 
             <div class="flex items-center gap-2 sm:gap-3 ml-auto">
+                @if ($role === 'admin')
+                    <x-button variant="ghost" size="sm" href="{{ route('admin.profile.edit') }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 12a4 4 0 100-8 4 4 0 000 8zm7 8a7 7 0 00-14 0"/></svg>
+                        <span class="hidden sm:inline">Profil</span>
+                    </x-button>
+                @endif
                 @if ($role === 'wali')
                     <div class="text-right hidden sm:block">
                         <p class="text-sm font-medium text-neutral-900 leading-tight">{{ $user->name }}</p>

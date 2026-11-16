@@ -55,6 +55,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         ]);
     })->name('dashboard');
 
+    Route::get('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
+
     Route::resource('santris', \App\Http\Controllers\Admin\SantriController::class);
     Route::resource('walis', \App\Http\Controllers\Admin\WaliController::class);
     Route::resource('ustadzs', \App\Http\Controllers\Admin\UstadzController::class);
