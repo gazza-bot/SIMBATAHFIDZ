@@ -24,12 +24,13 @@ $icons = [
 
 $variantClass = $variants[$variant] ?? $variants['info'];
 $iconSvg = $icons[$variant] ?? $icons['info'];
+$alertClass = 'relative flex gap-3 p-4 rounded-xl border ' . $variantClass . ' ' . $attributes->get('class', '');
 ?>
 
 <div
-    class="relative flex gap-3 p-4 rounded-xl border {{ $variantClass }}"
+    class="{{ $alertClass }}"
     role="alert"
-    {{ $attributes->merge(['class' => $attributes->get('class', '')]) }}
+    {{ $attributes->except('class') }}
 >
     @if ($icon)
         <div class="flex-shrink-0" aria-hidden="true">
