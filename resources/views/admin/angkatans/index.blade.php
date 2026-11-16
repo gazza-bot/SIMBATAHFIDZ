@@ -127,7 +127,7 @@
     {{-- Delete Confirmation Modal (Alpine.js) --}}
     <div x-data="{ showDeleteAngkatanModal: false, deleteAngkatanItem: null }" x-init="deleteAngkatanModal = $refs.deleteAngkatanModal">
         <div
-            x-show="showDeleteAngkatanModal"
+            x-show="showDeleteAngkatanModal" x-cloak
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0 scale-95"
             x-transition:enter-end="opacity-100 scale-100"
