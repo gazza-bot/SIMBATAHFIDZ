@@ -3,7 +3,7 @@
 @section('content')
     @include('admin.partials.master-tabs')
 
-    <div class="max-w-6xl mx-auto space-y-6">
+    <div class="max-w-6xl mx-auto space-y-6" x-data="{ showDeleteModal: false, deleteItem: null, openDeleteModal(id, name) { this.deleteItem = { id, name }; this.showDeleteModal = true; }, closeDeleteModal() { this.showDeleteModal = false; this.deleteItem = null; } }">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h2 class="text-xl font-bold text-neutral-900">{{$pageTitle}}</h2>
@@ -79,7 +79,7 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                             Edit
                                         </x-button>
-                                        <x-button variant="destructive" size="sm" x-data @click="deleteUstadzItem = { id: '{{ $ustadz->id }}', name: '{{ $ustadz->nama }}' }; showDeleteUstadzModal = true">
+                                        <x-button variant="destructive" size="sm" @click="openDeleteModal('{{ $ustadz->id }}', '{{ $ustadz->nama }}')">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                             Hapus
                                         </x-button>
@@ -118,69 +118,49 @@
     </div>
 
     {{-- Delete Confirmation Modal (Alpine.js) --}}
-    <div x-data="{ showDeleteUstadzModal: false, deleteUstadzItem: null }" x-init="deleteUstadzModal = $refs.deleteUstadzModal">
-        <div
-            x-show="showDeleteUstadzModal" x-cloak
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 scale-95"
-            x-transition:enter-end="opacity-100 scale-100"
-            x-transition:leave="transition ease-in duration-150"
-            x-transition:leave-start="opacity-100 scale-100"
-            x-transition:leave-end="opacity-0 scale-95"
-            class="fixed inset-0 z-50 flex items-center justify-center p-4"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="delete-ustadz-title"
-            @keydown.escape.window="showDeleteUstadzModal = false"
-            x-ref="deleteUstadzModal"
-        >
-            <div class="fixed inset-0 bg-neutral-950/70 backdrop-blur-sm" @click="showDeleteUstadzModal = false" aria-hidden="true"></div>
-            <div class="w-full max-w-md bg-white rounded-2xl shadow-level-4">
-                <div class="flex items-start justify-between gap-4 p-5 border-b border-neutral-100">
-                    <div>
-                        <h2 id="delete-ustadz-title" class="text-lg font-semibold text-neutral-900">Hapus Ustadz</h2>
-                        <p class="mt-1 text-sm text-neutral-500">Tindakan ini tidak dapat dibatalkan.</p>
+    <div
+        x-show="showDeleteModal" x-cloak
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0 scale-95"
+        x-transition:enter-end="opacity-100 scale-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100 scale-100"
+        x-transition:leave-end="opacity-0 scale-95"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-ustadz-title"
+        @keydown.escape.window="showDeleteModal = false"
+        x-ref="deleteUstadzModal"
+    >
+        <div class="fixed inset-0 bg-neutral-950/70 backdrop-blur-sm" @click="showDeleteModal = false" aria-hidden="true"></div>
+        <div class="w-full max-w-md bg-white rounded-2xl shadow-level-4">
+            <div class="flex items-start justify-between gap-4 p-5 border-b border-neutral-100">
+                <div>
+                    <h2 id="delete-ustadz-title" class="text-lg font-semibold text-neutral-900">Hapus Ustadz</h2>
+                    <p class="mt-1 text-sm text-neutral-500">Tindakan ini tidak dapat dibatalkan.</p>
+                </div>
+                <button
+                    type="button"
+                    class="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
+                    @click="showDeleteModal = false"
+                    aria-label="Tutup modal"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="p-5">
+                <p class="text-neutral-700">Apakah Anda yakin ingin menghapus ustadz <span x-text="deleteItem?.name" class="font-medium"></span>?</p>
+                <form method="POST" :action="'{{ route('admin.ustadzs.destroy', ':id') }}'.replace(':id', deleteItem?.id)">
+                    @csrf
+                    @method('DELETE')
+                    <div class="mt-6 flex justify-end gap-2">
+                        <x-button variant="ghost" @click="showDeleteModal = false">Batal</x-button>
+                        <x-button type="submit" variant="destructive">Hapus</x-button>
                     </div>
-                    <button
-                        type="button"
-                        class="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
-                        @click="showDeleteUstadzModal = false"
-                        aria-label="Tutup modal"
-                    >
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
-                <div class="p-5">
-                    <p class="text-neutral-700">Apakah Anda yakin ingin menghapus ustadz <span x-text="deleteUstadzItem?.name" class="font-medium"></span>?</p>
-                    <form method="POST" :action="'{{ route('admin.ustadzs.destroy', ':id') }}'.replace(':id', deleteUstadzItem?.id)">
-                        @csrf
-                        @method('DELETE')
-                        <div class="mt-6 flex justify-end gap-2">
-                            <x-button variant="ghost" @click="showDeleteUstadzModal = false">Batal</x-button>
-                            <x-button type="submit" variant="destructive">Hapus</x-button>
-                        </div>
-                    </form>
-                </div>
+                </form>
             </div>
         </div>
     </div>
-
-    @push('scripts')
-    <script>
-        document.addEventListener('alpine:init', () => {
-            Alpine.data('deleteUstadz', () => ({
-                showDeleteUstadzModal: false,
-                deleteUstadzItem: null,
-                openDeleteUstadzModal(id, name) {
-                    this.deleteUstadzItem = { id, name };
-                    this.showDeleteUstadzModal = true;
-                },
-                closeDeleteUstadzModal() {
-                    this.showDeleteUstadzModal = false;
-                    this.deleteUstadzItem = null;
-                }
-            }));
-        });
-    </script>
-    @endpush
+</div>
 @endsection
