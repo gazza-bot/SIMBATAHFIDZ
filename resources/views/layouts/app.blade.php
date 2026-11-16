@@ -155,7 +155,7 @@
     @endif
 
     <main id="main-content" class="pt-16 {{ $bottomPadding }} {{ $mainMargin }} min-h-screen">
-        <div class="p-4 sm:p-6 lg:p-8">
+        <div class="p-4 sm:p-6">
             @if (session('success'))
                 <x-alert variant="success" class="mb-6">{{ session('success') }}</x-alert>
             @endif

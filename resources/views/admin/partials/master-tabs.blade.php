@@ -13,8 +13,12 @@
 
 <div class="mb-6">
     <div class="border-b border-neutral-200" role="tablist" aria-label="Master Data Tabs">
-        <nav class="flex gap-1 overflow-x-auto pb-1" style="scrollbar-width: thin;">
-            @foreach ($tabs as $tab)
+        <nav class="flex gap-1 overflow-x-auto pb-1 relative" style="scrollbar-width: thin;">
+            {{-- Active indicator bar --}}
+            <div class="absolute bottom-0 left-0 h-1 bg-primary-500 transition-all duration-300 ease-out origin-left"
+                 style="width: var(--active-width, 0); transform: translateX(var(--active-x, 0));"></div>
+
+            @foreach ($tabs as $index => $tab)
                 @php
                     $isActive = $tab['key'] === $active;
                 @endphp
@@ -22,7 +26,9 @@
                     href="{{ $tab['url'] }}"
                     role="tab"
                     aria-selected="{{ $isActive ? 'true' : 'false' }}"
-                    class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium whitespace-nowrap rounded-lg transition-all duration-fast ease-standard {{ $isActive ? 'bg-primary-50 text-primary-600' : 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50' }}"
+                    data-index="{{ $index }}"
+                    class="relative inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium whitespace-nowrap rounded-lg transition-all duration-200 ease-out {{ $isActive ? 'text-primary-600' : 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50' }}"
+                    @if ($isActive) data-active-tab @endif
                 >
                     <span class="inline-flex items-center justify-center w-5 h-5" aria-hidden="true">{!! $tab['icon'] !!}</span>
                     {{ $tab['label'] }}
@@ -31,3 +37,35 @@
         </nav>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const nav = document.querySelector('[role="tablist"] nav');
+        const indicator = nav?.querySelector('.absolute.bottom-0');
+        const tabs = nav?.querySelectorAll('[data-index]');
+
+        function updateIndicator(activeTab) {
+            if (!activeTab || !indicator) return;
+            const rect = activeTab.getBoundingClientRect();
+            const navRect = nav.getBoundingClientRect();
+            indicator.style.width = rect.width + 'px';
+            indicator.style.transform = 'translateX(' + (rect.left - navRect.left) + 'px)';
+        }
+
+        tabs?.forEach(tab => {
+            if (tab.hasAttribute('data-active-tab')) {
+                updateIndicator(tab);
+            }
+            tab.addEventListener('click', () => {
+                updateIndicator(tab);
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            const activeTab = nav?.querySelector('[data-active-tab]');
+            if (activeTab) updateIndicator(activeTab);
+        });
+    });
+</script>
+@endpush
