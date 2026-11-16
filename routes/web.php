@@ -45,6 +45,10 @@ Route::post('/reset-password', function () {
 */
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', function () {
+        $unassignedSantri = \App\Models\Santri::where(function ($query) {
+            $query->whereNull('wali_id')->orWhereNull('kelompok_id');
+        })->count();
+
         return view('admin.dashboard', [
             'title' => 'Dashboard Admin',
             'pageTitle' => 'Dashboard',
@@ -52,6 +56,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             'totalUstadz' => \App\Models\Ustadz::count(),
             'totalWali' => \App\Models\Wali::count(),
             'totalKelompok' => \App\Models\Kelompok::count(),
+            'totalAngkatan' => \App\Models\Angkatan::count(),
+            'activeAngkatan' => \App\Models\Angkatan::where('status_aktif', true)->count(),
+            'unassignedSantri' => $unassignedSantri,
+            'unassignedKelompok' => \App\Models\Kelompok::whereNull('ustadz_id')->count(),
         ]);
     })->name('dashboard');
 
