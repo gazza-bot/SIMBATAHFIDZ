@@ -3,7 +3,7 @@
 @section('content')
     @include('admin.partials.master-tabs')
 
-    <div class="max-w-4xl mx-auto space-y-6">
+    <div class="max-w-4xl mx-auto space-y-6" x-data="{ showDeleteModal: false, deleteItem: null, openDeleteModal(id, name) { this.deleteItem = { id, name }; this.showDeleteModal = true; }, closeDeleteModal() { this.showDeleteModal = false; this.deleteItem = null; } }">
         <div class="flex items-center gap-4">
             <x-button variant="ghost" href="{{ route('admin.kelompoks.index') }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
@@ -15,7 +15,7 @@
             </div>
             <div class="ml-auto flex gap-2">
                 <x-button variant="ghost" href="{{ route('admin.kelompoks.edit', $kelompok) }}">Edit</x-button>
-                <x-button variant="destructive" wire:click="confirmDelete('{{ $kelompok->id }}')">Hapus</x-button>
+                <x-button variant="destructive" data-name="{{ $kelompok->nama }}" @click="openDeleteModal('{{ $kelompok->id }}', $event.currentTarget.dataset.name)">Hapus</x-button>
             </div>
         </div>
 
@@ -92,31 +92,10 @@
         </div>
     </div>
 
-    {-- Delete Confirmation Modal --}
-    <x-modal id="delete-kelompoks" title="Hapus Kelompok" description="Tindakan ini tidak dapat dibatalkan.">
-        <p class="text-neutral-700">Apakah Anda yakin ingin menghapus kelompok <span id="delete-kelompoks-name" class="font-medium"></span>?</p>
-        <input type="hidden" id="delete-kelompoks-id">
-        <div class="mt-6 flex justify-end gap-2">
-            <x-button variant="ghost" onclick="closeDeleteKelompokModal()">Batal</x-button>
-            <form method="POST" action="{ route('admin.kelompoks.destroy', ':id') }" id="delete-kelompoks-form">
-                @csrf
-                @method('DELETE')
-                <x-button type="submit" variant="destructive">Hapus</x-button>
-            </form>
-        </div>
-    </x-modal>
-
-    @push('scripts')
-    <script>
-        function openDeleteKelompokModal(id, name) {
-            document.getElementById('delete-kelompoks-id').value = id;
-            document.getElementById('delete-kelompoks-name').textContent = name;
-            document.getElementById('delete-kelompoks-form').action = '{ route('admin.kelompoks.destroy', ':id') }'.replace(':id', id);
-            document.getElementById('delete-kelompoks').setAttribute('open', '');
-        }
-        function closeDeleteKelompokModal() {
-            document.getElementById('delete-kelompoks').removeAttribute('open');
-        }
-    </script>
-    @endpush
+        @include('admin.partials.delete-modal', [
+            'title' => 'Hapus Kelompok',
+            'itemLabel' => 'kelompok',
+            'action' => route('admin.kelompoks.destroy', ':id'),
+        ])
+    </div>
 @endsection

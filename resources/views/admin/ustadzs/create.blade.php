@@ -21,7 +21,7 @@
             <x-card padding="default">
                 <h3 class="text-lg font-semibold text-neutral-900 mb-4">Akun Login</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <x-input name="username" label="Username" placeholder="username ustadz" required :error="$errors->first('username')" :value="old('username')" />
+                    <x-input name="username" label="Username" placeholder="Username ustadz" required :error="$errors->first('username')" :value="old('username')" />
                     <x-input name="password" label="Password" type="password" placeholder="Min. 6 karakter" required :error="$errors->first('password')" />
                     <x-input name="password_confirmation" label="Konfirmasi Password" type="password" placeholder="Ulangi password" required :error="$errors->first('password_confirmation')" />
                     <x-input name="nip" label="NIP" placeholder="Nomor Induk Pegawai" required :error="$errors->first('nip')" :value="old('nip')" />
@@ -46,31 +46,4 @@
         </form>
     </div>
 
-    {-- Delete Confirmation Modal --}
-    <x-modal id="delete-ustadzs" title="Hapus Ustadz" description="Tindakan ini tidak dapat dibatalkan.">
-        <p class="text-neutral-700">Apakah Anda yakin ingin menghapus ustadz <span id="delete-ustadzs-name" class="font-medium"></span>?</p>
-        <input type="hidden" id="delete-ustadzs-id">
-        <div class="mt-6 flex justify-end gap-2">
-            <x-button variant="ghost" onclick="closeDeleteUstadzModal()">Batal</x-button>
-            <form method="POST" action="{ route('admin.ustadzs.destroy', ':id') }" id="delete-ustadzs-form">
-                @csrf
-                @method('DELETE')
-                <x-button type="submit" variant="destructive">Hapus</x-button>
-            </form>
-        </div>
-    </x-modal>
-
-    @push('scripts')
-    <script>
-        function openDeleteUstadzModal(id, name) {
-            document.getElementById('delete-ustadzs-id').value = id;
-            document.getElementById('delete-ustadzs-name').textContent = name;
-            document.getElementById('delete-ustadzs-form').action = '{ route('admin.ustadzs.destroy', ':id') }'.replace(':id', id);
-            document.getElementById('delete-ustadzs').setAttribute('open', '');
-        }
-        function closeDeleteUstadzModal() {
-            document.getElementById('delete-ustadzs').removeAttribute('open');
-        }
-    </script>
-    @endpush
 @endsection

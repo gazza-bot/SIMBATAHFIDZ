@@ -3,7 +3,7 @@
 @section('content')
     @include('admin.partials.master-tabs')
 
-    <div class="max-w-4xl mx-auto space-y-6">
+    <div class="max-w-4xl mx-auto space-y-6" x-data="{ showDeleteModal: false, deleteItem: null, openDeleteModal(id, name) { this.deleteItem = { id, name }; this.showDeleteModal = true; }, closeDeleteModal() { this.showDeleteModal = false; this.deleteItem = null; } }">
         <div class="flex items-center gap-4">
             <x-button variant="ghost" href="{{ route('admin.santris.index') }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
@@ -15,7 +15,7 @@
             </div>
             <div class="ml-auto flex gap-2">
                 <x-button variant="ghost" href="{{ route('admin.santris.edit', $santri) }}">Edit</x-button>
-                <x-button variant="destructive" onclick="openDeleteSantriModal('{{ $santri->id }}', '{{ $santri->nama }}')">Hapus</x-button>
+                <x-button variant="destructive" data-name="{{ $santri->nama }}" @click="openDeleteModal('{{ $santri->id }}', $event.currentTarget.dataset.name)">Hapus</x-button>
             </div>
         </div>
 
@@ -147,19 +147,10 @@
                 </x-card>
             </div>
         </div>
+        @include('admin.partials.delete-modal', [
+            'title' => 'Hapus Santri',
+            'itemLabel' => 'santri',
+            'action' => route('admin.santris.destroy', ':id'),
+        ])
     </div>
 @endsection
-
-@push('scripts')
-<script>
-    function openDeleteSantriModal(id, name) {
-        document.getElementById('delete-santri-id').value = id;
-        document.getElementById('delete-santri-name').textContent = name;
-        document.getElementById('delete-santri-form').action = '{{ route('admin.santris.destroy', ':id') }}'.replace(':id', id);
-        document.getElementById('delete-santri').setAttribute('open', '');
-    }
-    function closeDeleteSantriModal() {
-        document.getElementById('delete-santri').removeAttribute('open');
-    }
-</script>
-@endpush

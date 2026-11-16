@@ -97,7 +97,7 @@
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                             Edit
                                         </x-button>
-                                        <x-button variant="destructive" size="sm" @click="openDeleteModal('{{ $kelompok->id }}', '{{ $kelompok->nama }}')">
+                                        <x-button variant="destructive" size="sm" data-name="{{ $kelompok->nama }}" @click="openDeleteModal('{{ $kelompok->id }}', $event.currentTarget.dataset.name)">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                             Hapus
                                         </x-button>
@@ -133,8 +133,6 @@
                 </div>
             @endif
         </div>
-    </div>
-
     {{-- Delete Confirmation Modal (Alpine.js) --}}
     <div
         x-show="showDeleteModal" x-cloak
@@ -151,8 +149,8 @@
         @keydown.escape.window="showDeleteModal = false"
         x-ref="deleteKelompokModal"
     >
-        <div class="fixed inset-0 bg-neutral-950/70 backdrop-blur-sm" @click="showDeleteModal = false" aria-hidden="true"></div>
-        <div class="w-full max-w-md bg-white rounded-2xl shadow-level-4">
+        <div class="fixed inset-0 z-0 bg-neutral-950/70 backdrop-blur-sm" @click="showDeleteModal = false" aria-hidden="true"></div>
+        <div class="relative z-10 w-full max-w-md bg-white rounded-2xl shadow-level-4">
             <div class="flex items-start justify-between gap-4 p-5 border-b border-neutral-100">
                 <div>
                     <h2 id="delete-kelompok-title" class="text-lg font-semibold text-neutral-900">Hapus Kelompok</h2>

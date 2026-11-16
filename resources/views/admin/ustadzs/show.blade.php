@@ -3,7 +3,7 @@
 @section('content')
     @include('admin.partials.master-tabs')
 
-    <div class="max-w-4xl mx-auto space-y-6">
+    <div class="max-w-4xl mx-auto space-y-6" x-data="{ showDeleteModal: false, deleteItem: null, openDeleteModal(id, name) { this.deleteItem = { id, name }; this.showDeleteModal = true; }, closeDeleteModal() { this.showDeleteModal = false; this.deleteItem = null; } }">
         <div class="flex items-center gap-4">
             <x-button variant="ghost" href="{{ route('admin.ustadzs.index') }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
@@ -15,7 +15,7 @@
             </div>
             <div class="ml-auto flex gap-2">
                 <x-button variant="ghost" href="{{ route('admin.ustadzs.edit', $ustadz) }}">Edit</x-button>
-                <x-button variant="destructive" wire:click="confirmDelete('{{ $ustadz->id }}')">Hapus</x-button>
+                <x-button variant="destructive" data-name="{{ $ustadz->nama }}" @click="openDeleteModal('{{ $ustadz->id }}', $event.currentTarget.dataset.name)">Hapus</x-button>
             </div>
         </div>
 
@@ -90,31 +90,10 @@
         </div>
     </div>
 
-    {-- Delete Confirmation Modal --}
-    <x-modal id="delete-ustadzs" title="Hapus Ustadz" description="Tindakan ini tidak dapat dibatalkan.">
-        <p class="text-neutral-700">Apakah Anda yakin ingin menghapus ustadz <span id="delete-ustadzs-name" class="font-medium"></span>?</p>
-        <input type="hidden" id="delete-ustadzs-id">
-        <div class="mt-6 flex justify-end gap-2">
-            <x-button variant="ghost" onclick="closeDeleteUstadzModal()">Batal</x-button>
-            <form method="POST" action="{ route('admin.ustadzs.destroy', ':id') }" id="delete-ustadzs-form">
-                @csrf
-                @method('DELETE')
-                <x-button type="submit" variant="destructive">Hapus</x-button>
-            </form>
-        </div>
-    </x-modal>
-
-    @push('scripts')
-    <script>
-        function openDeleteUstadzModal(id, name) {
-            document.getElementById('delete-ustadzs-id').value = id;
-            document.getElementById('delete-ustadzs-name').textContent = name;
-            document.getElementById('delete-ustadzs-form').action = '{ route('admin.ustadzs.destroy', ':id') }'.replace(':id', id);
-            document.getElementById('delete-ustadzs').setAttribute('open', '');
-        }
-        function closeDeleteUstadzModal() {
-            document.getElementById('delete-ustadzs').removeAttribute('open');
-        }
-    </script>
-    @endpush
+        @include('admin.partials.delete-modal', [
+            'title' => 'Hapus Ustadz',
+            'itemLabel' => 'ustadz',
+            'action' => route('admin.ustadzs.destroy', ':id'),
+        ])
+    </div>
 @endsection
