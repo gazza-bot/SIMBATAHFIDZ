@@ -11,10 +11,15 @@ Sistem Informasi Mutaba'ah & Belajar Al-Qur'an — Pondok Pesantren Darut Taqwa 
 - [x] Dashboard placeholder 4 peran (data nyata dari seed)
 
 ## Sprint 1 — Kelola Data Master (Admin)
-- [ ] CRUD Santri (+ cari, filter kelompok)
-- [ ] CRUD Wali & Ustadz (+ relasi wali-santri)
-- [ ] CRUD Kelompok Halaqah & Angkatan
-- [ ] Daftar & edit profil diri
+- [ ] Master Switcher Tabs UI (5 tabs: Santri, Wali, Ustadz, Kelompok, Angkatan)
+- [ ] CRUD Santri: index/create/store/edit/update/destroy (+ cari, filter kelompok/angkatan, relasi wali)
+- [ ] CRUD Wali: index/create/store/edit/update/destroy (+ relasi santri, no HP, alamat)
+- [ ] CRUD Ustadz: index/create/store/edit/update/destroy (+ NIP, no HP, angkatan dibimbing)
+- [ ] CRUD Kelompok Halaqah: index/create/store/edit/update/destroy (+ relasi ustadz musyrif, angkatan, kapasitas)
+- [ ] CRUD Angkatan: index/create/store/edit/update/destroy (+ nama, tahun, status aktif)
+- [ ] Validasi relasi: santri↔wali↔kelompok↔ustadz↔angkatan (FK integrity)
+- [ ] Daftar & edit profil diri (Admin)
+- [ ] Empty/loading/error states pada semua tabel (R-27)
 
 ## Sprint 2 — Input Setoran (Ustadz)
 - [ ] Form input setoran hafalan (santri, surah, ayat awal-akhir, nilai)

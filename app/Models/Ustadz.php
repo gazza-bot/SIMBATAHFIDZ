@@ -30,6 +30,11 @@ class Ustadz extends Model
         return $this->hasMany(Kelompok::class);
     }
 
+    public function kelompoks(): HasMany
+    {
+        return $this->hasMany(Kelompok::class);
+    }
+
     public function setorans(): HasMany
     {
         return $this->hasMany(Setoran::class);

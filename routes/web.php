@@ -78,13 +78,15 @@ Route::middleware(['auth', 'role:ustadz'])->prefix('ustadz')->name('ustadz.')->g
         ]);
     })->name('dashboard');
 
-    Route::resource('setorans', \App\Http\Controllers\Ustadz\SetoranController::class)->except(['show']);
-    Route::get('setorans/validasi', [\App\Http\Controllers\Ustadz\SetoranController::class, 'validasi'])->name('setorans.validasi');
-    Route::patch('setorans/{setoran}/approve', [\App\Http\Controllers\Ustadz\SetoranController::class, 'approve'])->name('setorans.approve');
-    Route::patch('setorans/{setoran}/reject', [\App\Http\Controllers\Ustadz\SetoranController::class, 'reject'])->name('setorans.reject');
+    // Sprint 2: Input Setoran
+    // Route::resource('setorans', \App\Http\Controllers\Ustadz\SetoranController::class)->except(['show']);
+    // Route::get('setorans/validasi', [\App\Http\Controllers\Ustadz\SetoranController::class, 'validasi'])->name('setorans.validasi');
+    // Route::patch('setorans/{setoran}/approve', [\App\Http\Controllers\Ustadz\SetoranController::class, 'approve'])->name('setorans.approve');
+    // Route::patch('setorans/{setoran}/reject', [\App\Http\Controllers\Ustadz\SetoranController::class, 'reject'])->name('setorans.reject');
 
-    Route::resource('absensis', \App\Http\Controllers\Ustadz\AbsensiController::class)->only(['index', 'create', 'store']);
-    Route::get('absensi/rekap', [\App\Http\Controllers\Ustadz\AbsensiController::class, 'rekap'])->name('absensi.rekap');
+    // Sprint 3: Absensi Kelompok
+    // Route::resource('absensis', \App\Http\Controllers\Ustadz\AbsensiController::class)->only(['index', 'create', 'store']);
+    // Route::get('absensi/rekap', [\App\Http\Controllers\Ustadz\AbsensiController::class, 'rekap'])->name('absensi.rekap');
 });
 
 /*
@@ -103,13 +105,13 @@ Route::middleware(['auth', 'role:kepala_tahfidz'])->prefix('kepala')->name('kepa
         ]);
     })->name('dashboard');
 
-    Route::get('/peta-juz', function () {
-        return view('kepala.peta-juz', ['title' => 'Peta Hafalan 30 Juz']);
-    })->name('peta-juz');
-
-    Route::get('/murajaah/bulanan', function () {
-        return view('kepala.murajaah-bulanan', ['title' => 'Daftar Murajaah Bulanan']);
-    })->name('murajaah.bulanan');
+    // Sprint 4: Dasbor Kepala
+    // Route::get('/peta-juz', function () {
+    //     return view('kepala.peta-juz', ['title' => 'Peta Hafalan 30 Juz']);
+    // })->name('peta-juz');
+    // Route::get('/murajaah/bulanan', function () {
+    //     return view('kepala.murajaah-bulanan', ['title' => 'Daftar Murajaah Bulanan']);
+    // })->name('murajaah.bulanan');
 });
 
 /*
@@ -145,8 +147,9 @@ Route::middleware(['auth', 'role:wali'])->prefix('wali')->name('wali.')->group(f
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:ustadz|kepala_tahfidz|wali'])->group(function () {
-    Route::get('/peta-juz/{santri?}', [\App\Http\Controllers\Shared\PetaJuzController::class, 'index'])->name('peta-juz.index');
-    Route::get('/murajaah/bulanan', [\App\Http\Controllers\Shared\MurajaahController::class, 'index'])->name('murajaah.index');
+    // Sprint 6: Peta Hafalan 30 Juz
+    // Route::get('/peta-juz/{santri?}', [\App\Http\Controllers\Shared\PetaJuzController::class, 'index'])->name('peta-juz.index');
+    // Route::get('/murajaah/bulanan', [\App\Http\Controllers\Shared\MurajaahController::class, 'index'])->name('murajaah.index');
 });
 
 /*
@@ -155,6 +158,7 @@ Route::middleware(['auth', 'role:ustadz|kepala_tahfidz|wali'])->group(function (
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    Route::get('/santri/{santri}/rapor/pdf', [\App\Http\Controllers\Admin\SantriController::class, 'exportRaporPdf'])->name('santris.rapor.pdf');
-    Route::get('/santri/{santri}/sertifikat/pdf', [\App\Http\Controllers\Admin\SantriController::class, 'exportSertifikatPdf'])->name('santris.sertifikat.pdf');
+    // Sprint 8: PDF Export
+    // Route::get('/santri/{santri}/rapor/pdf', [\App\Http\Controllers\Admin\SantriController::class, 'exportRaporPdf'])->name('santris.rapor.pdf');
+    // Route::get('/santri/{santri}/sertifikat/pdf', [\App\Http\Controllers\Admin\SantriController::class, 'exportSertifikatPdf'])->name('santris.sertifikat.pdf');
 });
