@@ -1,7 +1,6 @@
 @extends('layouts.app', ['title' => $title, 'pageTitle' => $pageTitle])
 
 @section('content')
-    @include('admin.partials.master-tabs')
 
     <div class="max-w-4xl mx-auto space-y-6" x-data="{ showDeleteModal: false, deleteItem: null, openDeleteModal(id, name) { this.deleteItem = { id, name }; this.showDeleteModal = true; }, closeDeleteModal() { this.showDeleteModal = false; this.deleteItem = null; } }">
         <div class="flex items-center gap-4">

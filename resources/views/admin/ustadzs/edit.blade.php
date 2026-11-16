@@ -1,7 +1,6 @@
 @extends('layouts.app', ['title' => $title, 'pageTitle' => $pageTitle])
 
 @section('content')
-    @include('admin.partials.master-tabs')
 
     <div class="max-w-3xl mx-auto space-y-6">
         <div class="flex items-center gap-4">

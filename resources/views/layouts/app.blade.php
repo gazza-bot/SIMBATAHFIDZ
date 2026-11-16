@@ -156,21 +156,26 @@
 
     <main id="main-content" class="pt-16 {{ $bottomPadding }} {{ $mainMargin }} min-h-screen">
         <div class="p-4 sm:p-6">
+            @yield('content')
+        </div>
+    </main>
+
+    @if (session('success') || session('error') || session('warning') || session('info') || $errors->any())
+        <div class="fixed top-20 right-4 left-4 sm:left-auto sm:right-6 z-30 flex max-w-md flex-col gap-3 pointer-events-none" aria-live="polite">
             @if (session('success'))
-                <x-alert variant="success" class="mb-6">{{ session('success') }}</x-alert>
+                <x-alert variant="success" class="pointer-events-auto animate-notification-in">{{ session('success') }}</x-alert>
             @endif
             @if (session('error'))
-                <x-alert variant="error" class="mb-6">{{ session('error') }}</x-alert>
+                <x-alert variant="error" class="pointer-events-auto animate-notification-in">{{ session('error') }}</x-alert>
             @endif
             @if (session('warning'))
-                <x-alert variant="warning" class="mb-6">{{ session('warning') }}</x-alert>
+                <x-alert variant="warning" class="pointer-events-auto animate-notification-in">{{ session('warning') }}</x-alert>
             @endif
             @if (session('info'))
-                <x-alert variant="info" class="mb-6">{{ session('info') }}</x-alert>
+                <x-alert variant="info" class="pointer-events-auto animate-notification-in">{{ session('info') }}</x-alert>
             @endif
-
             @if ($errors->any())
-                <x-alert variant="error" title="Terjadi kesalahan" class="mb-6">
+                <x-alert variant="error" title="Terjadi kesalahan" class="pointer-events-auto animate-notification-in">
                     <ul class="list-disc list-inside space-y-1">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -178,10 +183,8 @@
                     </ul>
                 </x-alert>
             @endif
-
-            @yield('content')
         </div>
-    </main>
+    @endif
 
     <footer class="border-t border-neutral-200 bg-white {{ $mainMargin }}">
         <div class="p-4 sm:p-6 text-center text-xs text-neutral-500">
