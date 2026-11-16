@@ -26,7 +26,7 @@ $sizeClass = $sizes[$size] ?? $sizes['md'];
     {{-- Backdrop --}}
     <div
         class="fixed inset-0 z-50 bg-neutral-950/70 backdrop-blur-sm transition-opacity duration-fast"
-        @if ($closeable) wire:click="$dispatch('modal-close')" @else onclick="this.closest('[data-modal]').querySelector('[data-modal-close]').click()"
+        @if ($closeable) wire:click="$dispatch('modal-close')" @else onclick="this.closest('[data-modal]').querySelector('[data-modal-close]').click()" @endif
         aria-hidden="true"
     ></div>
 
@@ -53,12 +53,12 @@ $sizeClass = $sizes[$size] ?? $sizes['md'];
                             <p id="modal-description" class="mt-1 text-sm text-neutral-500">{{ $description }}</p>
                         @endif
                     </div>
-                    @if ($closeable)
+@if ($closeable)
                         <button
                             type="button"
                             data-modal-close
                             class="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
-                            @if ($onClose) wire:click="{{ $onClose }}" @else onclick="this.closest('[data-modal]').remove(); document.querySelector('.fixed.inset-0.bg-neutral-950\\/70')?.remove()"
+                            @if ($onClose) wire:click="{{ $onClose }}" @else onclick="this.closest('[data-modal]').remove(); document.querySelector('.fixed.inset-0.bg-neutral-950\/70')?.remove()" @endif
                             aria-label="Tutup modal"
                         >
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>

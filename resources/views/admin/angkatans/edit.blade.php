@@ -48,4 +48,32 @@
             </div>
         </form>
     </div>
+
+    {-- Delete Confirmation Modal --}
+    <x-modal id="delete-angkatans" title="Hapus Angkatan" description="Tindakan ini tidak dapat dibatalkan.">
+        <p class="text-neutral-700">Apakah Anda yakin ingin menghapus angkatan <span id="delete-angkatans-name" class="font-medium"></span>?</p>
+        <input type="hidden" id="delete-angkatans-id">
+        <div class="mt-6 flex justify-end gap-2">
+            <x-button variant="ghost" onclick="closeDeleteAngkatanModal()">Batal</x-button>
+            <form method="POST" action="{ route('admin.angkatans.destroy', ':id') }" id="delete-angkatans-form">
+                @csrf
+                @method('DELETE')
+                <x-button type="submit" variant="destructive">Hapus</x-button>
+            </form>
+        </div>
+    </x-modal>
+
+    @push('scripts')
+    <script>
+        function openDeleteAngkatanModal(id, name) {
+            document.getElementById('delete-angkatans-id').value = id;
+            document.getElementById('delete-angkatans-name').textContent = name;
+            document.getElementById('delete-angkatans-form').action = '{ route('admin.angkatans.destroy', ':id') }'.replace(':id', id);
+            document.getElementById('delete-angkatans').setAttribute('open', '');
+        }
+        function closeDeleteAngkatanModal() {
+            document.getElementById('delete-angkatans').removeAttribute('open');
+        }
+    </script>
+    @endpush
 @endsection

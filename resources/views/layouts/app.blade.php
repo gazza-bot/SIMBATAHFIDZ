@@ -36,10 +36,15 @@
     $iconDash = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>';
 
     // Sidebar: hanya admin, ustadz, kepala. Wali pakai bottom bar.
-    // Sprint 0: hanya Dashboard (halaman lain belum dibangun).
+    // Sprint 1: Admin CRUD Master Data sudah dibangun.
     $navigation = match ($role) {
         'admin' => [
             ['label' => 'Dashboard', 'url' => '/admin/dashboard', 'active' => 'admin/dashboard', 'icon' => $iconDash],
+            ['label' => 'Data Santri', 'url' => '/admin/santris', 'active' => 'admin/santris', 'icon' => $iconUsers],
+            ['label' => 'Data Wali', 'url' => '/admin/walis', 'active' => 'admin/walis', 'icon' => $iconUsers],
+            ['label' => 'Data Ustadz', 'url' => '/admin/ustadzs', 'active' => 'admin/ustadzs', 'icon' => $iconUsers],
+            ['label' => 'Kelompok Halaqah', 'url' => '/admin/kelompoks', 'active' => 'admin/kelompoks', 'icon' => $iconGrid],
+            ['label' => 'Angkatan Kelas', 'url' => '/admin/angkatans', 'active' => 'admin/angkatans', 'icon' => $iconBook],
         ],
         'ustadz' => [
             ['label' => 'Dashboard', 'url' => '/ustadz/dashboard', 'active' => 'ustadz/dashboard', 'icon' => $iconDash],

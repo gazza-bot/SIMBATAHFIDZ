@@ -45,4 +45,32 @@
             </div>
         </form>
     </div>
+
+    {-- Delete Confirmation Modal --}
+    <x-modal id="delete-walis" title="Hapus Wali" description="Tindakan ini tidak dapat dibatalkan.">
+        <p class="text-neutral-700">Apakah Anda yakin ingin menghapus wali <span id="delete-walis-name" class="font-medium"></span>?</p>
+        <input type="hidden" id="delete-walis-id">
+        <div class="mt-6 flex justify-end gap-2">
+            <x-button variant="ghost" onclick="closeDeleteWaliModal()">Batal</x-button>
+            <form method="POST" action="{ route('admin.walis.destroy', ':id') }" id="delete-walis-form">
+                @csrf
+                @method('DELETE')
+                <x-button type="submit" variant="destructive">Hapus</x-button>
+            </form>
+        </div>
+    </x-modal>
+
+    @push('scripts')
+    <script>
+        function openDeleteWaliModal(id, name) {
+            document.getElementById('delete-walis-id').value = id;
+            document.getElementById('delete-walis-name').textContent = name;
+            document.getElementById('delete-walis-form').action = '{ route('admin.walis.destroy', ':id') }'.replace(':id', id);
+            document.getElementById('delete-walis').setAttribute('open', '');
+        }
+        function closeDeleteWaliModal() {
+            document.getElementById('delete-walis').removeAttribute('open');
+        }
+    </script>
+    @endpush
 @endsection

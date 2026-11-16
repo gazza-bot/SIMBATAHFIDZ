@@ -44,15 +44,15 @@
                                 <td class="px-4 py-3 text-sm text-neutral-600">{{ $wali->santris->count() }}</td>
                                 <td class="px-4 py-3 text-right">
                                     <div class="flex justify-end gap-1.5">
-                                        <x-button variant="ghost" size="sm" onclick="window.location.href='{{ route('admin.walis.show', $wali) }}'">
+                                        <x-button variant="ghost" size="sm" href="{{ route('admin.walis.show', $wali) }}">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                             Detail
                                         </x-button>
-                                        <x-button variant="ghost" size="sm" onclick="window.location.href='{{ route('admin.walis.edit', $wali) }}'">
+                                        <x-button variant="ghost" size="sm" href="{{ route('admin.walis.edit', $wali) }}">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
                                             Edit
                                         </x-button>
-                                        <x-button variant="destructive" size="sm" wire:click="confirmDelete('{{ $wali->id }}')">
+                                        <x-button variant="destructive" size="sm" onclick="openDeleteWaliModal('{{ $wali->id }}', '{{ $wali->nama }}')">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                                             Hapus
                                         </x-button>
@@ -89,4 +89,60 @@
             @endif
         </div>
     </div>
+
+    {{-- Delete Confirmation Modal --}}
+    <x-modal id="delete-wali" title="Hapus Wali" description="Tindakan ini tidak dapat dibatalkan.">
+        <p class="text-neutral-700">Apakah Anda yakin ingin menghapus wali <span id="delete-wali-name" class="font-medium"></span>?</p>
+        <input type="hidden" id="delete-wali-id">
+        <div class="mt-6 flex justify-end gap-2">
+            <x-button variant="ghost" onclick="closeDeleteWaliModal()">Batal</x-button>
+            <form method="POST" action="{{ route('admin.walis.destroy', ':id') }}" id="delete-wali-form">
+                @csrf
+                @method('DELETE')
+                <x-button type="submit" variant="destructive">Hapus</x-button>
+            </form>
+        </div>
+    </x-modal>
+
+    @push('scripts')
+    <script>
+        function openDeleteWaliModal(id, name) {
+            document.getElementById('delete-wali-id').value = id;
+            document.getElementById('delete-wali-name').textContent = name;
+            document.getElementById('delete-wali-form').action = '{{ route('admin.walis.destroy', ':id') }}'.replace(':id', id);
+            document.getElementById('delete-wali').setAttribute('open', '');
+        }
+        function closeDeleteWaliModal() {
+            document.getElementById('delete-wali').removeAttribute('open');
+        }
+    </script>
+    @endpush
+
+    {-- Delete Confirmation Modal --}
+    <x-modal id="delete-walis" title="Hapus Wali" description="Tindakan ini tidak dapat dibatalkan.">
+        <p class="text-neutral-700">Apakah Anda yakin ingin menghapus wali <span id="delete-walis-name" class="font-medium"></span>?</p>
+        <input type="hidden" id="delete-walis-id">
+        <div class="mt-6 flex justify-end gap-2">
+            <x-button variant="ghost" onclick="closeDeleteWaliModal()">Batal</x-button>
+            <form method="POST" action="{ route('admin.walis.destroy', ':id') }" id="delete-walis-form">
+                @csrf
+                @method('DELETE')
+                <x-button type="submit" variant="destructive">Hapus</x-button>
+            </form>
+        </div>
+    </x-modal>
+
+    @push('scripts')
+    <script>
+        function openDeleteWaliModal(id, name) {
+            document.getElementById('delete-walis-id').value = id;
+            document.getElementById('delete-walis-name').textContent = name;
+            document.getElementById('delete-walis-form').action = '{ route('admin.walis.destroy', ':id') }'.replace(':id', id);
+            document.getElementById('delete-walis').setAttribute('open', '');
+        }
+        function closeDeleteWaliModal() {
+            document.getElementById('delete-walis').removeAttribute('open');
+        }
+    </script>
+    @endpush
 @endsection

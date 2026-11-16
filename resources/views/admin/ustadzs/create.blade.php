@@ -45,4 +45,32 @@
             </div>
         </form>
     </div>
+
+    {-- Delete Confirmation Modal --}
+    <x-modal id="delete-ustadzs" title="Hapus Ustadz" description="Tindakan ini tidak dapat dibatalkan.">
+        <p class="text-neutral-700">Apakah Anda yakin ingin menghapus ustadz <span id="delete-ustadzs-name" class="font-medium"></span>?</p>
+        <input type="hidden" id="delete-ustadzs-id">
+        <div class="mt-6 flex justify-end gap-2">
+            <x-button variant="ghost" onclick="closeDeleteUstadzModal()">Batal</x-button>
+            <form method="POST" action="{ route('admin.ustadzs.destroy', ':id') }" id="delete-ustadzs-form">
+                @csrf
+                @method('DELETE')
+                <x-button type="submit" variant="destructive">Hapus</x-button>
+            </form>
+        </div>
+    </x-modal>
+
+    @push('scripts')
+    <script>
+        function openDeleteUstadzModal(id, name) {
+            document.getElementById('delete-ustadzs-id').value = id;
+            document.getElementById('delete-ustadzs-name').textContent = name;
+            document.getElementById('delete-ustadzs-form').action = '{ route('admin.ustadzs.destroy', ':id') }'.replace(':id', id);
+            document.getElementById('delete-ustadzs').setAttribute('open', '');
+        }
+        function closeDeleteUstadzModal() {
+            document.getElementById('delete-ustadzs').removeAttribute('open');
+        }
+    </script>
+    @endpush
 @endsection

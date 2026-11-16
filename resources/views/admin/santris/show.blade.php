@@ -15,7 +15,7 @@
             </div>
             <div class="ml-auto flex gap-2">
                 <x-button variant="ghost" href="{{ route('admin.santris.edit', $santri) }}">Edit</x-button>
-                <x-button variant="destructive" wire:click="confirmDelete('{{ $santri->id }}')">Hapus</x-button>
+                <x-button variant="destructive" onclick="openDeleteSantriModal('{{ $santri->id }}', '{{ $santri->nama }}')">Hapus</x-button>
             </div>
         </div>
 
@@ -149,3 +149,17 @@
         </div>
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    function openDeleteSantriModal(id, name) {
+        document.getElementById('delete-santri-id').value = id;
+        document.getElementById('delete-santri-name').textContent = name;
+        document.getElementById('delete-santri-form').action = '{{ route('admin.santris.destroy', ':id') }}'.replace(':id', id);
+        document.getElementById('delete-santri').setAttribute('open', '');
+    }
+    function closeDeleteSantriModal() {
+        document.getElementById('delete-santri').removeAttribute('open');
+    }
+</script>
+@endpush

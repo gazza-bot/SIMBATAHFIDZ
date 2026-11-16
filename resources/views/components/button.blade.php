@@ -7,6 +7,7 @@
     'iconLeft' => null,
     'iconRight' => null,
     'fullWidth' => false,
+    'href' => null,
     'attributes' => [],
 ])
 
@@ -29,28 +30,41 @@ $variantClass = $variants[$variant] ?? $variants['primary'];
 $sizeClass = $sizes[$size] ?? $sizes['md'];
 $disabledClass = $disabled || $loading ? 'opacity-50 cursor-not-allowed' : '';
 $widthClass = $fullWidth ? 'w-full' : '';
+
+$commonClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-fast ease-standard focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' . $variantClass . ' ' . $sizeClass . ' ' . $disabledClass . ' ' . $widthClass;
+$commonAttrs = $attributes->merge(['class' => $attributes->get('class', '')]);
+
+$innerContent = '';
+if ($loading) {
+    $innerContent .= '<svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+} elseif ($iconLeft) {
+    $innerContent .= '<span class="flex-shrink-0" aria-hidden="true">' . $iconLeft . '</span>';
+}
+$innerContent .= (string) $slot;
+if ($iconRight && !$loading) {
+    $innerContent .= '<span class="flex-shrink-0" aria-hidden="true">' . $iconRight . '</span>';
+}
 ?>
 
-<button
-    type="{{ $type }}"
-    class="inline-flex items-center justify-center font-medium rounded-lg transition-all duration-fast ease-standard focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 {{ $variantClass }} {{ $sizeClass }} {{ $disabledClass }} {{ $widthClass }}"
-    {{ $disabled || $loading ? 'disabled' : '' }}
-    {{ $attributes->merge(['class' => $attributes->get('class', '')]) }}
->
-    @if ($loading)
-        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-        </svg>
-    @elseif ($iconLeft)
-        {{-- Icon Left Slot --}}
-        <span class="flex-shrink-0" aria-hidden="true">{!! $iconLeft !!}</span>
-    @endif
+@if ($href)
+    <a href="{{ $href }}" class="{{ $commonClasses }}" @if ($disabled) aria-disabled="true" tabindex="-1" @endif {{ $commonAttrs }}>
+        {!! $innerContent !!}
+    </a>
+@else
+    <button type="{{ $type }}" class="{{ $commonClasses }}" {{ $disabled || $loading ? 'disabled' : '' }} {{ $commonAttrs }}>
+        @if ($loading)
+            <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        @elseif ($iconLeft)
+            <span class="flex-shrink-0" aria-hidden="true">{!! $iconLeft !!}</span>
+        @endif
 
-    {{ $slot }}
+        {{ $slot }}
 
-    @if ($iconRight && !$loading)
-        {{-- Icon Right Slot --}}
-        <span class="flex-shrink-0" aria-hidden="true">{!! $iconRight !!}</span>
-    @endif
-</button>
+        @if ($iconRight && !$loading)
+            <span class="flex-shrink-0" aria-hidden="true">{!! $iconRight !!}</span>
+        @endif
+    </button>
+@endif
