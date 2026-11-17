@@ -126,7 +126,6 @@ class SetoranController extends Controller
             'ayat_akhir' => 'required|integer|min:1',
             'nilai' => 'required|in:maqbul,jayyid,jayyid_jiddan,mumtaz',
             'skor' => 'nullable|integer|min:0|max:100',
-            'tuntas_lanjut' => 'boolean',
             'is_draft' => 'boolean',
             'catatan' => 'nullable|string|max:1000',
         ]);
@@ -230,7 +229,6 @@ class SetoranController extends Controller
             'ayat_akhir' => 'required|integer|min:1',
             'nilai' => 'required|in:maqbul,jayyid,jayyid_jiddan,mumtaz',
             'skor' => 'nullable|integer|min:0|max:100',
-            'tuntas_lanjut' => 'boolean',
             'is_draft' => 'boolean',
             'catatan' => 'nullable|string|max:1000',
         ]);

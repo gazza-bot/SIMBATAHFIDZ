@@ -147,20 +147,6 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <input type="checkbox" id="mutqin" name="mutqin" class="w-4 h-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500" />
-                <label for="mutqin" class="text-sm text-neutral-700">
-                    Cover penuh porsi juz ini - Set ayat awal & akhir ke batas porsi Juz
-                </label>
-            </div>
-
-            <div class="flex items-center gap-3">
-                <input type="checkbox" id="tuntas_lanjut" name="tuntas_lanjut" class="w-4 h-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500" />
-                <label for="tuntas_lanjut" class="text-sm text-neutral-700">
-                    Tuntas & Berhak Lanjut Ayat Berikutnya
-                </label>
-            </div>
-
-            <div class="flex items-center gap-3">
                 <input type="checkbox" id="is_draft" name="is_draft" class="w-4 h-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500" />
                 <label for="is_draft" class="text-sm text-neutral-700">
                     Simpan sebagai Draft
@@ -220,7 +206,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const ayatAkhir = document.querySelector('input[name="ayat_akhir"]');
     const ayatAwalHint = document.getElementById('ayat-awal-hint');
     const ayatAkhirHint = document.getElementById('ayat-akhir-hint');
-    const mutqinCheckbox = document.getElementById('mutqin');
 
     let currentJuz = juzSelect.value;
     let currentSurahItem = null;
@@ -287,13 +272,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (item) {
             setSurahRange(item);
             currentSurahItem = item;
-        }
-    });
-
-    mutqinCheckbox.addEventListener('change', function() {
-        if (this.checked && currentSurahItem) {
-            ayatAwal.value = currentSurahItem.min;
-            ayatAkhir.value = currentSurahItem.max;
         }
     });
 
