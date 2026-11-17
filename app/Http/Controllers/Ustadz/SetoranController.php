@@ -161,7 +161,8 @@ class SetoranController extends Controller
         $validated['ustadz_id'] = $ustadz->id;
         $validated['juz'] = (int) $validated['juz_pilih'];
         unset($validated['juz_pilih']);
-        $validated['status'] = $validated['is_draft'] ? 'pending' : 'pending';
+        $validated['is_draft'] = $request->boolean('is_draft');
+        $validated['status'] = 'pending';
 
         $setoran = Setoran::create($validated);
 
@@ -258,6 +259,7 @@ class SetoranController extends Controller
 
         $validated['juz'] = (int) $validated['juz_pilih'];
         unset($validated['juz_pilih']);
+        $validated['is_draft'] = $request->boolean('is_draft');
 
         $setoran->update($validated);
 
