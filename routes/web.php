@@ -84,10 +84,7 @@ Route::middleware(['auth', 'role:ustadz'])->prefix('ustadz')->name('ustadz.')->g
     Route::get('setorans/validasi', [\App\Http\Controllers\Ustadz\SetoranController::class, 'validasi'])->name('setorans.validasi');
     Route::post('dashboard/catatan', [\App\Http\Controllers\Ustadz\DashboardController::class, 'storeNote'])->name('dashboard.catatan');
     Route::get('setorans/sukses/{setoran}', [\App\Http\Controllers\Ustadz\SetoranController::class, 'sukses'])->name('setorans.sukses');
-    Route::resource('setorans', \App\Http\Controllers\Ustadz\SetoranController::class)->whereNumber('setoran');
-    Route::patch('setorans/{setoran}/approve', [\App\Http\Controllers\Ustadz\SetoranController::class, 'approve'])->name('setorans.approve');
-    Route::patch('setorans/{setoran}/reject', [\App\Http\Controllers\Ustadz\SetoranController::class, 'reject'])->name('setorans.reject');
-
+Route::resource('setorans', \App\Http\Controllers\Ustadz\SetoranController::class)->whereNumber('setoran');
     Route::resource('absensis', \App\Http\Controllers\Ustadz\AbsensiController::class)->only(['index', 'create', 'store']);
     Route::get('absensi/rekap', [\App\Http\Controllers\Ustadz\AbsensiController::class, 'rekap'])->name('absensi.rekap');
     Route::get('rekap', [\App\Http\Controllers\Ustadz\RekapController::class, 'index'])->name('rekap.index');

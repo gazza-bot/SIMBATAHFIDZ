@@ -10,10 +10,6 @@
                 <p class="mt-1 text-sm text-neutral-500">Kelola setoran hafalan santri di kelompok Anda.</p>
             </div>
             <div class="flex gap-2">
-                <x-button variant="outline" href="{{ route('ustadz.setorans.validasi') }}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    Validasi
-                </x-button>
                 <x-button href="{{ route('ustadz.setorans.create') }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     Input Setoran

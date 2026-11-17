@@ -163,7 +163,7 @@
             <div class="flex items-center gap-3">
                 <input type="checkbox" id="is_draft" name="is_draft" class="w-4 h-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500" />
                 <label for="is_draft" class="text-sm text-neutral-700">
-                    Simpan sebagai Draft (tidak dikirim ke validasi)
+                    Simpan sebagai Draft
                 </label>
             </div>
 

@@ -9,7 +9,7 @@
             </svg>
         </div>
         <h2 class="text-2xl font-bold text-neutral-900">Setoran Tersinkron</h2>
-        <p class="mt-2 text-neutral-600">Data hafalan telah disimpan dan menunggu validasi.</p>
+        <p class="mt-2 text-neutral-600">Data hafalan telah disimpan.</p>
     </div>
 
     <x-card class="space-y-4">
