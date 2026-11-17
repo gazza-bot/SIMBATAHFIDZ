@@ -158,7 +158,7 @@
 
     @if ($bottomNav)
         <nav class="fixed bottom-0 left-0 right-0 z-20 bg-white border-t border-neutral-200 lg:hidden" style="padding-bottom: env(safe-area-inset-bottom)" aria-label="Navigasi mobile">
-            <div class="grid grid-cols-{{ count($bottomNav) }} gap-1 px-2 py-1">
+            <div class="grid grid-cols-5 gap-1 px-2 py-1">
                 @foreach ($bottomNav as $item)
                     <a href="{{ $item['url'] }}"
                        class="flex flex-col items-center gap-0.5 px-1 py-2 rounded-xl min-h-[48px] justify-center transition-colors {{ request()->is($item['active']) || request()->is($item['active'] . '/*') ? 'bg-primary-50 text-primary-600' : 'text-neutral-500 hover:text-neutral-700' }}"

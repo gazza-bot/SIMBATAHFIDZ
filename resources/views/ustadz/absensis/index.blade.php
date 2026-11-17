@@ -1,13 +1,13 @@
 @extends('layouts.app', ['title' => 'Presensi Santri', 'pageTitle' => 'Presensi Santri Halaqah'])
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="max-w-4xl mx-auto space-y-6" x-data="presensiModal()">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h2 class="text-xl font-bold text-neutral-900">Presensi Santri Halaqah</h2>
             <p class="text-sm text-neutral-500">Halaqah {{ \App\Models\Kelompok::where('ustadz_id', auth()->user()->ustadz->id)->first()?->nama ?? 'A' }}</p>
         </div>
-        <div class="flex flex-col sm:flex-row gap-2">
+        <form method="GET" action="{{ route('ustadz.absensis.index') }}" class="flex flex-col sm:flex-row gap-2">
             <input
                 type="date"
                 name="tanggal"
@@ -23,17 +23,33 @@
                 <option value="ashar" {{ $sesi == 'ashar' ? 'selected' : '' }}>Ashar</option>
                 <option value="maghrib" {{ $sesi == 'maghrib' ? 'selected' : '' }}>Maghrib</option>
             </select>
-            <x-button variant="primary" type="submit" form="presensi-form">
+            <x-button variant="primary" type="submit">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                Simpan Presensi
+                Tampilkan
             </x-button>
+        </form>
+    </div>
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+        <div>
+            <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Total</p>
+            <p class="text-2xl font-bold text-neutral-900">{{ $stats['total'] }}</p>
+        </div>
+        <div>
+            <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Hadir</p>
+            <p class="text-2xl font-bold text-success-600">{{ $stats['hadir'] }}</p>
+        </div>
+        <div>
+            <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Izin</p>
+            <p class="text-2xl font-bold text-info-600">{{ $stats['izin'] }}</p>
+        </div>
+        <div>
+            <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Sakit/Alpa</p>
+            <p class="text-2xl font-bold text-warning-600">{{ $stats['sakit'] + $stats['alpa'] }}</p>
         </div>
     </div>
 
-    <form id="presensi-form" method="POST" action="{{ route('ustadz.absensis.store') }}">
-        @csrf
-        <input type="hidden" name="tanggal" value="{{ $date }}">
-        <input type="hidden" name="sesi" value="{{ $sesi }}">
+    <div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
 
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
             <div>
@@ -130,9 +146,9 @@
                 </table>
             </div>
         </div>
-    </form>
+    </div>
 
-    <div class="fixed inset-0 z-50 flex items-center justify-center" x-data="presensiModal()" x-show="showModal" x-cloak>
+    <div class="fixed inset-0 z-50 flex items-center justify-center" x-show="showModal" x-cloak>
         <div class="fixed inset-0 bg-neutral-950/70 backdrop-blur-sm" @click="closeModal" aria-hidden="true"></div>
         <div class="relative w-full max-w-md bg-white rounded-2xl shadow-level-4 p-6" role="dialog" aria-modal="true">
             <div class="flex items-start justify-between mb-4">
@@ -199,6 +215,7 @@ function presensiModal() {
             this.$watch('showModal', (val) => {
                 if (!val) this.resetForm();
             });
+            this.existingAbsensi = @json($existingAbsensi);
         },
         setMode(action) {
             this.currentAction = action;
@@ -221,6 +238,16 @@ function presensiModal() {
             this.selectedSantri = id;
             this.currentSantriId = id;
             this.currentAction = 'edit';
+            const existing = this.$data.existingAbsensi || {};
+            if (existing[id]) {
+                this.selectedStatus = existing[id].status || 'hadir';
+                this.waktuTiba = existing[id].waktu_tiba || '';
+                this.catatan = existing[id].catatan || '';
+            } else {
+                this.selectedStatus = 'hadir';
+                this.waktuTiba = '';
+                this.catatan = '';
+            }
             this.showModal = true;
         },
         closeModal() {
@@ -236,9 +263,6 @@ function presensiModal() {
         },
         async savePresensi() {
             if (!this.selectedSantri) { alert('Pilih santri'); return; }
-            @if (isset($santris))
-            const existing = @json($existingAbsensi);
-            @endif
             const formData = new FormData();
             formData.append('_token', '{{ csrf_token() }}');
             formData.append('_method', 'POST');
