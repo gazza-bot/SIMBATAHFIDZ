@@ -32,11 +32,11 @@
     $iconGrid = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>';
     $iconChart = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>';
     $iconList = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>';
-    $iconBook = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4v12a4 4 0 00-4 4H8a4 4 0 00-4-4V4a2 2 0 012-2h8a2 2 0 012 2z"/></svg>';
+    $iconPrinter = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h2a2 2 0 002-2v-4a2 2 0 00-2-2h-2a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>';
     $iconDash = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>';
+    $iconBook = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4v12a4 4 0 00-4 4H8a4 4 0 00-4-4V4a2 2 0 012-2h8a2 2 0 012 2z"/></svg>';
 
     // Sidebar: hanya admin, ustadz, kepala. Wali pakai bottom bar.
-    // Sprint 1: Admin CRUD Master Data sudah dibangun.
     $navigation = match ($role) {
         'admin' => [
             ['label' => 'Dashboard', 'url' => '/admin/dashboard', 'active' => 'admin/dashboard', 'icon' => $iconDash],
@@ -47,7 +47,12 @@
             ['label' => 'Angkatan Kelas', 'url' => '/admin/angkatans', 'active' => 'admin/angkatans', 'icon' => $iconBook],
         ],
         'ustadz' => [
-            ['label' => 'Dashboard', 'url' => '/ustadz/dashboard', 'active' => 'ustadz/dashboard', 'icon' => $iconDash],
+            ['label' => 'Dasbor Halaqah', 'url' => '/ustadz/dashboard', 'active' => 'ustadz/dashboard', 'icon' => $iconDash],
+            ['label' => 'Input Setoran', 'url' => '/ustadz/setorans', 'active' => 'ustadz.setorans.index', 'icon' => $iconList],
+            ['label' => 'Absensi Santri', 'url' => '/ustadz/absensis', 'active' => 'ustadz.absensis', 'icon' => $iconCheck],
+            ['label' => 'Rekap Capaian', 'url' => '/ustadz/rekap', 'active' => 'ustadz.rekap.index', 'icon' => $iconChart],
+            ['label' => 'Cetak Rapor', 'url' => '/ustadz/rapor', 'active' => 'ustadz.rapor.index', 'icon' => $iconPrinter],
+            ['label' => 'Murajaah Bulanan', 'url' => '/ustadz/murajaahs', 'active' => 'ustadz.murajaahs.index', 'icon' => $iconClock],
         ],
         'kepala_tahfidz' => [
             ['label' => 'Dashboard', 'url' => '/kepala/dashboard', 'active' => 'kepala/dashboard', 'icon' => $iconDash],
@@ -55,8 +60,14 @@
         default => [],
     };
 
-    // Bottom bar mobile: diisi saat fitur terkait sudah dibangun
-    $bottomNav = [];
+    // Bottom bar mobile: diisi untuk ustadz
+    $bottomNav = $role === 'ustadz' ? [
+        ['label' => 'Dasbor', 'url' => '/ustadz/dashboard', 'active' => 'ustadz/dashboard', 'icon' => $iconDash],
+        ['label' => 'Presensi', 'url' => '/ustadz/absensis', 'active' => 'ustadz.absensis', 'icon' => $iconCheck],
+        ['label' => 'Setoran', 'url' => '/ustadz/setorans', 'active' => 'ustadz.setorans.index', 'icon' => $iconList],
+        ['label' => 'Rekap', 'url' => '/ustadz/rekap', 'active' => 'ustadz.rekap.index', 'icon' => $iconChart],
+        ['label' => 'Rapor', 'url' => '/ustadz/rapor', 'active' => 'ustadz.rapor.index', 'icon' => $iconPrinter],
+    ] : [];
 
     $hasSidebar = $role && $role !== 'wali';
     $mainMargin = $hasSidebar ? 'lg:ml-64' : '';

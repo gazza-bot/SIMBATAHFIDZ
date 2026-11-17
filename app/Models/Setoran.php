@@ -22,6 +22,9 @@ class Setoran extends Model
         'ayat_awal',
         'ayat_akhir',
         'nilai',
+        'skor',
+        'tuntas_lanjut',
+        'is_draft',
         'catatan',
         'status',
         'validated_by',
@@ -31,6 +34,8 @@ class Setoran extends Model
     protected $casts = [
         'tanggal' => 'date',
         'validated_at' => 'datetime',
+        'tuntas_lanjut' => 'boolean',
+        'is_draft' => 'boolean',
     ];
 
     public function santri(): BelongsTo
@@ -63,6 +68,11 @@ class Setoran extends Model
         return $query->where('jenis', 'murajaah');
     }
 
+    public function scopeTasmi($query)
+    {
+        return $query->where('jenis', 'tasmi');
+    }
+
     public function scopeApproved($query)
     {
         return $query->where('status', 'approved');
@@ -73,10 +83,35 @@ class Setoran extends Model
         return $query->where('status', 'pending');
     }
 
+    public function scopeNotDraft($query)
+    {
+        return $query->where('is_draft', false);
+    }
+
     public function getAyatRangeAttribute(): string
     {
         return $this->ayat_awal === $this->ayat_akhir
             ? "Ayat {$this->ayat_awal}"
             : "Ayat {$this->ayat_awal}-{$this->ayat_akhir}";
+    }
+
+    public static function resolveJuz(int $surahNomor, int $ayat): int
+    {
+        $start = self::query()
+            ->select('juz')
+            ->join('juz_starts', 'juz_starts.surah_id', '=', 'surahs.id')
+            ->join('surahs', 'surahs.id', '=', 'juz_starts.surah_id')
+            ->where('surahs.nomor', '<=', $surahNomor)
+            ->where(function ($q) use ($surahNomor, $ayat) {
+                $q->where('surahs.nomor', '<', $surahNomor)
+                  ->orWhere(function ($q2) use ($ayat) {
+                      $q2->where('surahs.nomor', $surahNomor)
+                         ->where('juz_starts.ayat', '<=', $ayat);
+                  });
+            })
+            ->orderBy('juz_starts.juz', 'desc')
+            ->value('juz');
+
+        return $start ?? 1;
     }
 }

@@ -79,24 +79,23 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:ustadz'])->prefix('ustadz')->name('ustadz.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('ustadz.dashboard', [
-            'title' => 'Dashboard Ustadz',
-            'pageTitle' => 'Dashboard',
-            'totalSantri' => \App\Models\Santri::count(),
-            'totalSetoran' => \App\Models\Setoran::count(),
-            'totalMenunggu' => \App\Models\Setoran::where('status', 'menunggu_validasi')->count(),
-        ]);
-    })->name('dashboard');
+    Route::get('/dashboard', [\App\Http\Controllers\Ustadz\DashboardController::class, 'index'])->name('dashboard');
 
-    Route::resource('setorans', \App\Http\Controllers\Ustadz\SetoranController::class);
     Route::get('setorans/validasi', [\App\Http\Controllers\Ustadz\SetoranController::class, 'validasi'])->name('setorans.validasi');
+    Route::post('dashboard/catatan', [\App\Http\Controllers\Ustadz\DashboardController::class, 'storeNote'])->name('dashboard.catatan');
+    Route::get('setorans/sukses/{setoran}', [\App\Http\Controllers\Ustadz\SetoranController::class, 'sukses'])->name('setorans.sukses');
+    Route::resource('setorans', \App\Http\Controllers\Ustadz\SetoranController::class)->whereNumber('setoran');
     Route::patch('setorans/{setoran}/approve', [\App\Http\Controllers\Ustadz\SetoranController::class, 'approve'])->name('setorans.approve');
     Route::patch('setorans/{setoran}/reject', [\App\Http\Controllers\Ustadz\SetoranController::class, 'reject'])->name('setorans.reject');
 
-    // Sprint 3: Absensi Kelompok
-    // Route::resource('absensis', \App\Http\Controllers\Ustadz\AbsensiController::class)->only(['index', 'create', 'store']);
-    // Route::get('absensi/rekap', [\App\Http\Controllers\Ustadz\AbsensiController::class, 'rekap'])->name('absensi.rekap');
+    Route::resource('absensis', \App\Http\Controllers\Ustadz\AbsensiController::class)->only(['index', 'create', 'store']);
+    Route::get('absensi/rekap', [\App\Http\Controllers\Ustadz\AbsensiController::class, 'rekap'])->name('absensi.rekap');
+    Route::get('rekap', [\App\Http\Controllers\Ustadz\RekapController::class, 'index'])->name('rekap.index');
+    Route::get('rekap/export/csv', [\App\Http\Controllers\Ustadz\RekapController::class, 'exportCsv'])->name('rekap.export.csv');
+    Route::get('rekap/export/pdf', [\App\Http\Controllers\Ustadz\RekapController::class, 'exportPdf'])->name('rekap.export.pdf');
+    Route::get('rapor', [\App\Http\Controllers\Ustadz\RaporController::class, 'index'])->name('rapor.index');
+    Route::get('murajaahs', [\App\Http\Controllers\Ustadz\MurajaahController::class, 'index'])->name('murajaahs.index');
+    Route::post('murajaahs', [\App\Http\Controllers\Ustadz\MurajaahController::class, 'store'])->name('murajaahs.store');
 });
 
 /*

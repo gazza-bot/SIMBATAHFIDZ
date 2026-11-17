@@ -16,6 +16,8 @@ class Absensi extends Model
         'santri_id',
         'ustadz_id',
         'tanggal',
+        'sesi',
+        'waktu_tiba',
         'status',
         'catatan',
     ];
@@ -51,6 +53,15 @@ class Absensi extends Model
             'izin' => 'Izin',
             'sakit' => 'Sakit',
             'alpa' => 'Alpa',
+        ];
+    }
+
+    public static function getSesiLabels(): array
+    {
+        return [
+            'subuh' => 'Subuh',
+            'ashar' => 'Ashar',
+            'maghrib' => 'Maghrib',
         ];
     }
 }

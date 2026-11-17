@@ -67,11 +67,26 @@ class Santri extends Model
         return min(100, round(($juz / 30) * 100));
     }
 
-    public function getMuthuTerakhirAttribute(): ?string
+    public function getMutuTerakhirAttribute(): ?string
     {
         return $this->setorans()
             ->where('status', 'approved')
             ->latest('tanggal')
             ->value('nilai');
+    }
+
+    public function getLastMurajaahDateAttribute(): ?string
+    {
+        return $this->setorans()
+            ->where('jenis', 'murajaah')
+            ->where('status', 'approved')
+            ->latest('tanggal')
+            ->value('tanggal');
+    }
+
+    public function getDaysSinceMurajaahAttribute(): ?int
+    {
+        $date = $this->last_murajaah_date;
+        return $date ? \Carbon\Carbon::parse($date)->diffInDays(now()) : null;
     }
 }
