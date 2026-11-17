@@ -22,9 +22,9 @@ Sistem Informasi Mutaba'ah & Belajar Al-Qur'an — Pondok Pesantren Darut Taqwa 
 - [x] Empty/loading/error states pada semua tabel (R-27)
 
 ## Sprint 2 — Input Setoran (Ustadz)
-- [ ] Form input setoran hafalan (santri, surah, ayat awal-akhir, nilai)
-- [ ] Pilih Mutqin: cover penuh atau parsial
-- [ ] Validasi setoran (approve/reject + catatan)
+- [x] Form input setoran hafalan (santri, surah, ayat awal-akhir, nilai)
+- [x] Pilih Mutqin: cover penuh atau parsial
+- [x] Validasi setoran (approve/reject + catatan)
 
 ## Sprint 3 — Absensi Kelompok (Ustadz)
 - [ ] Presensi harian (Hadir/Izin/Sakit/Alpa)
