@@ -22,8 +22,19 @@
             </div>
         </div>
 
-        <x-alert variant="info" title="Sprint 0 - Fondasi">
-            Angka di atas diambil langsung dari database (seed development). Fitur Input Setoran & Absensi akan dibangun pada sprint berikutnya.
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <x-button href="{{ route('ustadz.setorans.index') }}" variant="primary" size="lg" fullWidth>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Input Setoran
+            </x-button>
+            <x-button href="{{ route('ustadz.setorans.validasi') }}" variant="outline" size="lg" fullWidth>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Validasi Setoran
+            </x-button>
+        </div>
+
+        <x-alert variant="info" title="Sprint 2 - Input Setoran">
+            Fitur input setoran hafalan dan validasi sudah aktif. Kelola setoran santri di kelompok Anda melalui menu di atas.
         </x-alert>
     </div>
 @endsection

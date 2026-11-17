@@ -88,8 +88,8 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-4 py-8 text-center">
-                                    <x-card padding="none">
+                                <td colspan="8" class="w-max px-4 py-8 text-center">
+                                    <x-card padding="8">
                                         <svg class="mx-auto h-12 w-12 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                                         <p class="mt-3 text-neutral-500">Tidak ada data ustadz.</p>
                                         <x-button variant="primary" class="mt-3" href="{{ route('admin.ustadzs.create') }}">

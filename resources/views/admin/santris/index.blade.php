@@ -114,7 +114,7 @@
                         @empty
                             <tr>
                                 <td colspan="8" class="px-4 py-8 text-center">
-                                    <x-card padding="none">
+                                    <x-card padding="8">
                                         <svg class="mx-auto h-12 w-12 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m-7 4h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                         <p class="mt-3 text-neutral-500">Tidak ada data santri.</p>
                                         <x-button variant="primary" class="mt-3" href="{{ route('admin.santris.create') }}">

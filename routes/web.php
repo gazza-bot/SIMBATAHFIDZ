@@ -89,11 +89,10 @@ Route::middleware(['auth', 'role:ustadz'])->prefix('ustadz')->name('ustadz.')->g
         ]);
     })->name('dashboard');
 
-    // Sprint 2: Input Setoran
-    // Route::resource('setorans', \App\Http\Controllers\Ustadz\SetoranController::class)->except(['show']);
-    // Route::get('setorans/validasi', [\App\Http\Controllers\Ustadz\SetoranController::class, 'validasi'])->name('setorans.validasi');
-    // Route::patch('setorans/{setoran}/approve', [\App\Http\Controllers\Ustadz\SetoranController::class, 'approve'])->name('setorans.approve');
-    // Route::patch('setorans/{setoran}/reject', [\App\Http\Controllers\Ustadz\SetoranController::class, 'reject'])->name('setorans.reject');
+    Route::resource('setorans', \App\Http\Controllers\Ustadz\SetoranController::class);
+    Route::get('setorans/validasi', [\App\Http\Controllers\Ustadz\SetoranController::class, 'validasi'])->name('setorans.validasi');
+    Route::patch('setorans/{setoran}/approve', [\App\Http\Controllers\Ustadz\SetoranController::class, 'approve'])->name('setorans.approve');
+    Route::patch('setorans/{setoran}/reject', [\App\Http\Controllers\Ustadz\SetoranController::class, 'reject'])->name('setorans.reject');
 
     // Sprint 3: Absensi Kelompok
     // Route::resource('absensis', \App\Http\Controllers\Ustadz\AbsensiController::class)->only(['index', 'create', 'store']);
