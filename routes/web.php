@@ -94,6 +94,7 @@ Route::middleware(['auth', 'role:ustadz'])->prefix('ustadz')->name('ustadz.')->g
     Route::get('rekap/export/csv', [\App\Http\Controllers\Ustadz\RekapController::class, 'exportCsv'])->name('rekap.export.csv');
     Route::get('rekap/export/pdf', [\App\Http\Controllers\Ustadz\RekapController::class, 'exportPdf'])->name('rekap.export.pdf');
     Route::get('rapor', [\App\Http\Controllers\Ustadz\RaporController::class, 'index'])->name('rapor.index');
+    Route::get('rapor/pdf', [\App\Http\Controllers\Ustadz\RaporController::class, 'exportPdf'])->name('rapor.pdf');
     Route::get('murajaahs', [\App\Http\Controllers\Ustadz\MurajaahController::class, 'index'])->name('murajaahs.index');
     Route::post('murajaahs', [\App\Http\Controllers\Ustadz\MurajaahController::class, 'store'])->name('murajaahs.store');
 });

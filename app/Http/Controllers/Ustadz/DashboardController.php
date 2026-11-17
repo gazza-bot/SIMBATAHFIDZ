@@ -7,49 +7,50 @@ use App\Models\Absensi;
 use App\Models\HalaqahNote;
 use App\Models\Santri;
 use App\Models\Setoran;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $ustadz = Auth::user()->ustadz;
         $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
 
-        $santris = Santri::whereIn('kelompok_id', $kelompokIds)
+        $allSantris = Santri::whereIn('kelompok_id', $kelompokIds)
             ->where('status_aktif', 'aktif')
-            ->with(['setorans' => function ($q) {
-                $q->where('status', 'approved');
-            }])
+            ->orderBy('nama')
             ->get();
 
         $today = Carbon::today();
         $weekStart = Carbon::now()->startOfWeek();
         $weekEnd = Carbon::now()->endOfWeek();
 
-        $totalSantri = $santris->count();
-        $totalSetoran = Setoran::whereIn('santri_id', $santris->pluck('id'))
+        $totalSantri = $allSantris->count();
+        $totalSetoran = Setoran::whereIn('santri_id', $allSantris->pluck('id'))
             ->where('status', 'approved')
             ->count();
-        $totalMenunggu = Setoran::whereIn('santri_id', $santris->pluck('id'))
+        $totalMenunggu = Setoran::whereIn('santri_id', $allSantris->pluck('id'))
             ->where('status', 'pending')
             ->count();
 
-        $hadirToday = Absensi::whereIn('santri_id', $santris->pluck('id'))
+        $hadirToday = Absensi::whereIn('santri_id', $allSantris->pluck('id'))
             ->where('tanggal', $today)
             ->where('status', 'hadir')
             ->count();
 
-        $sudahSetorToday = Setoran::whereIn('santri_id', $santris->pluck('id'))
+        $setoranHariIni = Setoran::with('surah')
+            ->whereIn('santri_id', $allSantris->pluck('id'))
             ->where('tanggal', $today)
-            ->where('status', '!=', 'draft')
-            ->distinct('santri_id')
-            ->count('santri_id');
+            ->where('is_draft', false)
+            ->get()
+            ->keyBy('santri_id');
 
+        $sudahSetorToday = $setoranHariIni->count();
         $belumSetorToday = $totalSantri - $sudahSetorToday;
 
-        $mutuValues = Setoran::whereIn('santri_id', $santris->pluck('id'))
+        $mutuValues = Setoran::whereIn('santri_id', $allSantris->pluck('id'))
             ->where('status', 'approved')
             ->pluck('nilai');
         $mutuScore = $mutuValues->map(function ($n) {
@@ -63,13 +64,13 @@ class DashboardController extends Controller
         })->avg() ?? 0;
 
         $lastSetorans = Setoran::with(['santri', 'surah'])
-            ->whereIn('santri_id', $santris->pluck('id'))
+            ->whereIn('santri_id', $allSantris->pluck('id'))
             ->where('status', 'approved')
             ->latest('tanggal')
             ->take(5)
             ->get();
 
-        $targetSimaan = Setoran::whereIn('santri_id', $santris->pluck('id'))
+        $targetSimaan = Setoran::whereIn('santri_id', $allSantris->pluck('id'))
             ->where('jenis', 'murajaah')
             ->where('status', 'approved')
             ->whereBetween('tanggal', [$weekStart, $weekEnd])
@@ -79,12 +80,27 @@ class DashboardController extends Controller
             ->where('tanggal', $today)
             ->first();
 
+        $filter = $request->get('filter', 'semua');
+        $allowedFilters = ['semua', 'belum', 'sudah'];
+        if (!in_array($filter, $allowedFilters)) {
+            $filter = 'semua';
+        }
+
+        if ($filter === 'belum') {
+            $santris = $allSantris->filter(fn($s) => !$setoranHariIni->has($s->id));
+        } elseif ($filter === 'sudah') {
+            $santris = $allSantris->filter(fn($s) => $setoranHariIni->has($s->id));
+        } else {
+            $santris = $allSantris;
+        }
+
         return view('ustadz.dashboard', [
             'title' => 'Dasbor Halaqah',
             'pageTitle' => 'Dasbor Halaqah',
             'ustadz' => $ustadz,
             'kelompokIds' => $kelompokIds,
             'santris' => $santris,
+            'allSantris' => $allSantris,
             'totalSantri' => $totalSantri,
             'totalSetoran' => $totalSetoran,
             'totalMenunggu' => $totalMenunggu,
@@ -95,6 +111,8 @@ class DashboardController extends Controller
             'lastSetorans' => $lastSetorans,
             'targetSimaan' => $targetSimaan,
             'halaqahNote' => $halaqahNote,
+            'filter' => $filter,
+            'setoranHariIni' => $setoranHariIni,
         ]);
     }
 

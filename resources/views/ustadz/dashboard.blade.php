@@ -54,9 +54,21 @@
                 <p class="text-sm text-neutral-500">Hari ini: {{ now()->translatedFormat('l, d F Y') }}</p>
             </div>
             <div class="flex gap-1 bg-neutral-100 rounded-lg p-1" role="tablist">
-                <button type="button" role="tab" aria-selected="true" class="px-3 py-1.5 text-sm font-medium rounded-md bg-white text-primary-600 shadow-sm">Semua</button>
-                <button type="button" role="tab" aria-selected="false" class="px-3 py-1.5 text-sm font-medium rounded-md text-neutral-600 hover:text-neutral-900">Belum Setor</button>
-                <button type="button" role="tab" aria-selected="false" class="px-3 py-1.5 text-sm font-medium rounded-md text-neutral-600 hover:text-neutral-900">Sudah Setor</button>
+                <a href="{{ route('ustadz.dashboard', ['filter' => 'semua']) }}"
+                   class="px-3 py-1.5 text-sm font-medium rounded-md {{ $filter === 'semua' ? 'bg-white text-primary-600 shadow-sm' : 'text-neutral-600 hover:text-neutral-900' }}"
+                   aria-current="{{ $filter === 'semua' ? 'page' : 'false' }}">
+                    Semua ({{ $totalSantri }})
+                </a>
+                <a href="{{ route('ustadz.dashboard', ['filter' => 'belum']) }}"
+                   class="px-3 py-1.5 text-sm font-medium rounded-md {{ $filter === 'belum' ? 'bg-white text-primary-600 shadow-sm' : 'text-neutral-600 hover:text-neutral-900' }}"
+                   aria-current="{{ $filter === 'belum' ? 'page' : 'false' }}">
+                    Belum Setor ({{ $belumSetorToday }})
+                </a>
+                <a href="{{ route('ustadz.dashboard', ['filter' => 'sudah']) }}"
+                   class="px-3 py-1.5 text-sm font-medium rounded-md {{ $filter === 'sudah' ? 'bg-white text-primary-600 shadow-sm' : 'text-neutral-600 hover:text-neutral-900' }}"
+                   aria-current="{{ $filter === 'sudah' ? 'page' : 'false' }}">
+                    Sudah Setor ({{ $sudahSetorToday }})
+                </a>
             </div>
         </div>
 
@@ -74,6 +86,9 @@
                 </thead>
                 <tbody class="divide-y divide-neutral-100">
                     @forelse ($santris as $santri)
+                        @php
+                            $setoranToday = $setoranHariIni->get($santri->id);
+                        @endphp
                         <tr class="hover:bg-neutral-50 transition-colors">
                             <td class="px-4 py-3 text-sm text-neutral-500">{{ $loop->iteration }}</td>
                             <td class="px-4 py-3">
@@ -88,9 +103,6 @@
                             <td class="px-4 py-3 text-sm text-neutral-600">{{ $santri->angkatan->nama ?? '-' }}</td>
                             <td class="px-4 py-3 text-sm text-neutral-600">Juz {{ $santri->progress_juz + 1 }}</td>
                             <td class="px-4 py-3 text-center">
-                                @php
-                                    $setoranToday = $santri->setorans()->where('tanggal', now()->toDateString())->where('is_draft', false)->first();
-                                @endphp
                                 @if ($setoranToday)
                                     <x-badge variant="{{ $setoranToday->jenis == 'ziyadah' ? 'info' : ($setoranToday->jenis == 'murajaah' ? 'secondary' : 'primary') }}" size="sm" dot>
                                         {{ ucfirst($setoranToday->jenis) }}: {{ $setoranToday->surah->nama_latin }} {{ $setoranToday->ayat_range }}
@@ -118,7 +130,15 @@
                         <tr>
                             <td colspan="6" class="px-4 py-8 text-center">
                                 <x-card padding="none">
-                                    <p class="mt-3 text-neutral-500">Tidak ada santri di halaqah ini.</p>
+                                    <p class="mt-3 text-neutral-500">
+                                        @if ($filter === 'belum')
+                                            Belum ada santri yang sudah setor.
+                                        @elseif ($filter === 'sudah')
+                                            Semua santri sudah setor.
+                                        @else
+                                            Tidak ada santri di halaqah ini.
+                                        @endif
+                                    </p>
                                 </x-card>
                             </td>
                         </tr>
@@ -169,7 +189,7 @@
         @csrf
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-3">
             <h3 class="text-lg font-semibold text-neutral-900">Catatan Halaqah Hari Ini</h3>
-            <span class="text-xs text-neutral-500">Auto-save ke server setiap 30 detik</span>
+            <span class="text-xs text-neutral-500">Simpan manual</span>
         </div>
         <textarea name="catatan" rows="3" placeholder="Tulis catatan pembinaan, catatan khusus santri, atau informasi penting untuk hari ini..." class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 placeholder-neutral-400 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2 transition-all duration-fast ease-standard">{{ $halaqahNote->catatan ?? '' }}</textarea>
         <div class="mt-4 flex justify-end">

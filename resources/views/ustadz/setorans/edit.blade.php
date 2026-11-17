@@ -76,22 +76,35 @@
                 </div>
             </div>
 
-            <div>
-                <label for="surah_id" class="block text-sm font-medium text-neutral-700 mb-1.5">
-                    Surah
-                    <span class="text-error-500 ml-1" aria-hidden="true">*</span>
-                </label>
-                <select id="surah_id" name="surah_id" required class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2 transition-all duration-fast ease-standard {{ $errors->first('surah_id') ? 'border-error-500' : '' }}">
-                    <option value="">Pilih Surah</option>
-                    @foreach ($surahs as $surah)
-                        <option value="{{ $surah->id }}" data-ayat="{{ $surah->jumlah_ayat }}" data-juz="{{ $surah->juz_mulai }}" {{ old('surah_id', $setoran->surah_id) == $surah->id ? 'selected' : '' }}>
-                            {{ $surah->nomor }}. {{ $surah->nama_latin }} ({{ $surah->jumlah_ayat }} ayat, Juz {{ $surah->juz_mulai }})
-                        </option>
-                    @endforeach
-                </select>
-                @error('surah_id')
-                    <p class="mt-1.5 text-sm text-error-600" role="alert">{{ $message }}</p>
-                @enderror
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label for="juz_pilih" class="block text-sm font-medium text-neutral-700 mb-1.5">
+                        Juz
+                        <span class="text-error-500 ml-1" aria-hidden="true">*</span>
+                    </label>
+                    <select id="juz_pilih" name="juz_pilih" required class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2 transition-all duration-fast ease-standard {{ $errors->first('juz_pilih') ? 'border-error-500' : '' }}">
+                        <option value="">Pilih Juz</option>
+                        @for ($i = 1; $i <= 30; $i++)
+                            <option value="{{ $i }}" {{ old('juz_pilih') == $i || $setoran->juz == $i ? 'selected' : '' }}>Juz {{ $i }}</option>
+                        @endfor
+                    </select>
+                    @error('juz_pilih')
+                        <p class="mt-1.5 text-sm text-error-600" role="alert">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div>
+                    <label for="surah_id" class="block text-sm font-medium text-neutral-700 mb-1.5">
+                        Surah
+                        <span class="text-error-500 ml-1" aria-hidden="true">*</span>
+                    </label>
+                    <select id="surah_id" name="surah_id" required class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2 transition-all duration-fast ease-standard {{ $errors->first('surah_id') ? 'border-error-500' : '' }}">
+                        <option value="">Pilih Juz terlebih dahulu</option>
+                    </select>
+                    <p id="surah-hint" class="mt-1 text-xs text-neutral-500 hidden"></p>
+                    @error('surah_id')
+                        <p class="mt-1.5 text-sm text-error-600" role="alert">{{ $message }}</p>
+                    @enderror
+                </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -106,6 +119,7 @@
                         required
                         :error="$errors->first('ayat_awal')"
                     />
+                    <p id="ayat-awal-hint" class="mt-1 text-xs text-neutral-500 hidden"></p>
                 </div>
                 <div>
                     <x-input
@@ -118,6 +132,7 @@
                         required
                         :error="$errors->first('ayat_akhir')"
                     />
+                    <p id="ayat-akhir-hint" class="mt-1 text-xs text-neutral-500 hidden"></p>
                 </div>
                 <div>
                     <x-input
@@ -133,9 +148,9 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <input type="checkbox" id="mutqin" name="mutqin" class="w-4 h-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500" {{ $setoran->ayat_awal == 1 && $setoran->ayat_akhir == $setoran->surah->jumlah_ayat ? 'checked' : '' }} />
+                <input type="checkbox" id="mutqin" name="mutqin" class="w-4 h-4 rounded border-neutral-300 text-primary-500 focus:ring-primary-500" {{ old('mutqin') ? 'checked' : '' }} />
                 <label for="mutqin" class="text-sm text-neutral-700">
-                    Cover penuh (Mutqin) - Set ayat awal = 1 dan ayat akhir = jumlah ayat surah
+                    Cover penuh porsi juz ini - Set ayat awal & akhir ke batas porsi Juz
                 </label>
             </div>
 
@@ -193,93 +208,111 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const santris = @json($santris);
+    const juzSurahMap = @json($juzSurahMap);
     const searchInput = document.querySelector('input[name="santri_search"]');
     const dropdown = document.getElementById('santri-dropdown');
     const hiddenInput = document.getElementById('santri_id');
     const selectedDiv = document.getElementById('selected-santri');
     const clearBtn = document.getElementById('clear-santri');
+    const juzSelect = document.getElementById('juz_pilih');
     const surahSelect = document.getElementById('surah_id');
+    const surahHint = document.getElementById('surah-hint');
     const ayatAwal = document.querySelector('input[name="ayat_awal"]');
     const ayatAkhir = document.querySelector('input[name="ayat_akhir"]');
+    const ayatAwalHint = document.getElementById('ayat-awal-hint');
+    const ayatAkhirHint = document.getElementById('ayat-akhir-hint');
     const mutqinCheckbox = document.getElementById('mutqin');
 
-    function renderDropdown(items) {
-        if (items.length === 0) {
-            dropdown.innerHTML = '<p class="p-3 text-sm text-neutral-500">Tidak ada santri ditemukan.</p>';
-        } else {
-            dropdown.innerHTML = items.map(function(s) {
-                return '<button type="button" class="w-full text-left px-3 py-2 text-sm hover:bg-neutral-50 focus:bg-neutral-50 focus:outline-none transition-colors flex items-center gap-2" data-id="' + s.id + '" data-name="' + s.nama + '" data-nis="' + s.nis + '">' +
-                    '<div class="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center text-xs font-medium text-primary-700">' + s.nama.charAt(0) + '</div>' +
-                    '<div><p class="font-medium text-neutral-900">' + s.nama + '</p><p class="text-xs text-neutral-500">' + s.nis + '</p></div>' +
-                    '</button>';
-            }).join('');
+    let currentJuz = juzSelect.value;
+    let currentSurahItem = null;
+
+    function fillSurahOptions(juz, selectedId) {
+        const items = juzSurahMap[juz] || [];
+        surahSelect.innerHTML = '<option value="">Pilih Surah</option>';
+        items.forEach(function(s) {
+            const option = document.createElement('option');
+            option.value = s.id;
+            option.textContent = s.nomor + '. ' + s.nama + ' (ayat ' + s.min + '-' + s.max + ')';
+            surahSelect.appendChild(option);
+        });
+
+        if (selectedId) {
+            surahSelect.value = selectedId;
+            const item = items.find(function(i) { return i.id == selectedId; });
+            if (item) {
+                setSurahRange(item);
+                currentSurahItem = item;
+            }
         }
-        dropdown.classList.remove('hidden');
     }
 
-    searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase();
-        const filtered = santris.filter(function(s) {
-            return s.nama.toLowerCase().indexOf(query) !== -1 || s.nis.indexOf(query) !== -1;
-        });
-        renderDropdown(filtered.slice(0, 10));
-    });
+    function setSurahRange(item) {
+        currentSurahItem = item;
+        ayatAwal.value = item.min;
+        ayatAkhir.value = item.max;
+        ayatAwal.min = item.min;
+        ayatAkhir.min = item.min;
+        ayatAkhir.max = item.max;
+        ayatAwalHint.textContent = 'Porsi Juz: ayat ' + item.min + '-' + item.max;
+        ayatAwalHint.classList.remove('hidden');
+        ayatAkhirHint.textContent = 'Batas Juz: ' + item.min + ' - ' + item.max;
+        ayatAkhirHint.classList.remove('hidden');
+        surahHint.textContent = 'Juz ' + currentJuz + ': ' + item.nomor + '. ' + item.nama + ' (ayat ' + item.min + '-' + item.max + ')';
+        surahHint.classList.remove('hidden');
+    }
 
-    searchInput.addEventListener('focus', function() {
-        if (this.value.length > 0) {
-            const query = this.value.toLowerCase();
-            const filtered = santris.filter(function(s) {
-                return s.nama.toLowerCase().indexOf(query) !== -1 || s.nis.indexOf(query) !== -1;
-            });
-            renderDropdown(filtered.slice(0, 10));
-        }
-    });
-
-    dropdown.addEventListener('click', function(e) {
-        const btn = e.target.closest('button[data-id]');
-        if (!btn) return;
-        const id = btn.dataset.id;
-        const name = btn.dataset.name;
-        const nis = btn.dataset.nis;
-        hiddenInput.value = id;
-        document.getElementById('selected-santri-name').textContent = name;
-        document.getElementById('selected-santri-nis').textContent = nis;
-        selectedDiv.classList.remove('hidden');
-        dropdown.classList.add('hidden');
-        searchInput.value = '';
-    });
-
-    clearBtn.addEventListener('click', function() {
-        hiddenInput.value = '';
-        selectedDiv.classList.add('hidden');
-        searchInput.focus();
-    });
-
-    document.addEventListener('click', function(e) {
-        if (!dropdown.contains(e.target) && e.target !== searchInput) {
-            dropdown.classList.add('hidden');
-        }
+    juzSelect.addEventListener('change', function() {
+        const juz = this.value;
+        if (!juz) return;
+        currentJuz = juz;
+        currentSurahItem = null;
+        fillSurahOptions(juz, '');
+        surahHint.classList.add('hidden');
+        ayatAwalHint.classList.add('hidden');
+        ayatAkhirHint.classList.add('hidden');
+        ayatAwal.value = '';
+        ayatAkhir.value = '';
     });
 
     surahSelect.addEventListener('change', function() {
-        const option = this.options[this.selectedIndex];
-        const maxAyat = option.dataset.ayat;
-        if (maxAyat) {
-            ayatAkhir.placeholder = maxAyat + ' (maks ' + maxAyat + ')';
-            ayatAkhir.max = maxAyat;
+        const id = Number(this.value);
+        const item = juzSurahMap[currentJuz] ? juzSurahMap[currentJuz].find(function(s) { return s.id == id; }) : null;
+        if (item) {
+            setSurahRange(item);
+            currentSurahItem = item;
         }
     });
 
     mutqinCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-            const option = surahSelect.options[surahSelect.selectedIndex];
-            const maxAyat = option.dataset.ayat;
-            if (maxAyat) {
-                ayatAwal.value = 1;
-                ayatAkhir.value = maxAyat;
-            }
+        if (this.checked && currentSurahItem) {
+            ayatAwal.value = currentSurahItem.min;
+            ayatAkhir.value = currentSurahItem.max;
         }
     });
+
+    @if(old('juz_pilih'))
+        const oldJuz = @json(old('juz_pilih'));
+        const oldSurah = @json(old('surah_id'));
+        juzSelect.value = oldJuz;
+        if (oldJuz && juzSurahMap[oldJuz]) {
+            fillSurahOptions(oldJuz, oldSurah);
+            const item = juzSurahMap[oldJuz].find(function(s) { return s.id == oldSurah; });
+            if (item) {
+                setSurahRange(item);
+            }
+        }
+    @elseif($setoran->juz)
+        const initJuz = @json($setoran->juz);
+        const initSurah = @json($setoran->surah_id);
+        juzSelect.value = initJuz;
+        if (initJuz && juzSurahMap[initJuz]) {
+            fillSurahOptions(initJuz, initSurah);
+            const item = juzSurahMap[initJuz].find(function(s) { return s.id == initSurah; });
+            if (item) {
+                setSurahRange(item);
+            }
+        }
+    @endif
 
     @if(old('santri_id'))
         const selected = santris.find(function(s) { return s.id == {{ old('santri_id') }}; });

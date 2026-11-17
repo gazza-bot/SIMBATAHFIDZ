@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Santri;
 use App\Models\Setoran;
 use App\Models\Surah;
+use App\Models\JuzStart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -49,7 +50,7 @@ class SetoranController extends Controller
         return view('ustadz.setorans.index', compact('setorans', 'stats'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $ustadz = Auth::user()->ustadz;
         $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
@@ -58,9 +59,59 @@ class SetoranController extends Controller
             ->orderBy('nama')
             ->get(['id', 'nama', 'nis']);
 
-        $surahs = Surah::orderBy('nomor')->get(['id', 'nama_latin', 'nama_arab', 'jumlah_ayat', 'juz_mulai', 'juz_selesai']);
+        $prefillSantriId = null;
+        if ($request->filled('santri')) {
+            $prefillSantriId = (int) $request->get('santri');
+            if (!$santris->where('id', $prefillSantriId)->first()) {
+                $prefillSantriId = null;
+            }
+        }
 
-        return view('ustadz.setorans.create', compact('santris', 'surahs'));
+        $juzSurahMap = $this->buildJuzSurahMap();
+
+        return view('ustadz.setorans.create', compact('santris', 'juzSurahMap', 'prefillSantriId'));
+    }
+
+    private function buildJuzSurahMap(): array
+    {
+        $surahs = Surah::orderBy('nomor')->get(['id', 'nomor', 'nama_latin', 'jumlah_ayat']);
+        $starts = JuzStart::with('surah:id,nomor')->orderBy('juz')->get();
+
+        $map = [];
+        foreach ($starts as $i => $start) {
+            $juz = $start->juz;
+            $startSurahNomor = $start->surah->nomor;
+            $startAyat = $start->ayat;
+
+            if ($i + 1 < $starts->count()) {
+                $next = $starts[$i + 1];
+                $endSurahNomor = $next->surah->nomor;
+                $endAyat = $next->ayat - 1;
+            } else {
+                $last = $surahs->last();
+                $endSurahNomor = $last->nomor;
+                $endAyat = $last->jumlah_ayat;
+            }
+
+            $items = [];
+            foreach ($surahs as $s) {
+                if ($s->nomor < $startSurahNomor || $s->nomor > $endSurahNomor) {
+                    continue;
+                }
+                $min = ($s->nomor === $startSurahNomor) ? $startAyat : 1;
+                $max = ($s->nomor === $endSurahNomor) ? $endAyat : $s->jumlah_ayat;
+                $items[] = [
+                    'id' => $s->id,
+                    'nomor' => $s->nomor,
+                    'nama' => $s->nama_latin,
+                    'jumlah_ayat' => $s->jumlah_ayat,
+                    'min' => $min,
+                    'max' => $max,
+                ];
+            }
+            $map[$juz] = $items;
+        }
+        return $map;
     }
 
     public function store(Request $request)
@@ -70,6 +121,7 @@ class SetoranController extends Controller
             'tanggal' => 'required|date|before_or_equal:today',
             'jenis' => 'required|in:ziyadah,murajaah,tasmi',
             'surah_id' => 'required|exists:surahs,id',
+            'juz_pilih' => 'required|integer|min:1|max:30',
             'ayat_awal' => 'required|integer|min:1',
             'ayat_akhir' => 'required|integer|min:1',
             'nilai' => 'required|in:maqbul,jayyid,jayyid_jiddan,mumtaz',
@@ -80,6 +132,11 @@ class SetoranController extends Controller
         ]);
 
         $surah = Surah::findOrFail($validated['surah_id']);
+        $juzSurahMap = $this->buildJuzSurahMap();
+
+        if (!$juzSurahMap[$validated['juz_pilih']] || !collect($juzSurahMap[$validated['juz_pilih']])->contains('id', $validated['surah_id'])) {
+            return back()->withErrors(['surah_id' => "Surah ini tidak termasuk Juz {$validated['juz_pilih']}. Silakan pilih Juz yang sesuai."])->withInput();
+        }
 
         if ($validated['ayat_akhir'] > $surah->jumlah_ayat) {
             return back()->withErrors(['ayat_akhir' => "Ayat akhir tidak boleh melebihi {$surah->jumlah_ayat}."])->withInput();
@@ -89,13 +146,22 @@ class SetoranController extends Controller
             return back()->withErrors(['ayat_awal' => 'Ayat awal tidak boleh melebihi ayat akhir.'])->withInput();
         }
 
+        $juzList = $juzSurahMap[$validated['juz_pilih']];
+        $item = collect($juzList)->firstWhere('id', $validated['surah_id']);
+        if ($validated['ayat_awal'] < $item['min'] || $validated['ayat_akhir'] > $item['max']) {
+            return back()->withErrors([
+                'ayat_awal' => "Jumlah ayat harus berada di antara {$item['min']} dan {$item['max']} untuk juz {$validated['juz_pilih']} pilihan.",
+            ])->withInput();
+        }
+
         $ustadz = Auth::user()->ustadz;
         if (!$ustadz) {
             abort(403, 'Akun ustadz tidak ditemukan.');
         }
 
         $validated['ustadz_id'] = $ustadz->id;
-        $validated['juz'] = Setoran::resolveJuz($surah->nomor, $validated['ayat_awal']);
+        $validated['juz'] = (int) $validated['juz_pilih'];
+        unset($validated['juz_pilih']);
         $validated['status'] = $validated['is_draft'] ? 'pending' : 'pending';
 
         $setoran = Setoran::create($validated);
@@ -142,9 +208,9 @@ class SetoranController extends Controller
             ->orderBy('nama')
             ->get(['id', 'nama', 'nis']);
 
-        $surahs = Surah::orderBy('nomor')->get(['id', 'nama_latin', 'nama_arab', 'jumlah_ayat', 'juz_mulai', 'juz_selesai']);
+        $juzSurahMap = $this->buildJuzSurahMap();
 
-        return view('ustadz.setorans.edit', compact('setoran', 'santris', 'surahs'));
+        return view('ustadz.setorans.edit', compact('setoran', 'santris', 'juzSurahMap'));
     }
 
     public function update(Request $request, Setoran $setoran)
@@ -159,6 +225,7 @@ class SetoranController extends Controller
             'tanggal' => 'required|date|before_or_equal:today',
             'jenis' => 'required|in:ziyadah,murajaah,tasmi',
             'surah_id' => 'required|exists:surahs,id',
+            'juz_pilih' => 'required|integer|min:1|max:30',
             'ayat_awal' => 'required|integer|min:1',
             'ayat_akhir' => 'required|integer|min:1',
             'nilai' => 'required|in:maqbul,jayyid,jayyid_jiddan,mumtaz',
@@ -169,6 +236,11 @@ class SetoranController extends Controller
         ]);
 
         $surah = Surah::findOrFail($validated['surah_id']);
+        $juzSurahMap = $this->buildJuzSurahMap();
+
+        if (!$juzSurahMap[$validated['juz_pilih']] || !collect($juzSurahMap[$validated['juz_pilih']])->contains('id', $validated['surah_id'])) {
+            return back()->withErrors(['surah_id' => "Surah ini tidak termasuk Juz {$validated['juz_pilih']}. Silakan pilih Juz yang sesuai."])->withInput();
+        }
 
         if ($validated['ayat_akhir'] > $surah->jumlah_ayat) {
             return back()->withErrors(['ayat_akhir' => "Ayat akhir tidak boleh melebihi {$surah->jumlah_ayat}."])->withInput();
@@ -178,7 +250,16 @@ class SetoranController extends Controller
             return back()->withErrors(['ayat_awal' => 'Ayat awal tidak boleh melebihi ayat akhir.'])->withInput();
         }
 
-        $validated['juz'] = Setoran::resolveJuz($surah->nomor, $validated['ayat_awal']);
+        $juzList = $juzSurahMap[$validated['juz_pilih']];
+        $item = collect($juzList)->firstWhere('id', $validated['surah_id']);
+        if ($validated['ayat_awal'] < $item['min'] || $validated['ayat_akhir'] > $item['max']) {
+            return back()->withErrors([
+                'ayat_awal' => "Jumlah ayat harus berada di antara {$item['min']} dan {$item['max']} untuk juz {$validated['juz_pilih']} pilihan.",
+            ])->withInput();
+        }
+
+        $validated['juz'] = (int) $validated['juz_pilih'];
+        unset($validated['juz_pilih']);
 
         $setoran->update($validated);
 

@@ -9,6 +9,7 @@ use App\Models\Setoran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use PDF;
 
 class RaporController extends Controller
 {
@@ -55,5 +56,59 @@ class RaporController extends Controller
             'santris', 'selectedSantri', 'setorans', 'absensis',
             'progressJuz', 'progressPercent', 'start', 'end', 'santriId'
         ));
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $ustadz = Auth::user()->ustadz;
+        $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
+
+        $santriId = $request->get('santri_id');
+        if (!$santriId) {
+            return redirect()->route('ustadz.rapor.index')->with('error', 'Santri tidak dipilih.');
+        }
+
+        $santri = Santri::whereIn('kelompok_id', $kelompokIds)
+            ->where('status_aktif', 'aktif')
+            ->where('id', $santriId)
+            ->first();
+
+        if (!$santri) {
+            return redirect()->route('ustadz.rapor.index')->with('error', 'Santri tidak ditemukan atau tidak di hak akses Anda.');
+        }
+
+        $start = $request->filled('tanggal_mulai') ? Carbon::parse($request->tanggal_mulai)->startOfDay() : Carbon::now()->startOfMonth();
+        $end = $request->filled('tanggal_selesai') ? Carbon::parse($request->tanggal_selesai)->endOfDay() : Carbon::now()->endOfMonth();
+
+        $setorans = Setoran::with(['surah'])
+            ->where('santri_id', $santriId)
+            ->whereBetween('tanggal', [$start, $end])
+            ->where('is_draft', false)
+            ->where('status', 'approved')
+            ->latest('tanggal')
+            ->get();
+
+        $absensis = Absensi::where('santri_id', $santriId)
+            ->whereBetween('tanggal', [$start, $end])
+            ->get()
+            ->groupBy('status');
+
+        $progressJuz = $santri->progress_juz;
+        $progressPercent = $santri->progress_percent;
+
+        $inline = $request->boolean('inline');
+
+        $pdf = PDF::loadView('ustadz.rapor.pdf', compact(
+            'santri', 'setorans', 'absensis',
+            'progressJuz', 'progressPercent', 'start', 'end'
+        ));
+
+        $filename = 'rapor_' . $santri->nis . '_' . $start->format('Ymd') . '_' . $end->format('Ymd') . '.pdf';
+
+        if ($inline) {
+            return $pdf->stream($filename);
+        }
+
+        return $pdf->download($filename);
     }
 }
