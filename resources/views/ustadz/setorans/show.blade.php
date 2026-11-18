@@ -8,12 +8,10 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                 Kembali
             </x-button>
-            @if ($setoran->status == 'pending')
-                <x-button variant="outline" size="sm" href="{{ route('ustadz.setorans.edit', $setoran) }}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                    Edit
-                </x-button>
-            @endif
+            <x-button variant="outline" size="sm" href="{{ route('ustadz.setorans.edit', $setoran) }}">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                Edit
+            </x-button>
         </div>
 
         <div class="bg-white rounded-2xl border border-neutral-200 shadow-level-1 overflow-hidden">
@@ -22,13 +20,6 @@
                     <h2 class="text-lg font-semibold text-neutral-900">Detail Setoran</h2>
                     <p class="mt-1 text-sm text-neutral-500">Informasi lengkap setoran hafalan.</p>
                 </div>
-                @if ($setoran->status == 'pending')
-                    <x-badge variant="warning" size="md" dot>Menunggu Validasi</x-badge>
-                @elseif ($setoran->status == 'approved')
-                    <x-badge variant="success" size="md" dot>Disetujui</x-badge>
-                @else
-                    <x-badge variant="error" size="md" dot>Ditolak</x-badge>
-                @endif
             </div>
 
             <div class="p-4 sm:p-6 space-y-6">
@@ -93,20 +84,6 @@
                     <div class="p-4 border border-neutral-100 rounded-xl">
                         <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Catatan</p>
                         <p class="mt-1 text-sm text-neutral-700 whitespace-pre-line">{{ $setoran->catatan }}</p>
-                    </div>
-                @endif
-
-                {{-- Validation Info --}}
-                @if ($setoran->validated_at)
-                    <div class="p-4 bg-success-50 border border-success-200 rounded-xl">
-                        <p class="text-xs font-medium text-success-700 uppercase tracking-wide">Validasi</p>
-                        <p class="mt-1 text-sm text-success-800">
-                            @if ($setoran->status == 'approved')
-                                Disetujui oleh {{ $setoran->validator->name ?? '-' }} pada {{ $setoran->validated_at->format('d F Y H:i') }}
-                            @else
-                                Ditolak oleh {{ $setoran->validator->name ?? '-' }} pada {{ $setoran->validated_at->format('d F Y H:i') }}
-                            @endif
-                        </p>
                     </div>
                 @endif
             </div>

@@ -22,10 +22,6 @@ class SetoranController extends Controller
             ->where('is_draft', false)
             ->latest('tanggal');
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
         if ($request->filled('jenis')) {
             $query->where('jenis', $request->jenis);
         }
@@ -42,9 +38,6 @@ class SetoranController extends Controller
 
         $stats = [
             'total' => Setoran::whereIn('santri_id', Santri::whereIn('kelompok_id', $kelompokIds)->pluck('id'))->where('is_draft', false)->count(),
-            'pending' => Setoran::whereIn('santri_id', Santri::whereIn('kelompok_id', $kelompokIds)->pluck('id'))->where('status', 'pending')->where('is_draft', false)->count(),
-            'approved' => Setoran::whereIn('santri_id', Santri::whereIn('kelompok_id', $kelompokIds)->pluck('id'))->where('status', 'approved')->count(),
-            'rejected' => Setoran::whereIn('santri_id', Santri::whereIn('kelompok_id', $kelompokIds)->pluck('id'))->where('status', 'rejected')->count(),
         ];
 
         return view('ustadz.setorans.index', compact('setorans', 'stats'));

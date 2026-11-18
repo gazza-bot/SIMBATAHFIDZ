@@ -17,46 +17,25 @@
             </div>
         </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="max-w-xs">
             <x-card padding="sm">
                 <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Total</p>
                 <p class="mt-2 text-2xl font-bold text-neutral-900">{{ $stats['total'] }}</p>
             </x-card>
-            <x-card padding="sm">
-                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Menunggu</p>
-                <p class="mt-2 text-2xl font-bold text-warning-600">{{ $stats['pending'] }}</p>
-            </x-card>
-            <x-card padding="sm">
-                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Disetujui</p>
-                <p class="mt-2 text-2xl font-bold text-success-600">{{ $stats['approved'] }}</p>
-            </x-card>
-            <x-card padding="sm">
-                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Ditolak</p>
-                <p class="mt-2 text-2xl font-bold text-error-600">{{ $stats['rejected'] }}</p>
-            </x-card>
         </div>
 
         <div class="bg-white rounded-2xl border border-neutral-200 p-4 sm:p-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+            <form method="GET" action="{{ route('ustadz.setorans.index') }}" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                 <x-input type="text" name="search" placeholder="Cari nama atau NIS santri..." value="{{ request('search') }}" />
                 <div>
-                    <label for="filter-status" class="block text-sm font-medium text-neutral-700 mb-1.5">Status</label>
-                    <select id="filter-status" name="status" class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2 transition-all duration-fast ease-standard">
-                        <option value="">Semua Status</option>
-                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Menunggu</option>
-                        <option value="approved" {{ request('status') == 'approved' ? 'selected' : '' }}>Disetujui</option>
-                        <option value="rejected" {{ request('status') == 'rejected' ? 'selected' : '' }}>Ditolak</option>
-                    </select>
-                </div>
-                <div>
                     <label for="filter-jenis" class="block text-sm font-medium text-neutral-700 mb-1.5">Jenis</label>
-                    <select id="filter-jenis" name="jenis" class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2 transition-all duration-fast ease-standard">
+                    <select id="filter-jenis" name="jenis" onchange="this.form.submit()" class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2 transition-all duration-fast ease-standard">
                         <option value="">Semua Jenis</option>
                         <option value="ziyadah" {{ request('jenis') == 'ziyadah' ? 'selected' : '' }}>Ziyadah</option>
                         <option value="murajaah" {{ request('jenis') == 'murajaah' ? 'selected' : '' }}>Murajaah</option>
                     </select>
                 </div>
-            </div>
+            </form>
 
             <div class="overflow-x-auto rounded-2xl border border-neutral-200">
                 <table class="w-full" role="grid">
@@ -69,7 +48,6 @@
                             <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Ayat</th>
                             <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Jenis</th>
                             <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Nilai</th>
-                            <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Status</th>
                             <th scope="col" class="px-4 py-3 text-right text-xs font-semibold text-neutral-600 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
@@ -102,37 +80,26 @@
                                         size="sm"
                                     >{{ ucwords(str_replace('_', ' ', $setoran->nilai)) }}</x-badge>
                                 </td>
-                                <td class="px-4 py-3 text-sm">
-                                    @if ($setoran->status == 'pending')
-                                        <x-badge variant="warning" size="sm" dot>Menunggu</x-badge>
-                                    @elseif ($setoran->status == 'approved')
-                                        <x-badge variant="success" size="sm" dot>Disetujui</x-badge>
-                                    @else
-                                        <x-badge variant="error" size="sm" dot>Ditolak</x-badge>
-                                    @endif
-                                </td>
                                 <td class="px-4 py-3 text-right">
                                     <div class="flex justify-end gap-1.5">
                                         <x-button variant="ghost" size="sm" href="{{ route('ustadz.setorans.show', $setoran) }}">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                                             Detail
                                         </x-button>
-                                        @if ($setoran->status == 'pending')
-                                            <x-button variant="ghost" size="sm" href="{{ route('ustadz.setorans.edit', $setoran) }}">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                                                Edit
-                                            </x-button>
-                                            <x-button variant="destructive" size="sm" data-name="{{ $setoran->santri->nama ?? 'Setoran' }} ({{ $setoran->surah->nama_latin ?? '-' }})" @click="openDeleteModal('{{ $setoran->id }}', $event.currentTarget.dataset.name)">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                                Hapus
-                                            </x-button>
-                                        @endif
+                                        <x-button variant="ghost" size="sm" href="{{ route('ustadz.setorans.edit', $setoran) }}">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                            Edit
+                                        </x-button>
+                                        <x-button variant="destructive" size="sm" data-name="{{ $setoran->santri->nama ?? 'Setoran' }} ({{ $setoran->surah->nama_latin ?? '-' }})" @click="openDeleteModal('{{ $setoran->id }}', $event.currentTarget.dataset.name)">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            Hapus
+                                        </x-button>
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="px-4 py-8 text-center">
+                                <td colspan="8" class="px-4 py-8 text-center">
                                     <x-card padding="8">
                                         <svg class="mx-auto h-12 w-12 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                         <p class="mt-3 text-neutral-500">Tidak ada data setoran.</p>

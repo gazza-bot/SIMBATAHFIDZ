@@ -13,20 +13,18 @@
                 name="tanggal"
                 value="{{ $date }}"
                 class="w-full sm:w-auto rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2"
+                onchange="this.form.submit()"
                 required
             >
             <select
                 name="sesi"
                 class="w-full sm:w-auto rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2"
+                onchange="this.form.submit()"
             >
                 <option value="subuh" {{ $sesi == 'subuh' ? 'selected' : '' }}>Subuh</option>
                 <option value="ashar" {{ $sesi == 'ashar' ? 'selected' : '' }}>Ashar</option>
                 <option value="maghrib" {{ $sesi == 'maghrib' ? 'selected' : '' }}>Maghrib</option>
             </select>
-            <x-button variant="primary" type="submit">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                Tampilkan
-            </x-button>
         </form>
     </div>
 
@@ -50,28 +48,7 @@
     </div>
 
     <div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
-            <div>
-                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Total</p>
-                <p class="text-2xl font-bold text-neutral-900">{{ $stats['total'] }}</p>
-            </div>
-            <div>
-                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Hadir</p>
-                <p class="text-2xl font-bold text-success-600">{{ $stats['hadir'] }}</p>
-            </div>
-            <div>
-                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Izin</p>
-                <p class="text-2xl font-bold text-info-600">{{ $stats['izin'] }}</p>
-            </div>
-            <div>
-                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Sakit/Alpa</p>
-                <p class="text-2xl font-bold text-warning-600">{{ $stats['sakit'] + $stats['alpa'] }}</p>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-neutral-200 overflow-hidden">
-            <div class="overflow-x-auto">
+        <div class="overflow-x-auto">
                 <table class="w-full" role="grid">
                     <thead class="bg-neutral-50 border-b border-neutral-200">
                         <tr>
@@ -81,7 +58,6 @@
                             <th scope="col" class="px-4 py-3 text-left text-xs font-semibold text-neutral-600 uppercase tracking-wider">Angkatan</th>
                             <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-neutral-600 uppercase tracking-wider">Waktu Tiba</th>
                             <th scope="col" class="px-4 py-3 text-center text-xs font-semibold text-neutral-600 uppercase tracking-wider">Status</th>
-                            <th scope="col" class="px-4 py-3 text-right text-xs font-semibold text-neutral-600 uppercase tracking-wider">Keterangan</th>
                             <th scope="col" class="px-4 py-3 text-right text-xs font-semibold text-neutral-600 uppercase tracking-wider">Aksi</th>
                         </tr>
                     </thead>
@@ -93,11 +69,11 @@
                                     <div class="flex items-center gap-3">
                                         <x-avatar name="{{ $santri->nama }}" size="sm" />
                                         <div>
-                                            <p class="text-sm font-medium text-neutral-900">{{ $santri->nama }}</p>
-                                            <p class="text-xs text-neutral-500">{{ $santri->nis }}</p>
+                                            <p class="text-sm text-neutral-900">{{ $santri->nama }}</p>
                                         </div>
                                     </div>
                                 </td>
+                                <td class="px-4 py-3 text-sm text-neutral-600">{{ $santri->nis }}</td>
                                 <td class="px-4 py-3 text-sm text-neutral-600">{{ $santri->angkatan->nama ?? '-' }}</td>
                                 <td class="px-4 py-3 text-center text-xs text-neutral-500">
                                     @if (isset($existingAbsensi[$santri->id]))
@@ -135,7 +111,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-4 py-8 text-center">
+                                <td colspan="7" class="px-4 py-8 text-center">
                                     <x-card padding="none">
                                         <p class="mt-3 text-neutral-500">Tidak ada santri.</p>
                                     </x-card>
@@ -146,7 +122,6 @@
                 </table>
             </div>
         </div>
-    </div>
 
     <div class="fixed inset-0 z-50 flex items-center justify-center" x-show="showModal" x-cloak>
         <div class="fixed inset-0 bg-neutral-950/70 backdrop-blur-sm" @click="closeModal" aria-hidden="true"></div>

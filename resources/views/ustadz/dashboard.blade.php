@@ -10,7 +10,7 @@
                 <p class="mt-1 text-sm text-primary-100">Kelola Halaqah {{ \App\Models\Kelompok::where('ustadz_id', $ustadz->id)->first()?->nama ?? 'A' }}</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <x-button variant="outline" size="sm" href="{{ route('ustadz.absensis.create') }}">
+                <x-button variant="outline-light" size="sm" href="{{ route('ustadz.absensis.create') }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
                     Absensi Sesi Ini
                 </x-button>
@@ -18,7 +18,7 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                     Catat Setoran Cepat
                 </x-button>
-                <x-button variant="outline" size="sm" href="{{ route('ustadz.rapor.index') }}">
+                <x-button variant="outline-light" size="sm" href="{{ route('ustadz.rapor.index') }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     Pratinjau Rapor
                 </x-button>
@@ -28,19 +28,19 @@
 
     {{-- Stat Cards --}}
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <x-card padding="sm" class="bg-white border border-neutral-200">
+        <x-card padding="8" class="bg-white border border-neutral-200">
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Santri Hadir</p>
             <p class="mt-2 text-2xl font-bold text-neutral-900">{{ $hadirToday }}/{{ $totalSantri }}</p>
         </x-card>
-        <x-card padding="sm" class="bg-white border border-neutral-200">
+        <x-card padding="8" class="bg-white border border-neutral-200">
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Sudah Setor</p>
-            <p class="mt-2 text-2xl font-bold text-warning-600">{{ $sudahSetorToday }}/{{ $totalSantri }} ({{ $totalSantri > 0 ? round(($sudahSetorToday/$totalSantri)*100) : 0 }}%)</p>
+            <p class="mt-2 text-2xl font-bold text-success-600">{{ $sudahSetorToday }}/{{ $totalSantri }} ({{ $totalSantri > 0 ? round(($sudahSetorToday/$totalSantri)*100) : 0 }}%)</p>
         </x-card>
-        <x-card padding="sm" class="bg-white border border-neutral-200">
+        <x-card padding="8" class="bg-white border border-neutral-200">
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Belum Setor</p>
             <p class="mt-2 text-2xl font-bold text-error-600">{{ $belumSetorToday }}</p>
         </x-card>
-        <x-card padding="sm" class="bg-white border border-neutral-200">
+        <x-card padding="8" class="bg-white border border-neutral-200">
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Rata-rata Mutu</p>
             <p class="mt-2 text-2xl font-bold text-success-600">{{ $mutuScore }}%</p>
         </x-card>
@@ -129,12 +129,12 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-4 py-8 text-center">
-                                <x-card padding="none">
-                                    <p class="mt-3 text-neutral-500">
+                                <x-card padding="8">
+                                    <p class="text-neutral-500">
                                         @if ($filter === 'belum')
-                                            Belum ada santri yang sudah setor.
-                                        @elseif ($filter === 'sudah')
                                             Semua santri sudah setor.
+                                        @elseif ($filter === 'sudah')
+                                            Semua santri belum setor.
                                         @else
                                             Tidak ada santri di halaqah ini.
                                         @endif
@@ -173,12 +173,12 @@
 
     {{-- Target Sima'an Pekan Ini --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <x-card padding="sm" class="bg-white border border-neutral-200">
+        <x-card padding="lg" class="bg-white border border-neutral-200">
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Target Sima'an Pekan Ini</p>
             <p class="mt-2 text-2xl font-bold text-primary-600">{{ $targetSimaan }} juz</p>
         </x-card>
 
-        <x-card padding="sm" class="bg-white border border-neutral-200">
+        <x-card padding="lg" class="bg-white border border-neutral-200">
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Catatan Halaqah</p>
             <p class="mt-2 text-sm font-medium text-neutral-700 line-clamp-2">{{ $halaqahNote?->catatan ?: 'Belum ada catatan hari ini.' }}</p>
         </x-card>
