@@ -3,26 +3,30 @@
 namespace App\Http\Controllers\Ustadz;
 
 use App\Http\Controllers\Controller;
+use App\Models\Absensi;
+use App\Models\JuzStart;
 use App\Models\Santri;
 use App\Models\Setoran;
 use App\Models\Surah;
-use App\Models\JuzStart;
+use App\Models\Ustadz;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class SetoranController extends Controller
 {
     public function index(Request $request)
     {
-        $ustadz = Auth::user()->ustadz;
-        $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
+        $ustadz = $this->ustadzOrFail();
 
         $query = Setoran::with(['santri', 'surah', 'ustadz'])
-            ->whereIn('santri_id', Santri::whereIn('kelompok_id', $kelompokIds)->pluck('id'))
+            ->whereHas('santri', fn ($q) => $q->whereIn('kelompok_id', $ustadz->kelompoks->pluck('id')->all()))
             ->where('is_draft', false)
-            ->latest('tanggal');
+            ->latest('tanggal')
+            ->latest('id');
 
-        if ($request->filled('jenis')) {
+        if (in_array($request->jenis, ['ziyadah', 'murajaah', 'tasmi'], true)) {
             $query->where('jenis', $request->jenis);
         }
 
@@ -30,47 +34,301 @@ class SetoranController extends Controller
             $search = $request->search;
             $query->whereHas('santri', function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
-                  ->orWhere('nis', 'like', "%{$search}%");
+                    ->orWhere('nis', 'like', "%{$search}%");
             });
         }
 
         $setorans = $query->paginate(15)->withQueryString();
 
-        $stats = [
-            'total' => Setoran::whereIn('santri_id', Santri::whereIn('kelompok_id', $kelompokIds)->pluck('id'))->where('is_draft', false)->count(),
-        ];
-
-        return view('ustadz.setorans.index', compact('setorans', 'stats'));
+        return view('ustadz.setorans.index', compact('setorans'));
     }
 
     public function create(Request $request)
     {
-        $ustadz = Auth::user()->ustadz;
-        $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
-        $santris = Santri::whereIn('kelompok_id', $kelompokIds)
-            ->where('status_aktif', 'aktif')
-            ->orderBy('nama')
-            ->get(['id', 'nama', 'nis']);
+        $ustadz = $this->ustadzOrFail();
+        $kelompokIds = $ustadz->kelompoks->pluck('id');
 
-        $prefillSantriId = null;
+        $kelompoks = $ustadz->kelompoks()
+            ->with(['santris' => fn ($q) => $q->where('status_aktif', 'aktif')->orderBy('nama')])
+            ->orderBy('nama')
+            ->get();
+
+        $selectedSantri = null;
+
         if ($request->filled('santri')) {
-            $prefillSantriId = (int) $request->get('santri');
-            if (!$santris->where('id', $prefillSantriId)->first()) {
-                $prefillSantriId = null;
-            }
+            $selectedSantri = Santri::whereIn('kelompok_id', $kelompokIds)
+                ->where('status_aktif', 'aktif')
+                ->with(['kelompok', 'angkatan'])
+                ->find((int) $request->get('santri'));
         }
 
-        $juzSurahMap = $this->buildJuzSurahMap();
+        $selectedSantri ??= Santri::whereIn('kelompok_id', $kelompokIds)
+            ->where('status_aktif', 'aktif')
+            ->with(['kelompok', 'angkatan'])
+            ->orderBy('nama')
+            ->first();
 
-        return view('ustadz.setorans.create', compact('santris', 'juzSurahMap', 'prefillSantriId'));
+        return view('ustadz.setorans.create', [
+            'title' => 'Input Setoran',
+            'pageTitle' => 'Input Setoran',
+            'kelompoks' => $kelompoks,
+            'selectedSantri' => $selectedSantri,
+            'santriContext' => $selectedSantri ? $this->buildSantriContext($selectedSantri) : null,
+            'todayStats' => $this->buildTodayStats($kelompokIds),
+            'juzSurahMap' => $this->buildJuzSurahMap(),
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $ustadz = $this->ustadzOrFail();
+        $kelompokIds = $ustadz->kelompoks->pluck('id')->all();
+
+        $validated = $this->validateSetoran($request, $kelompokIds);
+
+        $validated['ustadz_id'] = $ustadz->id;
+        $validated['is_draft'] = false;
+        $validated['status'] = 'approved';
+        $validated['validated_by'] = Auth::id();
+        $validated['validated_at'] = now();
+
+        $setoran = Setoran::create($validated);
+
+        return redirect()
+            ->route('ustadz.setorans.sukses', $setoran)
+            ->with('success', 'Setoran berhasil disimpan.');
+    }
+
+    public function show(Setoran $setoran)
+    {
+        $this->ensureOwned($setoran);
+
+        $setoran->load(['santri.kelompok', 'santri.angkatan', 'surah', 'ustadz.user', 'validator']);
+
+        return view('ustadz.setorans.show', compact('setoran'));
+    }
+
+    public function edit(Setoran $setoran)
+    {
+        $this->ensureOwned($setoran);
+        $ustadz = $this->ustadzOrFail();
+
+        $kelompoks = $ustadz->kelompoks()
+            ->with(['santris' => fn ($q) => $q->where('status_aktif', 'aktif')->orderBy('nama')])
+            ->orderBy('nama')
+            ->get();
+
+        $setoran->loadMissing(['santri.kelompok', 'santri.angkatan', 'surah']);
+
+        return view('ustadz.setorans.edit', [
+            'title' => 'Edit Setoran',
+            'pageTitle' => 'Edit Setoran',
+            'setoran' => $setoran,
+            'kelompoks' => $kelompoks,
+            'selectedSantri' => $setoran->santri,
+            'santriContext' => $setoran->santri ? $this->buildSantriContext($setoran->santri) : null,
+            'todayStats' => $this->buildTodayStats($ustadz->kelompoks->pluck('id')),
+            'juzSurahMap' => $this->buildJuzSurahMap(),
+        ]);
+    }
+
+    public function update(Request $request, Setoran $setoran)
+    {
+        $this->ensureOwned($setoran);
+        $ustadz = $this->ustadzOrFail();
+        $kelompokIds = $ustadz->kelompoks->pluck('id')->all();
+
+        $validated = $this->validateSetoran($request, $kelompokIds);
+
+        $validated['is_draft'] = false;
+        $validated['status'] = 'approved';
+        $validated['validated_by'] = Auth::id();
+        $validated['validated_at'] = now();
+
+        $setoran->update($validated);
+
+        return redirect()
+            ->route('ustadz.setorans.index')
+            ->with('success', 'Setoran berhasil diperbarui.');
+    }
+
+    public function destroy(Setoran $setoran)
+    {
+        $this->ensureOwned($setoran);
+
+        $setoran->delete();
+
+        return redirect()
+            ->route('ustadz.setorans.index')
+            ->with('success', 'Setoran berhasil dihapus.');
+    }
+
+    public function sukses(Setoran $setoran)
+    {
+        $this->ensureOwned($setoran);
+
+        $setoran->load(['santri.kelompok', 'santri.angkatan', 'surah', 'ustadz.user']);
+
+        return view('ustadz.setorans.sukses', compact('setoran'));
+    }
+
+    private function ustadzOrFail(): Ustadz
+    {
+        $ustadz = Auth::user()->ustadz;
+
+        abort_if(! $ustadz, 403, 'Akun ustadz tidak ditemukan.');
+
+        return $ustadz;
+    }
+
+    private function ensureOwned(Setoran $setoran): void
+    {
+        $kelompokIds = Auth::user()->ustadz?->kelompoks->pluck('id')->all() ?? [];
+        $setoran->loadMissing('santri');
+
+        if (! $setoran->santri || ! in_array($setoran->santri->kelompok_id, $kelompokIds, true)) {
+            abort(403, 'Anda tidak memiliki akses ke setoran ini.');
+        }
+    }
+
+    private function buildSantriContext(Santri $santri): array
+    {
+        $approved = Setoran::query()
+            ->where('santri_id', $santri->id)
+            ->where('status', 'approved')
+            ->where('is_draft', false);
+
+        $lastSetoran = (clone $approved)
+            ->with('surah')
+            ->latest('tanggal')
+            ->latest('id')
+            ->first();
+
+        $attendanceTotal = Absensi::where('santri_id', $santri->id)->count();
+        $attendanceHadir = Absensi::where('santri_id', $santri->id)
+            ->where('status', 'hadir')
+            ->count();
+
+        $averageScore = (clone $approved)
+            ->whereNotNull('skor')
+            ->avg('skor');
+
+        $progressJuz = $santri->progress_juz ?? 0;
+
+        return [
+            'last_setoran' => $lastSetoran,
+            'attendance_rate' => $attendanceTotal > 0
+                ? (int) round(($attendanceHadir / $attendanceTotal) * 100)
+                : null,
+            'attendance_total' => $attendanceTotal,
+            'average_score' => $averageScore !== null ? round((float) $averageScore, 1) : null,
+            'total_setoran' => (clone $approved)->count(),
+            'progress_juz' => $progressJuz,
+            'progress_percent' => $santri->progress_percent,
+            'next_juz' => min(30, $progressJuz + 1),
+        ];
+    }
+
+    private function buildTodayStats($kelompokIds): array
+    {
+        $totalSantri = Santri::whereIn('kelompok_id', $kelompokIds)
+            ->where('status_aktif', 'aktif')
+            ->count();
+
+        $sudahSetor = Setoran::whereIn(
+            'santri_id',
+            Santri::whereIn('kelompok_id', $kelompokIds)
+                ->where('status_aktif', 'aktif')
+                ->select('id')
+        )
+            ->whereDate('tanggal', today())
+            ->where('is_draft', false)
+            ->distinct()
+            ->count('santri_id');
+
+        return [
+            'total_santri' => $totalSantri,
+            'sudah_setor' => $sudahSetor,
+            'belum_setor' => max(0, $totalSantri - $sudahSetor),
+            'percent' => $totalSantri > 0 ? (int) round(($sudahSetor / $totalSantri) * 100) : 0,
+        ];
+    }
+
+    private function validateSetoran(Request $request, array $kelompokIds): array
+    {
+        $validated = $request->validate([
+            'santri_id' => ['required', Rule::exists('santris', 'id')->whereIn('kelompok_id', $kelompokIds)],
+            'tanggal' => 'required|date|before_or_equal:today',
+            'jenis' => 'required|in:ziyadah,murajaah,tasmi',
+            'surah_id' => 'required|exists:surahs,id',
+            'juz_pilih' => 'required|integer|min:1|max:30',
+            'ayat_awal' => 'required|integer|min:1',
+            'ayat_akhir' => 'required|integer|min:1',
+            'nilai' => 'required|in:maqbul,jayyid,jayyid_jiddan,mumtaz',
+            'skor' => 'nullable|integer|min:0|max:100',
+            'tuntas_lanjut' => 'boolean',
+            'catatan' => 'nullable|string|max:1000',
+        ], [
+            'santri_id.exists' => 'Santri tidak termasuk kelompok yang Anda ampu.',
+        ]);
+
+        $juz = (int) $validated['juz_pilih'];
+        $juzSurahMap = $this->buildJuzSurahMap();
+        $items = $juzSurahMap[$juz] ?? null;
+
+        if (! $items) {
+            throw ValidationException::withMessages([
+                'juz_pilih' => 'Pembagian juz belum tersedia. Hubungi admin untuk melengkapi data juz.',
+            ]);
+        }
+
+        $surah = Surah::findOrFail($validated['surah_id']);
+        $item = collect($items)->firstWhere('id', (int) $validated['surah_id']);
+
+        if (! $item) {
+            throw ValidationException::withMessages([
+                'surah_id' => "Surah ini tidak termasuk Juz {$juz}. Silakan pilih juz yang sesuai.",
+            ]);
+        }
+
+        if ((int) $validated['ayat_akhir'] > $surah->jumlah_ayat) {
+            throw ValidationException::withMessages([
+                'ayat_akhir' => "Ayat akhir tidak boleh melebihi {$surah->jumlah_ayat}.",
+            ]);
+        }
+
+        if ((int) $validated['ayat_awal'] > (int) $validated['ayat_akhir']) {
+            throw ValidationException::withMessages([
+                'ayat_awal' => 'Ayat awal tidak boleh melebihi ayat akhir.',
+            ]);
+        }
+
+        if ((int) $validated['ayat_awal'] < $item['min'] || (int) $validated['ayat_akhir'] > $item['max']) {
+            throw ValidationException::withMessages([
+                'ayat_awal' => "Rentang ayat harus berada di antara {$item['min']} dan {$item['max']} untuk Juz {$juz}.",
+            ]);
+        }
+
+        $validated['juz'] = $juz;
+        $validated['tuntas_lanjut'] = $request->boolean('tuntas_lanjut');
+        unset($validated['juz_pilih']);
+
+        return $validated;
     }
 
     private function buildJuzSurahMap(): array
     {
         $surahs = Surah::orderBy('nomor')->get(['id', 'nomor', 'nama_latin', 'jumlah_ayat']);
-        $starts = JuzStart::with('surah:id,nomor')->orderBy('juz')->get();
+        $starts = JuzStart::with('surah:id,nomor')->orderBy('juz')->get()
+            ->filter(fn ($start) => $start->surah !== null)
+            ->values();
+
+        if ($surahs->isEmpty() || $starts->isEmpty()) {
+            return [];
+        }
 
         $map = [];
+
         foreach ($starts as $i => $start) {
             $juz = $start->juz;
             $startSurahNomor = $start->surah->nomor;
@@ -78,8 +336,14 @@ class SetoranController extends Controller
 
             if ($i + 1 < $starts->count()) {
                 $next = $starts[$i + 1];
-                $endSurahNomor = $next->surah->nomor;
-                $endAyat = $next->ayat - 1;
+
+                if ($next->ayat > 1) {
+                    $endSurahNomor = $next->surah->nomor;
+                    $endAyat = $next->ayat - 1;
+                } else {
+                    $endSurahNomor = max(1, $next->surah->nomor - 1);
+                    $endAyat = (int) ($surahs->firstWhere('nomor', $endSurahNomor)?->jumlah_ayat ?? 0);
+                }
             } else {
                 $last = $surahs->last();
                 $endSurahNomor = $last->nomor;
@@ -87,201 +351,32 @@ class SetoranController extends Controller
             }
 
             $items = [];
-            foreach ($surahs as $s) {
-                if ($s->nomor < $startSurahNomor || $s->nomor > $endSurahNomor) {
+
+            foreach ($surahs as $surah) {
+                if ($surah->nomor < $startSurahNomor || $surah->nomor > $endSurahNomor) {
                     continue;
                 }
-                $min = ($s->nomor === $startSurahNomor) ? $startAyat : 1;
-                $max = ($s->nomor === $endSurahNomor) ? $endAyat : $s->jumlah_ayat;
+
+                $min = $surah->nomor === $startSurahNomor ? $startAyat : 1;
+                $max = $surah->nomor === $endSurahNomor ? $endAyat : $surah->jumlah_ayat;
+
+                if ($max < $min) {
+                    continue;
+                }
+
                 $items[] = [
-                    'id' => $s->id,
-                    'nomor' => $s->nomor,
-                    'nama' => $s->nama_latin,
-                    'jumlah_ayat' => $s->jumlah_ayat,
+                    'id' => $surah->id,
+                    'nomor' => $surah->nomor,
+                    'nama' => $surah->nama_latin,
+                    'jumlah_ayat' => $surah->jumlah_ayat,
                     'min' => $min,
                     'max' => $max,
                 ];
             }
+
             $map[$juz] = $items;
         }
+
         return $map;
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'santri_id' => 'required|exists:santris,id',
-            'tanggal' => 'required|date|before_or_equal:today',
-            'jenis' => 'required|in:ziyadah,murajaah,tasmi',
-            'surah_id' => 'required|exists:surahs,id',
-            'juz_pilih' => 'required|integer|min:1|max:30',
-            'ayat_awal' => 'required|integer|min:1',
-            'ayat_akhir' => 'required|integer|min:1',
-            'nilai' => 'required|in:maqbul,jayyid,jayyid_jiddan,mumtaz',
-            'skor' => 'nullable|integer|min:0|max:100',
-            'is_draft' => 'boolean',
-            'catatan' => 'nullable|string|max:1000',
-        ]);
-
-        $surah = Surah::findOrFail($validated['surah_id']);
-        $juzSurahMap = $this->buildJuzSurahMap();
-
-        if (!$juzSurahMap[$validated['juz_pilih']] || !collect($juzSurahMap[$validated['juz_pilih']])->contains('id', $validated['surah_id'])) {
-            return back()->withErrors(['surah_id' => "Surah ini tidak termasuk Juz {$validated['juz_pilih']}. Silakan pilih Juz yang sesuai."])->withInput();
-        }
-
-        if ($validated['ayat_akhir'] > $surah->jumlah_ayat) {
-            return back()->withErrors(['ayat_akhir' => "Ayat akhir tidak boleh melebihi {$surah->jumlah_ayat}."])->withInput();
-        }
-
-        if ($validated['ayat_awal'] > $validated['ayat_akhir']) {
-            return back()->withErrors(['ayat_awal' => 'Ayat awal tidak boleh melebihi ayat akhir.'])->withInput();
-        }
-
-        $juzList = $juzSurahMap[$validated['juz_pilih']];
-        $item = collect($juzList)->firstWhere('id', $validated['surah_id']);
-        if ($validated['ayat_awal'] < $item['min'] || $validated['ayat_akhir'] > $item['max']) {
-            return back()->withErrors([
-                'ayat_awal' => "Jumlah ayat harus berada di antara {$item['min']} dan {$item['max']} untuk juz {$validated['juz_pilih']} pilihan.",
-            ])->withInput();
-        }
-
-        $ustadz = Auth::user()->ustadz;
-        if (!$ustadz) {
-            abort(403, 'Akun ustadz tidak ditemukan.');
-        }
-
-        $validated['ustadz_id'] = $ustadz->id;
-        $validated['juz'] = (int) $validated['juz_pilih'];
-        unset($validated['juz_pilih']);
-        $validated['is_draft'] = $request->boolean('is_draft');
-        $validated['status'] = 'pending';
-
-        $setoran = Setoran::create($validated);
-
-        if ($setoran->is_draft) {
-            return redirect()->route('ustadz.setorans.index')
-                ->with('success', 'Draft setoran tersimpan.');
-        }
-
-        return redirect()->route('ustadz.setorans.sukses', $setoran)
-            ->with('success', 'Setoran berhasil ditambahkan.');
-    }
-
-    public function show(Setoran $setoran)
-    {
-        $ustadz = Auth::user()->ustadz;
-        $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
-
-        if (!$setoran->santri || !in_array($setoran->santri->kelompok_id, $kelompokIds)) {
-            abort(403, 'Anda tidak memiliki akses ke setoran ini.');
-        }
-
-        $setoran->load(['santri', 'surah', 'ustadz', 'validator']);
-
-        return view('ustadz.setorans.show', compact('setoran'));
-    }
-
-    public function edit(Setoran $setoran)
-    {
-        if ($setoran->status !== 'pending' || $setoran->is_draft) {
-            return redirect()->route('ustadz.setorans.index')
-                ->with('error', 'Setoran yang sudah divalidasi atau draft tidak dapat diedit.');
-        }
-
-        $ustadz = Auth::user()->ustadz;
-        $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
-
-        if (!$setoran->santri || !in_array($setoran->santri->kelompok_id, $kelompokIds)) {
-            abort(403, 'Anda tidak memiliki akses ke setoran ini.');
-        }
-
-        $santris = Santri::whereIn('kelompok_id', $kelompokIds)
-            ->where('status_aktif', 'aktif')
-            ->orderBy('nama')
-            ->get(['id', 'nama', 'nis']);
-
-        $juzSurahMap = $this->buildJuzSurahMap();
-
-        return view('ustadz.setorans.edit', compact('setoran', 'santris', 'juzSurahMap'));
-    }
-
-    public function update(Request $request, Setoran $setoran)
-    {
-        if ($setoran->status !== 'pending' || $setoran->is_draft) {
-            return redirect()->route('ustadz.setorans.index')
-                ->with('error', 'Setoran yang sudah divalidasi atau draft tidak dapat diubah.');
-        }
-
-        $validated = $request->validate([
-            'santri_id' => 'required|exists:santris,id',
-            'tanggal' => 'required|date|before_or_equal:today',
-            'jenis' => 'required|in:ziyadah,murajaah,tasmi',
-            'surah_id' => 'required|exists:surahs,id',
-            'juz_pilih' => 'required|integer|min:1|max:30',
-            'ayat_awal' => 'required|integer|min:1',
-            'ayat_akhir' => 'required|integer|min:1',
-            'nilai' => 'required|in:maqbul,jayyid,jayyid_jiddan,mumtaz',
-            'skor' => 'nullable|integer|min:0|max:100',
-            'is_draft' => 'boolean',
-            'catatan' => 'nullable|string|max:1000',
-        ]);
-
-        $surah = Surah::findOrFail($validated['surah_id']);
-        $juzSurahMap = $this->buildJuzSurahMap();
-
-        if (!$juzSurahMap[$validated['juz_pilih']] || !collect($juzSurahMap[$validated['juz_pilih']])->contains('id', $validated['surah_id'])) {
-            return back()->withErrors(['surah_id' => "Surah ini tidak termasuk Juz {$validated['juz_pilih']}. Silakan pilih Juz yang sesuai."])->withInput();
-        }
-
-        if ($validated['ayat_akhir'] > $surah->jumlah_ayat) {
-            return back()->withErrors(['ayat_akhir' => "Ayat akhir tidak boleh melebihi {$surah->jumlah_ayat}."])->withInput();
-        }
-
-        if ($validated['ayat_awal'] > $validated['ayat_akhir']) {
-            return back()->withErrors(['ayat_awal' => 'Ayat awal tidak boleh melebihi ayat akhir.'])->withInput();
-        }
-
-        $juzList = $juzSurahMap[$validated['juz_pilih']];
-        $item = collect($juzList)->firstWhere('id', $validated['surah_id']);
-        if ($validated['ayat_awal'] < $item['min'] || $validated['ayat_akhir'] > $item['max']) {
-            return back()->withErrors([
-                'ayat_awal' => "Jumlah ayat harus berada di antara {$item['min']} dan {$item['max']} untuk juz {$validated['juz_pilih']} pilihan.",
-            ])->withInput();
-        }
-
-        $validated['juz'] = (int) $validated['juz_pilih'];
-        unset($validated['juz_pilih']);
-        $validated['is_draft'] = $request->boolean('is_draft');
-
-        $setoran->update($validated);
-
-        return redirect()->route('ustadz.setorans.index')
-            ->with('success', 'Setoran berhasil diperbarui.');
-    }
-
-    public function destroy(Setoran $setoran)
-    {
-        if ($setoran->status !== 'pending' || $setoran->is_draft) {
-            return redirect()->route('ustadz.setorans.index')
-                ->with('error', 'Setoran yang sudah divalidasi atau draft tidak dapat dihapus.');
-        }
-
-        $ustadz = Auth::user()->ustadz;
-        $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
-
-        if (!$setoran->santri || !in_array($setoran->santri->kelompok_id, $kelompokIds)) {
-            abort(403, 'Anda tidak memiliki akses ke setoran ini.');
-        }
-
-        $setoran->delete();
-
-        return redirect()->route('ustadz.setorans.index')
-            ->with('success', 'Setoran berhasil dihapus.');
-        }
-
-    public function sukses(Setoran $setoran)
-    {
-        return view('ustadz.setorans.sukses', ['setoran' => $setoran]);
     }
 }

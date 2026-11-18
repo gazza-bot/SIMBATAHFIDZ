@@ -228,7 +228,6 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
 
-            // Pending setoran (belum divalidasi)
             Setoran::create([
                 'santri_id' => $santri->id,
                 'ustadz_id' => $ustadz->id,
@@ -239,12 +238,13 @@ class DatabaseSeeder extends Seeder
                 'ayat_awal' => 1,
                 'ayat_akhir' => 15,
                 'nilai' => 'maqbul',
-                'catatan' => 'Pending setoran',
+                'catatan' => 'Setoran ziyadah juz 4',
                 'is_draft' => false,
-                'status' => 'pending',
+                'status' => 'approved',
+                'validated_by' => $ustadzUser->id,
+                'validated_at' => $now->copy()->subDays(2),
             ]);
 
-            // Pending tasmi
             Setoran::create([
                 'santri_id' => $santri->id,
                 'ustadz_id' => $ustadz->id,
@@ -257,7 +257,9 @@ class DatabaseSeeder extends Seeder
                 'nilai' => 'jayyid_jiddan',
                 'catatan' => 'Tasmi pekan ini',
                 'is_draft' => false,
-                'status' => 'pending',
+                'status' => 'approved',
+                'validated_by' => $ustadzUser->id,
+                'validated_at' => $now->copy()->subDay(),
             ]);
         }
     }

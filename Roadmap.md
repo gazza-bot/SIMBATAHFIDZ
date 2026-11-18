@@ -23,8 +23,10 @@ Sistem Informasi Mutaba'ah & Belajar Al-Qur'an — Pondok Pesantren Darut Taqwa 
 
 ## Sprint 2 — Input Setoran (Ustadz)
 - [x] Form input setoran hafalan (santri, surah, ayat awal-akhir, nilai)
-- [x] Pilih Mutqin: cover penuh atau parsial
-- [x] Validasi setoran (approve/reject + catatan)
+- [x] UI dua kolom: kartu konteks santri, progres, kehadiran, rata nilai, dan setoran hari ini
+- [x] Indikator cover penuh surah (Mutqin) dihitung otomatis dari rentang ayat
+- [x] Setoran final langsung disetujui (auto-approve) dan masuk progres santri
+- [x] Halaman sukses dan daftar setoran responsif tanpa fitur draft
 
 ## Sprint 3 — Absensi Kelompok (Ustadz)
 - [ ] Presensi harian (Hadir/Izin/Sakit/Alpa)

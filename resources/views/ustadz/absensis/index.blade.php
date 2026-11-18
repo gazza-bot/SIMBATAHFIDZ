@@ -28,12 +28,12 @@
         </form>
     </div>
 
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4 p-2">
         <div>
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Total</p>
             <p class="text-2xl font-bold text-neutral-900">{{ $stats['total'] }}</p>
         </div>
-        <div>
+        <div class="text-right sm:text-left">
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Hadir</p>
             <p class="text-2xl font-bold text-success-600">{{ $stats['hadir'] }}</p>
         </div>
@@ -41,7 +41,7 @@
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Izin</p>
             <p class="text-2xl font-bold text-info-600">{{ $stats['izin'] }}</p>
         </div>
-        <div>
+        <div class="text-right sm:text-left">
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Sakit/Alpa</p>
             <p class="text-2xl font-bold text-warning-600">{{ $stats['sakit'] + $stats['alpa'] }}</p>
         </div>

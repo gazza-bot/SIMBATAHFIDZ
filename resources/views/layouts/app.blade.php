@@ -39,34 +39,34 @@
     // Sidebar: hanya admin, ustadz, kepala. Wali pakai bottom bar.
     $navigation = match ($role) {
         'admin' => [
-            ['label' => 'Dashboard', 'url' => '/admin/dashboard', 'active' => 'admin/dashboard', 'icon' => $iconDash],
-            ['label' => 'Data Santri', 'url' => '/admin/santris', 'active' => 'admin/santris', 'icon' => $iconUsers],
-            ['label' => 'Data Wali', 'url' => '/admin/walis', 'active' => 'admin/walis', 'icon' => $iconUsers],
-            ['label' => 'Data Ustadz', 'url' => '/admin/ustadzs', 'active' => 'admin/ustadzs', 'icon' => $iconUsers],
-            ['label' => 'Kelompok Halaqah', 'url' => '/admin/kelompoks', 'active' => 'admin/kelompoks', 'icon' => $iconGrid],
-            ['label' => 'Angkatan Kelas', 'url' => '/admin/angkatans', 'active' => 'admin/angkatans', 'icon' => $iconBook],
+            ['label' => 'Dashboard', 'url' => '/admin/dashboard', 'active' => 'admin.dashboard', 'icon' => $iconDash],
+            ['label' => 'Data Santri', 'url' => '/admin/santris', 'active' => 'admin.santris.*', 'icon' => $iconUsers],
+            ['label' => 'Data Wali', 'url' => '/admin/walis', 'active' => 'admin.walis.*', 'icon' => $iconUsers],
+            ['label' => 'Data Ustadz', 'url' => '/admin/ustadzs', 'active' => 'admin.ustadzs.*', 'icon' => $iconUsers],
+            ['label' => 'Kelompok Halaqah', 'url' => '/admin/kelompoks', 'active' => 'admin.kelompoks.*', 'icon' => $iconGrid],
+            ['label' => 'Angkatan Kelas', 'url' => '/admin/angkatans', 'active' => 'admin.angkatans.*', 'icon' => $iconBook],
         ],
         'ustadz' => [
-            ['label' => 'Dasbor Halaqah', 'url' => '/ustadz/dashboard', 'active' => 'ustadz/dashboard', 'icon' => $iconDash],
-            ['label' => 'Input Setoran', 'url' => '/ustadz/setorans', 'active' => 'ustadz.setorans.index', 'icon' => $iconList],
-            ['label' => 'Absensi Santri', 'url' => '/ustadz/absensis', 'active' => 'ustadz.absensis', 'icon' => $iconCheck],
-            ['label' => 'Rekap Capaian', 'url' => '/ustadz/rekap', 'active' => 'ustadz.rekap.index', 'icon' => $iconChart],
-            ['label' => 'Cetak Rapor', 'url' => '/ustadz/rapor', 'active' => 'ustadz.rapor.index', 'icon' => $iconPrinter],
-            ['label' => 'Murajaah Bulanan', 'url' => '/ustadz/murajaahs', 'active' => 'ustadz.murajaahs.index', 'icon' => $iconClock],
+            ['label' => 'Dasbor Halaqah', 'url' => '/ustadz/dashboard', 'active' => 'ustadz.dashboard', 'icon' => $iconDash],
+            ['label' => 'Input Setoran', 'url' => '/ustadz/setorans', 'active' => 'ustadz.setorans.*', 'icon' => $iconList],
+            ['label' => 'Absensi Santri', 'url' => '/ustadz/absensis', 'active' => 'ustadz.absensis.*', 'icon' => $iconCheck],
+            ['label' => 'Rekap Capaian', 'url' => '/ustadz/rekap', 'active' => 'ustadz.rekap.*', 'icon' => $iconChart],
+            ['label' => 'Cetak Rapor', 'url' => '/ustadz/rapor', 'active' => 'ustadz.rapor.*', 'icon' => $iconPrinter],
+            ['label' => 'Murajaah Bulanan', 'url' => '/ustadz/murajaahs', 'active' => 'ustadz.murajaahs.*', 'icon' => $iconClock],
         ],
         'kepala_tahfidz' => [
-            ['label' => 'Dashboard', 'url' => '/kepala/dashboard', 'active' => 'kepala/dashboard', 'icon' => $iconDash],
+            ['label' => 'Dashboard', 'url' => '/kepala/dashboard', 'active' => 'kepala.dashboard', 'icon' => $iconDash],
         ],
         default => [],
     };
 
     // Bottom bar mobile: diisi untuk ustadz
     $bottomNav = $role === 'ustadz' ? [
-        ['label' => 'Dasbor', 'url' => '/ustadz/dashboard', 'active' => 'ustadz/dashboard', 'icon' => $iconDash],
-        ['label' => 'Presensi', 'url' => '/ustadz/absensis', 'active' => 'ustadz.absensis', 'icon' => $iconCheck],
-        ['label' => 'Setoran', 'url' => '/ustadz/setorans', 'active' => 'ustadz.setorans.index', 'icon' => $iconList],
-        ['label' => 'Rekap', 'url' => '/ustadz/rekap', 'active' => 'ustadz.rekap.index', 'icon' => $iconChart],
-        ['label' => 'Rapor', 'url' => '/ustadz/rapor', 'active' => 'ustadz.rapor.index', 'icon' => $iconPrinter],
+        ['label' => 'Dasbor', 'url' => '/ustadz/dashboard', 'active' => 'ustadz.dashboard', 'icon' => $iconDash],
+        ['label' => 'Presensi', 'url' => '/ustadz/absensis', 'active' => 'ustadz.absensis.*', 'icon' => $iconCheck],
+        ['label' => 'Setoran', 'url' => '/ustadz/setorans', 'active' => 'ustadz.setorans.*', 'icon' => $iconList],
+        ['label' => 'Rekap', 'url' => '/ustadz/rekap', 'active' => 'ustadz.rekap.*', 'icon' => $iconChart],
+        ['label' => 'Rapor', 'url' => '/ustadz/rapor', 'active' => 'ustadz.rapor.*', 'icon' => $iconPrinter],
     ] : [];
 
     $hasSidebar = $role && $role !== 'wali';
@@ -91,8 +91,8 @@
                 <nav class="flex-1 p-4 space-y-1 overflow-y-auto" aria-label="Menu utama">
                     @foreach ($navigation as $item)
                         <a href="{{ $item['url'] }}"
-                           class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors {{ request()->is($item['active']) || request()->is($item['active'] . '/*') ? 'bg-primary-50 text-primary-600' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50' }}"
-                           @if (request()->is($item['active']) || request()->is($item['active'] . '/*')) aria-current="page" @endif>
+                           class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs($item['active']) ? 'bg-primary-50 text-primary-600' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50' }}"
+                           @if (request()->routeIs($item['active'])) aria-current="page" @endif>
                             {!! $item['icon'] !!}
                             {{ $item['label'] }}
                         </a>
@@ -161,8 +161,8 @@
             <div class="grid grid-cols-5 gap-1 px-2 py-1">
                 @foreach ($bottomNav as $item)
                     <a href="{{ $item['url'] }}"
-                       class="flex flex-col items-center gap-0.5 px-1 py-2 rounded-xl min-h-[48px] justify-center transition-colors {{ request()->is($item['active']) || request()->is($item['active'] . '/*') ? 'bg-primary-50 text-primary-600' : 'text-neutral-500 hover:text-neutral-700' }}"
-                       @if (request()->is($item['active']) || request()->is($item['active'] . '/*')) aria-current="page" @endif>
+                       class="flex flex-col items-center gap-0.5 px-1 py-2 rounded-xl min-h-[48px] justify-center transition-colors {{ request()->routeIs($item['active']) ? 'bg-primary-50 text-primary-600' : 'text-neutral-500 hover:text-neutral-700' }}"
+                       @if (request()->routeIs($item['active'])) aria-current="page" @endif>
                         {!! $item['icon'] !!}
                         <span class="text-[11px] font-medium">{{ $item['label'] }}</span>
                     </a>

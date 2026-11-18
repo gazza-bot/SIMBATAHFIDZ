@@ -144,9 +144,9 @@ sm 640, md 768, lg 1024, xl 1280, 2xl 1536
 | Sprint | Scope | Status |
 |--------|-------|--------|
 | 0 | Foundation: Laravel, Tailwind, auth, design system, seed, login, placeholder dashboards | Done |
-| 1 | Kelola Data Master (Admin): CRUD santri/wali/ustadz/kelompok/angkatan | Next |
-| 2 | Input Setoran (Ustadz): form, Mutqin toggle, validation | Pending |
-| 3 | Absensi Kelompok (Ustadz): presensi, rekap | Pending |
+| 1 | Kelola Data Master (Admin): CRUD santri/wali/ustadz/kelompok/angkatan | Done |
+| 2 | Input Setoran (Ustadz): form, cover penuh otomatis, auto-approve | Done |
+| 3 | Absensi Kelompok (Ustadz): presensi, rekap | Next |
 | 4 | Dasbor Kepala: stats + Chart.js, attention list | Pending |
 | 5 | Dasbor Wali: mutaba'ah multi-anak, riwayat | Pending |
 | 6 | Peta Hafalan 30 Juz | Pending |
@@ -317,7 +317,7 @@ Every data view needs empty, loading, error states (R-27). Placeholder dashboard
 
 ---
 
-*Reflects Sprint 0 completion (commit `f51a7fa`). Update after each sprint.*
+*Reflects Sprint 2 completion: input setoran ustadz dengan auto-approve dan tanpa draft. Update after each sprint.*
 
 <!-- antislop:start -->
 ## antislop

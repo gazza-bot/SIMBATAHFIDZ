@@ -95,6 +95,39 @@ class Setoran extends Model
             : "Ayat {$this->ayat_awal}-{$this->ayat_akhir}";
     }
 
+    public function getJumlahAyatAttribute(): int
+    {
+        return max(0, (int) $this->ayat_akhir - (int) $this->ayat_awal + 1);
+    }
+
+    public function getIsCoverPenuhAttribute(): bool
+    {
+        return $this->surah !== null
+            && (int) $this->ayat_awal === 1
+            && (int) $this->ayat_akhir === (int) $this->surah->jumlah_ayat;
+    }
+
+    public function getJenisLabelAttribute(): string
+    {
+        return match ($this->jenis) {
+            'ziyadah' => 'Ziyadah',
+            'murajaah' => 'Murajaah',
+            'tasmi' => "Tasmi'",
+            default => ucfirst((string) $this->jenis),
+        };
+    }
+
+    public function getNilaiLabelAttribute(): string
+    {
+        return match ($this->nilai) {
+            'maqbul' => 'Maqbul',
+            'jayyid' => 'Jayyid',
+            'jayyid_jiddan' => 'Jayyid Jiddan',
+            'mumtaz' => 'Mumtaz',
+            default => ucfirst(str_replace('_', ' ', (string) $this->nilai)),
+        };
+    }
+
     public static function resolveJuz(int $surahNomor, int $ayat): int
     {
         $start = self::query()
