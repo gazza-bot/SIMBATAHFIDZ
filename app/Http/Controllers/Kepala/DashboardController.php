@@ -102,11 +102,15 @@ class DashboardController extends Controller
             $selectedAngkatan = null;
         }
 
-        $coverage = $this->buildJuzCoverage($santriIds, $selectedAngkatan);
         $coverageScopeSantris = $selectedAngkatan
             ? $santris->where('angkatan_id', $selectedAngkatan)
             : $santris;
         $coverageScopeIds = $coverageScopeSantris->pluck('id');
+
+        $juzRanges = $this->buildProgressDistribution($progressMap, $coverageScopeIds);
+        $belumMulai = $coverageScopeIds
+            ->filter(fn ($id) => ($progressMap[$id] ?? 0) === 0)
+            ->count();
 
         $coverageFooter = [
             'rata_juz' => $this->averageProgress($progressMap, $coverageScopeIds),
@@ -158,7 +162,8 @@ class DashboardController extends Controller
             'halaqahMonitor' => $halaqahMonitor,
             'angkatanList' => $angkatanList,
             'selectedAngkatan' => $selectedAngkatan,
-            'juzCoverage' => $coverage,
+            'juzRanges' => $juzRanges,
+            'belumMulai' => $belumMulai,
             'coverageFooter' => $coverageFooter,
             'activities' => $activities,
             'attention' => $attention,
@@ -271,37 +276,28 @@ class DashboardController extends Controller
         });
     }
 
-    private function buildJuzCoverage(Collection $santriIds, ?int $angkatanId): array
+    private function buildProgressDistribution(Collection $progressMap, Collection $scopeIds): array
     {
-        $query = Setoran::query()
-            ->join('surahs', 'surahs.id', '=', 'setorans.surah_id')
-            ->join('santris', 'santris.id', '=', 'setorans.santri_id')
-            ->whereIn('setorans.santri_id', $santriIds)
-            ->where('setorans.status', 'approved')
-            ->where('setorans.jenis', 'ziyadah')
-            ->where('setorans.ayat_awal', 1)
-            ->whereColumn('setorans.ayat_akhir', 'surahs.jumlah_ayat');
+        $ranges = [];
 
-        if ($angkatanId) {
-            $query->where('santris.angkatan_id', $angkatanId);
+        for ($start = 1; $start <= 30; $start += 5) {
+            $end = $start + 4;
+
+            $count = $scopeIds->filter(function ($id) use ($progressMap, $start, $end) {
+                $progress = (int) ($progressMap[$id] ?? 0);
+
+                return $progress >= $start && $progress <= $end;
+            })->count();
+
+            $ranges[] = [
+                'label' => "Juz {$start}-{$end}",
+                'from' => $start,
+                'to' => $end,
+                'count' => $count,
+            ];
         }
 
-        $counts = $query
-            ->selectRaw('setorans.juz as juz, count(distinct setorans.santri_id) as santri_count')
-            ->groupBy('setorans.juz')
-            ->pluck('santri_count', 'juz');
-
-        $denominator = $angkatanId
-            ? Santri::where('angkatan_id', $angkatanId)->where('status_aktif', 'aktif')->count()
-            : Santri::where('status_aktif', 'aktif')->count();
-
-        $coverage = [];
-        for ($juz = 1; $juz <= 30; $juz++) {
-            $count = (int) ($counts[$juz] ?? 0);
-            $coverage[$juz] = $denominator > 0 ? (int) round(($count / $denominator) * 100) : 0;
-        }
-
-        return $coverage;
+        return $ranges;
     }
 
     private function buildAttention(
