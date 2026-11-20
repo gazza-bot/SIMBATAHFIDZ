@@ -24,7 +24,6 @@ class WaliController extends Controller
         }
 
         $totalWali = (clone $query)->count();
-        $totalAktif = (clone $query)->whereHas('user', fn($q) => $q->where('status_aktif', 'aktif'))->count();
 
         $walis = $query->latest()->paginate(15)->withQueryString();
 
@@ -35,7 +34,7 @@ class WaliController extends Controller
             'filters' => $request->only(['search']),
             'summary' => [
                 'total' => $totalWali,
-                'aktif' => $totalAktif,
+                'aktif' => $totalWali,
             ],
         ];
 
