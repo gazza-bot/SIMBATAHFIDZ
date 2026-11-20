@@ -22,19 +22,19 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <x-card padding="sm">
+            <x-card padding="lg">
                 <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Total Santri</p>
                 <p class="mt-2 text-2xl font-bold text-neutral-900">{{ $kelompoks->total() }}</p>
             </x-card>
-            <x-card padding="sm">
+            <x-card padding="lg">
                 <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Aktif</p>
                 <p class="mt-2 text-2xl font-bold text-success-600">{{ $kelompoks->where('status_aktif','aktif')->count() }}</p>
             </x-card>
-            <x-card padding="sm">
+            <x-card padding="lg">
                 <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Nonaktif</p>
                 <p class="mt-2 text-2xl font-bold text-error-600">{{ $kelompoks->where('status_aktif','nonaktif')->count() }}</p>
             </x-card>
-            <x-card padding="sm">
+            <x-card padding="lg">
                 <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Lulus</p>
                 <p class="mt-2 text-2xl font-bold text-secondary-600">{{ $kelompoks->where('status_aktif','lulus')->count() }}</p>
             </x-card>
