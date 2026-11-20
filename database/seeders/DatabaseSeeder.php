@@ -26,14 +26,14 @@ class DatabaseSeeder extends Seeder
         $this->call(SurahSeeder::class);
 
         // 2. Angkatan
-        $angkatan = Angkatan::create([
-            'nama' => '2024/2025',
-            'tahun_mulai' => 2024,
-            'status_aktif' => true,
-        ]);
+        $angkatans = collect([
+            ['nama' => '2022/2023', 'tahun_mulai' => 2022, 'status_aktif' => true],
+            ['nama' => '2023/2024', 'tahun_mulai' => 2023, 'status_aktif' => true],
+            ['nama' => '2024/2025', 'tahun_mulai' => 2024, 'status_aktif' => true],
+        ])->map(fn ($data) => Angkatan::create($data));
 
         // 3. Users & Roles
-        $adminUser = User::create([
+        User::create([
             'name' => 'Admin Pesantren',
             'username' => 'admin',
             'password' => bcrypt('password'),
@@ -41,92 +41,125 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $kepalaUser = User::create([
-            'name' => 'Kepala Tahfidz',
+            'name' => 'Ust. Ahmad Dahlan, Lc.',
             'username' => 'kepala',
             'password' => bcrypt('password'),
             'role' => 'kepala_tahfidz',
         ]);
         KepalaTahfidz::create([
             'user_id' => $kepalaUser->id,
-            'nama' => 'Kepala Tahfidz',
+            'nama' => 'Ust. Ahmad Dahlan, Lc.',
         ]);
 
-        $ustadzUser = User::create([
-            'name' => 'Ustadz Ahmad',
-            'username' => 'ustadz',
-            'password' => bcrypt('password'),
-            'role' => 'ustadz',
-        ]);
-        $ustadz = Ustadz::create([
-            'user_id' => $ustadzUser->id,
-            'nip' => '198001012005011001',
-            'nama' => 'Ustadz Ahmad',
-            'telepon' => '081234567890',
-        ]);
-
-        $waliUser = User::create([
-            'name' => 'Bapak Santri',
-            'username' => 'wali',
-            'password' => bcrypt('password'),
-            'role' => 'wali',
-        ]);
-        $wali = Wali::create([
-            'user_id' => $waliUser->id,
-            'nama' => 'Bapak Santri',
-            'telepon' => '081234567891',
-            'alamat' => 'Ponorogo, Jawa Timur',
-        ]);
-
-        // 4. Kelompok
-        $kelompok = Kelompok::create([
-            'nama' => 'Halaqah A',
-            'ustadz_id' => $ustadz->id,
-            'angkatan_id' => $angkatan->id,
-            'deskripsi' => 'Halaqah pemula untuk santri baru',
-        ]);
-
-        // 5. Santri (10 santri)
-        $santriData = [
-            ['nis' => '2024001', 'nama' => 'Ahmad Fauzi', 'tanggal_masuk' => '2024-07-01'],
-            ['nis' => '2024002', 'nama' => 'Muhammad Rizki', 'tanggal_masuk' => '2024-07-01'],
-            ['nis' => '2024003', 'nama' => 'Abdul Rahman', 'tanggal_masuk' => '2024-07-01'],
-            ['nis' => '2024004', 'nama' => 'Fathur Rohman', 'tanggal_masuk' => '2024-07-01'],
-            ['nis' => '2024005', 'nama' => 'Zainal Abidin', 'tanggal_masuk' => '2024-07-01'],
-            ['nis' => '2024006', 'nama' => 'Muhammad Iqbal', 'tanggal_masuk' => '2024-07-15'],
-            ['nis' => '2024007', 'nama' => 'Ahmad Syauqi', 'tanggal_masuk' => '2024-07-15'],
-            ['nis' => '2024008', 'nama' => 'Abdul Malik', 'tanggal_masuk' => '2024-08-01'],
-            ['nis' => '2024009', 'nama' => 'Muhammad Fadhil', 'tanggal_masuk' => '2024-08-01'],
-            ['nis' => '2024010', 'nama' => 'Ahmad Zaki', 'tanggal_masuk' => '2024-08-01'],
+        $ustadzDefs = [
+            ['name' => 'Ustadz Ahmad', 'username' => 'ustadz', 'nip' => '198001012005011001', 'telepon' => '081234567890'],
+            ['name' => 'Ust. Muhammad Wildan, S.Pd.I', 'username' => 'ustadz2', 'nip' => '198502022010011002', 'telepon' => '081234567891'],
+            ['name' => 'Ust. Salman Al-Farisi, Lc.', 'username' => 'ustadz3', 'nip' => '198703032012011003', 'telepon' => '081234567892'],
+            ['name' => 'Ust. Rayhan Abdurrahman, M.Ag', 'username' => 'ustadz4', 'nip' => '198904042014011004', 'telepon' => '081234567893'],
+            ['name' => 'Ust. Fathur Rabbani', 'username' => 'ustadz5', 'nip' => '199105052016011005', 'telepon' => '081234567894'],
         ];
 
-        $santris = [];
-        foreach ($santriData as $index => $data) {
-            $santri = Santri::create([
-                'nis' => $data['nis'],
-                'nama' => $data['nama'],
-                'angkatan_id' => $angkatan->id,
-                'kelompok_id' => $kelompok->id,
-                'wali_id' => $index === 0 ? $wali->id : null,
-                'status_aktif' => 'aktif',
-                'tanggal_masuk' => $data['tanggal_masuk'],
+        $ustadzs = collect($ustadzDefs)->map(function ($def) {
+            $user = User::create([
+                'name' => $def['name'],
+                'username' => $def['username'],
+                'password' => bcrypt('password'),
+                'role' => 'ustadz',
             ]);
-            $santris[] = $santri;
+
+            return Ustadz::create([
+                'user_id' => $user->id,
+                'nip' => $def['nip'],
+                'nama' => $def['name'],
+                'telepon' => $def['telepon'],
+            ]);
+        });
+
+        // 4. Wali
+        $waliDefs = [
+            ['name' => 'Bapak Santri', 'username' => 'wali', 'telepon' => '081234567811', 'alamat' => 'Ponorogo, Jawa Timur'],
+            ['name' => 'Bapak Hasan', 'username' => 'wali2', 'telepon' => '081234567812', 'alamat' => 'Ponorogo, Jawa Timur'],
+            ['name' => 'Bapak Ridwan', 'username' => 'wali3', 'telepon' => '081234567813', 'alamat' => 'Madiun, Jawa Timur'],
+        ];
+
+        $walis = collect($waliDefs)->map(function ($def) {
+            $user = User::create([
+                'name' => $def['name'],
+                'username' => $def['username'],
+                'password' => bcrypt('password'),
+                'role' => 'wali',
+            ]);
+
+            return Wali::create([
+                'user_id' => $user->id,
+                'nama' => $def['name'],
+                'telepon' => $def['telepon'],
+                'alamat' => $def['alamat'],
+            ]);
+        });
+
+        // 5. Kelompok Halaqah
+        $kelompokDefs = [
+            ['nama' => 'Halaqah Imami Nafi\'', 'deskripsi' => 'Halaqah reguler tingkat menengah'],
+            ['nama' => 'Halaqah Imam \'Ashim', 'deskripsi' => 'Halaqah reguler tingkat menengah'],
+            ['nama' => 'Halaqah Ibn Al-Jazari', 'deskripsi' => 'Halaqah takhassus tahfidz intensif'],
+            ['nama' => 'Halaqah Imam Bukhari', 'deskripsi' => 'Halaqah reguler tingkat lanjut'],
+            ['nama' => 'Halaqah Imam Ibnu Katsir', 'deskripsi' => 'Halaqah reguler tingkat lanjut'],
+            ['nama' => 'Halaqah Imam Syatibi', 'deskripsi' => 'Halaqah persiapan tasmi akbar'],
+        ];
+
+        $kelompoks = collect($kelompokDefs)->map(function ($def, $index) use ($ustadzs, $angkatans) {
+            return Kelompok::create([
+                'nama' => $def['nama'],
+                'ustadz_id' => $ustadzs[$index % $ustadzs->count()]->id,
+                'angkatan_id' => $angkatans[$index % $angkatans->count()]->id,
+                'deskripsi' => $def['deskripsi'],
+            ]);
+        });
+
+        // 6. Santri (48 santri tersebar)
+        $firstNames = ['Ahmad', 'Muhammad', 'Abdul', 'Fathur', 'Zainal', 'Iqbal', 'Syauqi', 'Malik', 'Fadhil', 'Zaki', 'Rizki', 'Rahman', 'Hafidz', 'Thariq', 'Ibrahim', 'Yusuf', 'Umar', 'Ali', 'Hasan', 'Husain', 'Salman', 'Bilal', 'Anas', 'Farhan'];
+        $lastNames = ['Fauzi', 'Rizki', 'Rahman', 'Rohman', 'Abidin', 'Iqbal', 'Syauqi', 'Malik', 'Fadhil', 'Zaki', 'Hafidz', 'Naufal', 'Aziz', 'Karim', 'Hakim', 'Siddiq'];
+
+        $santris = collect();
+        for ($i = 0; $i < 48; $i++) {
+            $nama = $firstNames[$i % count($firstNames)] . ' ' . $lastNames[intdiv($i, count($firstNames)) % count($lastNames)];
+            $kelompok = $kelompoks[$i % $kelompoks->count()];
+
+            $waliId = null;
+            if ($i < 5) {
+                $waliId = $walis[0]->id;
+            } elseif ($i % 4 === 0) {
+                $waliId = $walis[$i % $walis->count()]->id;
+            }
+
+            $santris->push(Santri::create([
+                'nis' => '2024' . str_pad((string) ($i + 1), 3, '0', STR_PAD_LEFT),
+                'nama' => $nama,
+                'angkatan_id' => $kelompok->angkatan_id,
+                'kelompok_id' => $kelompok->id,
+                'wali_id' => $waliId,
+                'status_aktif' => 'aktif',
+                'tanggal_masuk' => Carbon::create(2024, 7 + ($i % 3), 1 + ($i % 20))->toDateString(),
+            ]));
         }
 
-        // 6. Juz starts
+        $santris = Santri::with('kelompok.ustadz')->get();
+
+        // 7. Juz starts
         $this->seedJuzStarts();
 
-        // 7. Setoran sample
-        $this->seedSetorans($santris, $ustadz, $ustadzUser);
+        // 8. Setoran sample
+        $this->seedSetorans($santris);
 
-        // 8. Absensi sample (multi sesi)
-        $this->seedAbsensi($santris, $ustadz);
+        // 9. Absensi sample (30 hari terakhir)
+        $this->seedAbsensi($santris);
 
-        // 9. Halaqah notes
-        $this->seedHalaqahNotes($kelompok, $ustadz);
+        // 10. Halaqah notes
+        $this->seedHalaqahNotes($kelompoks, $ustadzs);
 
-        // 10. Simaan schedules
-        $this->seedSimaanSchedules($santris, $ustadz);
+        // 11. Simaan schedules
+        $this->seedSimaanSchedules($santris);
 
         $this->command->info('Development data seeded successfully!');
         $this->command->info('Login credentials:');
@@ -176,140 +209,189 @@ class DatabaseSeeder extends Seeder
         }
     }
 
-    private function seedSetorans(array $santris, Ustadz $ustadz, User $ustadzUser): void
+    private function seedSetorans($santris): void
     {
         $now = Carbon::now();
-        $surahs = Surah::where('nomor', '<=', 10)->get();
+        $surahs = Surah::all();
 
-        foreach ($santris as $santri) {
-            // Ziyadah approved
-            foreach (range(1, 3) as $juz) {
-                $surah = $surahs->where('juz_mulai', '<=', $juz)->where('juz_selesai', '>=', $juz)->first();
-                if (!$surah) {
+        // Pola target juz: sebagian khatim, sebagian menengah, sebagian awal.
+        $progressPattern = [30, 30, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 10, 9, 8, 8, 7, 7, 6, 6, 5, 5, 4, 4, 3, 3, 3, 2, 2, 1, 1];
+        $nilaiPool = ['maqbul', 'jayyid', 'jayyid', 'jayyid_jiddan', 'jayyid_jiddan', 'mumtaz'];
+
+        foreach ($santris as $index => $santri) {
+            $ustadzId = $santri->kelompok?->ustadz_id;
+            if (! $ustadzId) {
+                continue;
+            }
+
+            $target = $progressPattern[$index % count($progressPattern)];
+
+            for ($juz = 1; $juz <= $target; $juz++) {
+                $surah = $surahs->first(fn ($s) => $s->juz_mulai <= $juz && $s->juz_selesai >= $juz);
+                if (! $surah) {
                     continue;
                 }
+
                 Setoran::create([
                     'santri_id' => $santri->id,
-                    'ustadz_id' => $ustadz->id,
-                    'tanggal' => $now->copy()->subDays(rand(1, 30)),
+                    'ustadz_id' => $ustadzId,
+                    'tanggal' => $now->copy()->subDays(rand(1, 150)),
                     'jenis' => 'ziyadah',
                     'juz' => $juz,
                     'surah_id' => $surah->id,
                     'ayat_awal' => 1,
                     'ayat_akhir' => $surah->jumlah_ayat,
-                    'nilai' => $this->randomNilai(),
+                    'nilai' => $nilaiPool[array_rand($nilaiPool)],
                     'catatan' => 'Setoran ziyadah juz ' . $juz,
                     'status' => 'approved',
-                    'validated_by' => $ustadzUser->id,
-                    'validated_at' => $now->copy()->subDays(rand(0, 5)),
+                    'validated_by' => $santri->kelompok->ustadz->user_id ?? null,
+                    'validated_at' => $now->copy()->subDays(rand(0, 30)),
                 ]);
             }
 
-            // Murajaah approved
-            foreach (range(1, 2) as $juz) {
-                $surah = $surahs->where('juz_mulai', '<=', $juz)->where('juz_selesai', '>=', $juz)->first();
-                if (!$surah) {
+            // Murajaah: 70% santri punya murajaah terbaru, sisanya tertunda.
+            if ($index % 10 < 7) {
+                $murajaahJuz = max(1, $target - 1);
+                $surah = $surahs->first(fn ($s) => $s->juz_mulai <= $murajaahJuz && $s->juz_selesai >= $murajaahJuz);
+                if ($surah) {
+                    Setoran::create([
+                        'santri_id' => $santri->id,
+                        'ustadz_id' => $ustadzId,
+                        'tanggal' => $now->copy()->subDays(rand(0, 10)),
+                        'jenis' => 'murajaah',
+                        'juz' => $murajaahJuz,
+                        'surah_id' => $surah->id,
+                        'ayat_awal' => 1,
+                        'ayat_akhir' => $surah->jumlah_ayat,
+                        'nilai' => $nilaiPool[array_rand($nilaiPool)],
+                        'catatan' => 'Murajaah juz ' . $murajaahJuz,
+                        'status' => 'approved',
+                        'validated_by' => $santri->kelompok->ustadz->user_id ?? null,
+                        'validated_at' => $now->copy()->subDays(rand(0, 5)),
+                    ]);
+                }
+            } elseif ($index % 2 === 0) {
+                $murajaahJuz = max(1, $target - 1);
+                $surah = $surahs->first(fn ($s) => $s->juz_mulai <= $murajaahJuz && $s->juz_selesai >= $murajaahJuz);
+                if ($surah) {
+                    Setoran::create([
+                        'santri_id' => $santri->id,
+                        'ustadz_id' => $ustadzId,
+                        'tanggal' => $now->copy()->subDays(rand(20, 45)),
+                        'jenis' => 'murajaah',
+                        'juz' => $murajaahJuz,
+                        'surah_id' => $surah->id,
+                        'ayat_awal' => 1,
+                        'ayat_akhir' => $surah->jumlah_ayat,
+                        'nilai' => $nilaiPool[array_rand($nilaiPool)],
+                        'catatan' => 'Murajaah tertunda juz ' . $murajaahJuz,
+                        'status' => 'approved',
+                        'validated_by' => $santri->kelompok->ustadz->user_id ?? null,
+                        'validated_at' => $now->copy()->subDays(rand(20, 45)),
+                    ]);
+                }
+            }
+
+            // Setoran hari ini agar indikator sesi dan pemantauan halaqah terisi.
+            if ($index % 3 !== 0) {
+                $juzToday = max(1, min(30, $target));
+                $surahToday = $surahs->first(fn ($s) => $s->juz_mulai <= $juzToday && $s->juz_selesai >= $juzToday);
+                if ($surahToday) {
+                    Setoran::create([
+                        'santri_id' => $santri->id,
+                        'ustadz_id' => $ustadzId,
+                        'tanggal' => $now->copy()->toDateString(),
+                        'jenis' => 'murajaah',
+                        'juz' => $juzToday,
+                        'surah_id' => $surahToday->id,
+                        'ayat_awal' => 1,
+                        'ayat_akhir' => $surahToday->jumlah_ayat,
+                        'nilai' => $nilaiPool[array_rand($nilaiPool)],
+                        'catatan' => 'Murajaah sesi hari ini',
+                        'status' => 'approved',
+                        'validated_by' => $santri->kelompok->ustadz->user_id ?? null,
+                        'validated_at' => $now,
+                    ]);
+                }
+            }
+
+            // Tasmi sesekali
+            if ($index % 4 === 0) {
+                $tasmiJuz = max(1, min(30, $target));
+                $surah = $surahs->first(fn ($s) => $s->juz_mulai <= $tasmiJuz && $s->juz_selesai >= $tasmiJuz);
+                if ($surah) {
+                    Setoran::create([
+                        'santri_id' => $santri->id,
+                        'ustadz_id' => $ustadzId,
+                        'tanggal' => $now->copy()->subDays(rand(1, 20)),
+                        'jenis' => 'tasmi',
+                        'juz' => $tasmiJuz,
+                        'surah_id' => $surah->id,
+                        'ayat_awal' => 1,
+                        'ayat_akhir' => $surah->jumlah_ayat,
+                        'nilai' => 'jayyid_jiddan',
+                        'catatan' => 'Tasmi juz ' . $tasmiJuz,
+                        'status' => 'approved',
+                        'validated_by' => $santri->kelompok->ustadz->user_id ?? null,
+                        'validated_at' => $now->copy()->subDay(),
+                    ]);
+                }
+            }
+        }
+    }
+
+    private function seedAbsensi($santris): void
+    {
+        $statusPool = ['hadir', 'hadir', 'hadir', 'hadir', 'hadir', 'hadir', 'hadir', 'hadir', 'izin', 'sakit'];
+        $sesiPool = ['subuh', 'ashar', 'maghrib'];
+        $waktuMap = ['subuh' => '05:00', 'ashar' => '14:30', 'maghrib' => '18:30'];
+
+        for ($d = 0; $d < 30; $d++) {
+            $date = Carbon::today()->subDays($d)->toDateString();
+
+            foreach ($santris as $santri) {
+                if (rand(1, 100) > 94) {
                     continue;
                 }
-                Setoran::create([
-                    'santri_id' => $santri->id,
-                    'ustadz_id' => $ustadz->id,
-                    'tanggal' => $now->copy()->subDays(rand(1, 7)),
-                    'jenis' => 'murajaah',
-                    'juz' => $juz,
-                    'surah_id' => $surah->id,
-                    'ayat_awal' => 1,
-                    'ayat_akhir' => $surah->jumlah_ayat,
-                    'nilai' => 'jayyid',
-                    'catatan' => 'Murajaah juz ' . $juz,
-                    'status' => 'approved',
-                    'validated_by' => $ustadzUser->id,
-                    'validated_at' => $now->copy()->subDays(rand(0, 2)),
-                ]);
-            }
 
-            Setoran::create([
-                'santri_id' => $santri->id,
-                'ustadz_id' => $ustadz->id,
-                'tanggal' => $now->copy()->subDays(rand(2, 5)),
-                'jenis' => 'ziyadah',
-                'juz' => 4,
-                'surah_id' => $surahs->where('juz_mulai', '<=', 4)->where('juz_selesai', '>=', 4)->first()->id,
-                'ayat_awal' => 1,
-                'ayat_akhir' => 15,
-                'nilai' => 'maqbul',
-                'catatan' => 'Setoran ziyadah juz 4',
-                'is_draft' => false,
-                'status' => 'approved',
-                'validated_by' => $ustadzUser->id,
-                'validated_at' => $now->copy()->subDays(2),
-            ]);
+                $status = $statusPool[array_rand($statusPool)];
+                $sesi = $sesiPool[array_rand($sesiPool)];
 
-            Setoran::create([
-                'santri_id' => $santri->id,
-                'ustadz_id' => $ustadz->id,
-                'tanggal' => $now->copy()->subDays(rand(1, 3)),
-                'jenis' => 'tasmi',
-                'juz' => 30,
-                'surah_id' => Surah::where('nomor', '<=', 30)->first()->id,
-                'ayat_awal' => 1,
-                'ayat_akhir' => 23,
-                'nilai' => 'jayyid_jiddan',
-                'catatan' => 'Tasmi pekan ini',
-                'is_draft' => false,
-                'status' => 'approved',
-                'validated_by' => $ustadzUser->id,
-                'validated_at' => $now->copy()->subDay(),
-            ]);
-        }
-    }
-
-    private function seedAbsensi(array $santris, Ustadz $ustadz): void
-    {
-        $days = ['2024-11-11', '2024-11-12', '2024-11-13', '2024-11-14', '2024-11-15'];
-        foreach ($days as $day) {
-            foreach ($santris as $santri) {
-                $status = collect(['hadir', 'hadir', 'hadir', 'izin', 'sakit', 'alpa'])->random();
-                $sesi = collect(['subuh', 'ashar', 'maghrib'])->random();
-                $waktu = ['subuh' => '05:00', 'ashar' => '14:30', 'maghrib' => '18:30'][$sesi];
                 Absensi::create([
                     'santri_id' => $santri->id,
-                    'ustadz_id' => $ustadz->id,
-                    'tanggal' => $day,
+                    'ustadz_id' => $santri->kelompok?->ustadz_id,
+                    'tanggal' => $date,
                     'sesi' => $sesi,
-                    'waktu_tiba' => $waktu,
+                    'waktu_tiba' => $waktuMap[$sesi],
                     'status' => $status,
-                    'catatan' => $status !== 'hadir' ? 'Izin orang tua' : null,
+                    'catatan' => $status !== 'hadir' ? 'Keterangan ' . $status : null,
                 ]);
             }
         }
     }
 
-    private function seedHalaqahNotes(Kelompok $kelompok, Ustadz $ustadz): void
+    private function seedHalaqahNotes($kelompoks, $ustadzs): void
     {
-        HalaqahNote::create([
-            'kelompok_id' => $kelompok->id,
-            'ustadz_id' => $ustadz->id,
-            'tanggal' => now()->subDay()->toDateString(),
-            'catatan' => 'Halaqah kondusif. Bacaan juz 1-3 tuntas.',
-        ]);
+        foreach ($kelompoks as $index => $kelompok) {
+            HalaqahNote::create([
+                'kelompok_id' => $kelompok->id,
+                'ustadz_id' => $ustadzs[$index % $ustadzs->count()]->id,
+                'tanggal' => now()->subDay()->toDateString(),
+                'catatan' => 'Halaqah kondusif. Setoran berjalan sesuai target harian.',
+            ]);
+        }
     }
 
-    private function seedSimaanSchedules(array $santris, Ustadz $ustadz): void
+    private function seedSimaanSchedules($santris): void
     {
-        foreach ($santris as $santri) {
+        foreach ($santris->take(12) as $santri) {
             SimaanSchedule::create([
                 'santri_id' => $santri->id,
-                'ustadz_id' => $ustadz->id,
+                'ustadz_id' => $santri->kelompok?->ustadz_id,
                 'tanggal' => now()->addDay()->toDateString(),
-                'keterangan' => 'Sima\'an ziyadah juz 4-5',
+                'keterangan' => 'Sima\'an ziyadah rutin',
                 'status' => 'dijadwalkan',
             ]);
         }
-    }
-
-    private function randomNilai(): string
-    {
-        return ['maqbul', 'jayyid', 'jayyid_jiddan', 'mumtaz'][array_rand(['maqbul', 'jayyid', 'jayyid_jiddan', 'mumtaz'])];
     }
 }

@@ -4,187 +4,353 @@ namespace App\Http\Controllers\Kepala;
 
 use App\Http\Controllers\Controller;
 use App\Models\Absensi;
+use App\Models\Angkatan;
+use App\Models\Kelompok;
 use App\Models\Santri;
 use App\Models\Setoran;
-use App\Models\Kelompok;
 use App\Models\Ustadz;
-use Illuminate\Support\Facades\Auth;
+use App\Support\HijriDate;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $today = Carbon::today();
-        $weekStart = Carbon::now()->startOfWeek();
-        $weekEnd = Carbon::now()->endOfWeek();
-        $monthStart = Carbon::now()->startOfMonth();
-        $monthEnd = Carbon::now()->endOfMonth();
         $days30Start = Carbon::now()->subDays(29);
 
-        // Overall stats
-        $totalSantri = Santri::where('status_aktif', 'aktif')->count();
+        $santris = Santri::where('status_aktif', 'aktif')
+            ->with(['kelompok.ustadz', 'angkatan'])
+            ->orderBy('nama')
+            ->get();
+
+        $santriIds = $santris->pluck('id');
+
+        $progressMap = Setoran::whereIn('santri_id', $santriIds)
+            ->where('jenis', 'ziyadah')
+            ->where('status', 'approved')
+            ->selectRaw('santri_id, max(juz) as max_juz')
+            ->groupBy('santri_id')
+            ->pluck('max_juz', 'santri_id');
+
+        $setoranTodayIds = Setoran::whereIn('santri_id', $santriIds)
+            ->where('status', 'approved')
+            ->whereDate('tanggal', $today)
+            ->pluck('santri_id')
+            ->unique();
+
+        $setoranYesterdayIds = Setoran::whereIn('santri_id', $santriIds)
+            ->where('status', 'approved')
+            ->whereDate('tanggal', $today->copy()->subDay())
+            ->pluck('santri_id')
+            ->unique();
+
+        $absensiToday = Absensi::whereIn('santri_id', $santriIds)
+            ->whereDate('tanggal', $today)
+            ->get(['santri_id', 'status']);
+
+        $absensi30 = Absensi::whereIn('santri_id', $santriIds)
+            ->whereBetween('tanggal', [$days30Start, $today])
+            ->get(['santri_id', 'status'])
+            ->groupBy('santri_id');
+
+        $setoran30 = Setoran::whereIn('santri_id', $santriIds)
+            ->where('status', 'approved')
+            ->where('tanggal', '>=', $days30Start)
+            ->get(['santri_id', 'nilai', 'jenis', 'tanggal']);
+
+        $totalSantri = $santris->count();
         $totalKelompok = Kelompok::count();
         $totalUstadz = Ustadz::count();
+        $kelompokTerisi = Kelompok::whereNotNull('ustadz_id')->count();
 
-        $totalSetoranThisMonth = Setoran::where('status', 'approved')
-            ->whereBetween('tanggal', [$monthStart, $monthEnd])
-            ->count();
+        $hadirToday = $absensiToday->where('status', 'hadir')->count();
+        $hadirPct = $totalSantri > 0 ? (int) round(($hadirToday / $totalSantri) * 100) : 0;
 
-        // Attendance rate this month
-        $attendanceStats = Absensi::whereBetween('tanggal', [$monthStart, $monthEnd])
-            ->selectRaw('
-                sum(case when status = "hadir" then 1 else 0 end) as hadir,
-                count(*) as total
-            ')
-            ->first();
-        $attendanceRate = $attendanceStats->total > 0
-            ? round(($attendanceStats->hadir / $attendanceStats->total) * 100)
+        $setoranSesi = $setoranTodayIds->count();
+        $setoranDelta = $setoranSesi - $setoranYesterdayIds->count();
+
+        $indeksMutu = $this->averageMutu($setoran30);
+        $mutuLabel = $this->mutuLabel($indeksMutu);
+
+        $kelompokLengkapPct = $totalKelompok > 0
+            ? (int) round(($kelompokTerisi / $totalKelompok) * 100)
             : 0;
 
-        // Chart 1: Progress Hafalan per Juz (Mutqin)
-        // Use accessor via collection map since progress_juz is not a DB column
-        $allSantris = Santri::where('status_aktif', 'aktif')->get();
-        $progressPerJuz = $allSantris
-            ->map(fn($s) => $s->progress_juz)
-            ->countBy();
-        
-        $juzLabels = [];
-        $juzData = [];
-        $juzBgColors = [];
-        $juzBorderColors = [];
-        for ($i = 1; $i <= 30; $i++) {
-            $juzLabels[] = 'Juz ' . $i;
-            $juzData[] = $progressPerJuz->get($i - 1, 0);
-            if ($i >= 25) {
-                $juzBgColors[] = '#31533B';
-                $juzBorderColors[] = '#274230';
-            } elseif ($i >= 20) {
-                $juzBgColors[] = '#3C6749';
-                $juzBorderColors[] = '#31533B';
-            } elseif ($i >= 15) {
-                $juzBgColors[] = '#4A7C59';
-                $juzBorderColors[] = '#3D6B4A';
-            } else {
-                $juzBgColors[] = '#6B997A';
-                $juzBorderColors[] = '#4A7C59';
-            }
+        $rataCapaian = $this->averageProgress($progressMap, $santriIds);
+
+        $mutqin30 = $santris->filter(
+            fn ($s) => ($progressMap[$s->id] ?? 0) >= 30
+        )->count();
+
+        $attention = $this->buildAttention($santris, $progressMap, $absensi30, $setoran30, $days30Start);
+        $perluPerhatian = $attention->count();
+
+        $halaqahMonitor = $this->buildHalaqahMonitor(
+            $santris,
+            $progressMap,
+            $setoranTodayIds,
+            $absensi30,
+            $setoran30
+        );
+
+        $angkatanList = Angkatan::orderByDesc('tahun_mulai')->get();
+        $selectedAngkatan = $request->integer('angkatan') ?: null;
+        if ($selectedAngkatan && !$angkatanList->contains('id', $selectedAngkatan)) {
+            $selectedAngkatan = null;
         }
 
-        // Chart 2: Kehadiran 30 hari
-        $attendanceDaily = Absensi::whereBetween('tanggal', [$days30Start, $today])
-            ->selectRaw('tanggal,
-                sum(case when status = "hadir" then 1 else 0 end) as hadir,
-                count(*) as total
-            ')
-            ->groupBy('tanggal')
-            ->orderBy('tanggal')
-            ->get()
-            ->keyBy('tanggal');
+        $coverage = $this->buildJuzCoverage($santriIds, $selectedAngkatan);
+        $coverageScopeSantris = $selectedAngkatan
+            ? $santris->where('angkatan_id', $selectedAngkatan)
+            : $santris;
+        $coverageScopeIds = $coverageScopeSantris->pluck('id');
 
-        $attendanceLabels = [];
-        $attendanceRates = [];
-        for ($i = 29; $i >= 0; $i--) {
-            $date = $days30Start->copy()->addDays($i)->toDateString();
-            $attendanceLabels[] = Carbon::parse($date)->format('d M');
-            $dayData = $attendanceDaily->get($date);
-            $rate = $dayData && $dayData->total > 0
-                ? round(($dayData->hadir / $dayData->total) * 100)
-                : 0;
-            $attendanceRates[] = $rate;
-        }
-
-        // Chart 3: Mutu Distribution
-        $mutuDist = Setoran::where('status', 'approved')
-            ->where('jenis', 'ziyadah')
-            ->selectRaw('nilai, count(*) as cnt')
-            ->groupBy('nilai')
-            ->pluck('cnt', 'nilai');
-
-        $mutuLabels = ['Maqbul', 'Jayyid', 'Jayyid Jiddan', 'Mumtaz'];
-        $mutuData = [
-            $mutuDist->get('maqbul', 0),
-            $mutuDist->get('jayyid', 0),
-            $mutuDist->get('jayyid_jiddan', 0),
-            $mutuDist->get('mumtaz', 0),
+        $coverageFooter = [
+            'rata_juz' => $this->averageProgress($progressMap, $coverageScopeIds),
+            'siap_khatam' => $coverageScopeSantris->filter(
+                fn ($s) => ($progressMap[$s->id] ?? 0) >= 30
+            )->count(),
+            'jumlah_santri' => $coverageScopeSantris->count(),
         ];
 
-        // Attention List
-        // Criteria: < 75% attendance last 30 days OR > 14 days no murajaah OR progress < 3 juz
-        $attentionSantris = Santri::where('status_aktif', 'aktif')
-            ->with(['kelompok.ustadz'])
-            ->get()
-            ->filter(function ($santri) use ($days30Start, $today) {
-                // Attendance check
-                $absensi = Absensi::where('santri_id', $santri->id)
-                    ->whereBetween('tanggal', [$days30Start, $today])
-                    ->selectRaw('
-                        sum(case when status = "hadir" then 1 else 0 end) as hadir,
-                        count(*) as total
-                    ')
-                    ->first();
-                $attRate = $absensi->total > 0 ? ($absensi->hadir / $absensi->total) : 1;
-                $lowAttendance = $absensi->total > 0 && $attRate < 0.75;
+        $activities = Setoran::with(['santri', 'surah', 'ustadz'])
+            ->whereIn('santri_id', $santriIds)
+            ->where('status', 'approved')
+            ->orderByDesc('tanggal')
+            ->orderByDesc('id')
+            ->take(6)
+            ->get();
 
-                // Murajaah check
-                $lastMurajaah = $santri->last_murajaah_date;
-                $noMurajaah = !$lastMurajaah || Carbon::parse($lastMurajaah)->lt(Carbon::now()->subDays(14));
-
-                // Progress check
-                $lowProgress = $santri->progress_juz < 3;
-
-                return $lowAttendance || $noMurajaah || $lowProgress;
-            })
+        $nearKhatam = $santris
+            ->map(fn ($s) => ['santri' => $s, 'progress' => $progressMap[$s->id] ?? 0])
+            ->filter(fn ($item) => $item['progress'] > 0)
+            ->sortByDesc('progress')
+            ->take(4)
             ->values();
-
-        $attentionDetails = $attentionSantris->map(function ($santri) use ($days30Start, $today) {
-            $reasons = [];
-
-            $absensi = Absensi::where('santri_id', $santri->id)
-                ->whereBetween('tanggal', [$days30Start, $today])
-                ->selectRaw('
-                    sum(case when status = "hadir" then 1 else 0 end) as hadir,
-                    count(*) as total
-                ')
-                ->first();
-            if ($absensi->total > 0 && ($absensi->hadir / $absensi->total) < 0.75) {
-                $rate = round(($absensi->hadir / $absensi->total) * 100);
-                $reasons[] = "Kehadiran {$rate}% (30 hari)";
-            }
-
-            if (!$santri->last_murajaah_date || $santri->last_murajaah_date->lt(Carbon::now()->subDays(14))) {
-                $reasons[] = 'Belum murajaah > 14 hari';
-            }
-
-            if ($santri->progress_juz < 3) {
-                $reasons[] = 'Progres < Juz 3';
-            }
-
-            return [
-                'santri' => $santri,
-                'reasons' => $reasons,
-                'kelompok' => $santri->kelompok?->nama,
-                'ustadz' => $santri->kelompok?->ustadz?->nama,
-            ];
-        });
 
         return view('kepala.dashboard', [
             'title' => 'Dashboard Kepala Tahfidz',
-            'pageTitle' => 'Dashboard',
-            'totalSantri' => $totalSantri,
-            'totalKelompok' => $totalKelompok,
-            'totalUstadz' => $totalUstadz,
-            'totalSetoranThisMonth' => $totalSetoranThisMonth,
-            'attendanceRate' => $attendanceRate,
-            'juzLabels' => json_encode($juzLabels),
-            'juzData' => json_encode($juzData),
-            'attendanceLabels' => json_encode($attendanceLabels),
-            'attendanceRates' => json_encode($attendanceRates),
-            'mutuLabels' => json_encode($mutuLabels),
-            'mutuData' => json_encode($mutuData),
-            'juzBgColors' => json_encode($juzBgColors),
-            'juzBorderColors' => json_encode($juzBorderColors),
-            'attentionSantris' => $attentionDetails,
+            'pageTitle' => 'Ikhtisar Dasbor',
+            'hijriDate' => HijriDate::format($today),
+            'semester' => HijriDate::semester($today),
+            'indicators' => [
+                'hadir' => $hadirToday,
+                'total_santri' => $totalSantri,
+                'hadir_pct' => $hadirPct,
+                'setoran_sesi' => $setoranSesi,
+                'setoran_delta' => $setoranDelta,
+                'indeks_mutu' => $indeksMutu,
+                'mutu_label' => $mutuLabel,
+                'asatidz' => $totalUstadz,
+                'kelompok_lengkap_pct' => $kelompokLengkapPct,
+                'kelompok_aktif' => $kelompokTerisi,
+                'total_kelompok' => $totalKelompok,
+            ],
+            'capaian' => [
+                'total_santri' => $totalSantri,
+                'rata_capaian' => $rataCapaian,
+                'mutqin30' => $mutqin30,
+                'perlu_perhatian' => $perluPerhatian,
+            ],
+            'halaqahMonitor' => $halaqahMonitor,
+            'angkatanList' => $angkatanList,
+            'selectedAngkatan' => $selectedAngkatan,
+            'juzCoverage' => $coverage,
+            'coverageFooter' => $coverageFooter,
+            'activities' => $activities,
+            'attention' => $attention,
+            'nearKhatam' => $nearKhatam,
         ]);
+    }
+
+    private function scoreOf(?string $nilai): ?int
+    {
+        return match ($nilai) {
+            'mumtaz' => 100,
+            'jayyid_jiddan' => 85,
+            'jayyid' => 70,
+            'maqbul' => 55,
+            default => null,
+        };
+    }
+
+    private function averageMutu(Collection $setorans): float
+    {
+        $scores = $setorans
+            ->map(fn ($s) => $this->scoreOf($s->nilai))
+            ->filter(fn ($v) => $v !== null);
+
+        return $scores->isEmpty() ? 0.0 : round($scores->avg(), 1);
+    }
+
+    private function mutuLabel(float $score): string
+    {
+        if ($score >= 90) {
+            return 'Mumtaz (A)';
+        }
+        if ($score >= 80) {
+            return 'Jayyid Jiddan (B)';
+        }
+        if ($score >= 70) {
+            return 'Jayyid (C)';
+        }
+        if ($score > 0) {
+            return 'Maqbul (D)';
+        }
+
+        return 'Belum ada data';
+    }
+
+    private function averageProgress(Collection $progressMap, Collection $ids): float
+    {
+        if ($ids->isEmpty()) {
+            return 0.0;
+        }
+
+        $sum = $ids->sum(fn ($id) => $progressMap[$id] ?? 0);
+
+        return round($sum / $ids->count(), 1);
+    }
+
+    private function buildHalaqahMonitor(
+        Collection $santris,
+        Collection $progressMap,
+        Collection $setoranTodayIds,
+        Collection $absensi30,
+        Collection $setoran30
+    ): Collection {
+        $santrisByKelompok = $santris->groupBy('kelompok_id');
+        $kelompoks = Kelompok::with(['ustadz', 'angkatan'])->orderBy('nama')->get();
+
+        return $kelompoks->map(function ($kelompok) use ($santrisByKelompok, $progressMap, $setoranTodayIds, $absensi30, $setoran30) {
+            $anggota = $santrisByKelompok->get($kelompok->id, collect());
+            $anggotaIds = $anggota->pluck('id');
+            $total = $anggota->count();
+
+            $sudahSetor = $anggotaIds->filter(fn ($id) => $setoranTodayIds->contains($id))->count();
+            $progressPct = $total > 0 ? (int) round(($sudahSetor / $total) * 100) : 0;
+
+            $mutu = $this->averageMutu(
+                $setoran30->whereIn('santri_id', $anggotaIds)
+            );
+
+            $rataJuz = $this->averageProgress($progressMap, $anggotaIds);
+
+            $absensiAnggota = $absensi30
+                ->filter(fn ($rows, $key) => $anggotaIds->contains((int) $key))
+                ->flatten(1);
+            $absensiTotal = $absensiAnggota->count();
+            $absensiHadir = $absensiAnggota->where('status', 'hadir')->count();
+            $kehadiranPct = $absensiTotal > 0 ? (int) round(($absensiHadir / $absensiTotal) * 100) : 0;
+
+            if ($progressPct >= 90) {
+                $statusLabel = 'Lengkap';
+                $statusVariant = 'success';
+            } elseif ($progressPct >= 50) {
+                $statusLabel = 'Sebagian';
+                $statusVariant = 'warning';
+            } else {
+                $statusLabel = 'Belum';
+                $statusVariant = 'error';
+            }
+
+            return [
+                'kelompok' => $kelompok,
+                'total' => $total,
+                'sudah_setor' => $sudahSetor,
+                'progress_pct' => $progressPct,
+                'mutu' => $mutu,
+                'rata_juz' => $rataJuz,
+                'kehadiran_pct' => $kehadiranPct,
+                'status_label' => $statusLabel,
+                'status_variant' => $statusVariant,
+            ];
+        });
+    }
+
+    private function buildJuzCoverage(Collection $santriIds, ?int $angkatanId): array
+    {
+        $query = Setoran::query()
+            ->join('surahs', 'surahs.id', '=', 'setorans.surah_id')
+            ->join('santris', 'santris.id', '=', 'setorans.santri_id')
+            ->whereIn('setorans.santri_id', $santriIds)
+            ->where('setorans.status', 'approved')
+            ->where('setorans.jenis', 'ziyadah')
+            ->where('setorans.ayat_awal', 1)
+            ->whereColumn('setorans.ayat_akhir', 'surahs.jumlah_ayat');
+
+        if ($angkatanId) {
+            $query->where('santris.angkatan_id', $angkatanId);
+        }
+
+        $counts = $query
+            ->selectRaw('setorans.juz as juz, count(distinct setorans.santri_id) as santri_count')
+            ->groupBy('setorans.juz')
+            ->pluck('santri_count', 'juz');
+
+        $denominator = $angkatanId
+            ? Santri::where('angkatan_id', $angkatanId)->where('status_aktif', 'aktif')->count()
+            : Santri::where('status_aktif', 'aktif')->count();
+
+        $coverage = [];
+        for ($juz = 1; $juz <= 30; $juz++) {
+            $count = (int) ($counts[$juz] ?? 0);
+            $coverage[$juz] = $denominator > 0 ? (int) round(($count / $denominator) * 100) : 0;
+        }
+
+        return $coverage;
+    }
+
+    private function buildAttention(
+        Collection $santris,
+        Collection $progressMap,
+        Collection $absensi30,
+        Collection $setoran30,
+        Carbon $days30Start
+    ): Collection {
+        $murajaahLast = $setoran30
+            ->where('jenis', 'murajaah')
+            ->groupBy('santri_id')
+            ->map(fn ($rows) => $rows->max('tanggal'));
+
+        $threshold = Carbon::now()->subDays(14);
+
+        return $santris
+            ->map(function ($santri) use ($progressMap, $absensi30, $murajaahLast, $threshold) {
+                $reasons = [];
+
+                $absensi = $absensi30->get($santri->id, collect());
+                $totalAbsensi = $absensi->count();
+                if ($totalAbsensi > 0) {
+                    $hadir = $absensi->where('status', 'hadir')->count();
+                    $rate = (int) round(($hadir / $totalAbsensi) * 100);
+                    if ($rate < 75) {
+                        $reasons[] = "Kehadiran {$rate}% (30 hari)";
+                    }
+                }
+
+                $lastMurajaah = $murajaahLast->get($santri->id);
+                if (!$lastMurajaah || Carbon::parse($lastMurajaah)->lt($threshold)) {
+                    $reasons[] = 'Belum murajaah > 14 hari';
+                }
+
+                $progress = $progressMap[$santri->id] ?? 0;
+                if ($progress < 3) {
+                    $reasons[] = 'Progres < Juz 3';
+                }
+
+                return [
+                    'santri' => $santri,
+                    'progress' => $progress,
+                    'kelompok' => $santri->kelompok?->nama,
+                    'ustadz' => $santri->kelompok?->ustadz?->nama,
+                    'reasons' => $reasons,
+                ];
+            })
+            ->filter(fn ($item) => count($item['reasons']) > 0)
+            ->values();
     }
 }

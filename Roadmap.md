@@ -36,10 +36,12 @@ Sistem Informasi Mutaba'ah & Belajar Al-Qur'an — Pondok Pesantren Darut Taqwa 
 - [x] Keyboard accessible modal (R-32, R-39)
 
 ## Sprint 4 — Dasbor Kepala Tahfidz
-- [x] Statistik keseluruhan + grafik (Chart.js)
-- [x] Daftar santri perlu perhatian
-- [x] 3 charts: Progress Juz (bar), Kehadiran 30 hari (line), Mutu (doughnut)
-- [x] Attention list with criteria: attendance < 75%, no murajaah > 14d, progress < 3 juz
+- [x] Indikator utama harian + capaian keseluruhan (data nyata)
+- [x] Pemantauan halaqah: progress setoran, rata mutu, kehadiran
+- [x] Peta Hafalan 30 Juz (grid persentase + filter angkatan)
+- [x] Daftar santri perlu perhatian (kehadiran < 75%, belum murajaah > 14 hari, progres < Juz 3)
+- [x] Aktivitas setoran & tasmi terkini + santri menuju khatam
+- [x] Layout disesuaikan dengan UI_SIMBATAHFIDZ (tanpa Chart.js)
 
 ## Sprint 5 — Dasbor Wali
 - [ ] Mutaba'ah anak (tab multi-anak)
