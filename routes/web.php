@@ -112,12 +112,7 @@ Route::middleware(['auth', 'role:kepala_tahfidz'])->prefix('kepala')->name('kepa
     })->name('dashboard');
 
     // Sprint 4: Dasbor Kepala
-    // Route::get('/peta-juz', function () {
-    //     return view('kepala.peta-juz', ['title' => 'Peta Hafalan 30 Juz']);
-    // })->name('peta-juz');
-    // Route::get('/murajaah/bulanan', function () {
-    //     return view('kepala.murajaah-bulanan', ['title' => 'Daftar Murajaah Bulanan']);
-    // })->name('murajaah.bulanan');
+    Route::get('/dashboard', [\App\Http\Controllers\Kepala\DashboardController::class, 'index'])->name('dashboard');
 });
 
 /*

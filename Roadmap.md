@@ -29,12 +29,17 @@ Sistem Informasi Mutaba'ah & Belajar Al-Qur'an — Pondok Pesantren Darut Taqwa 
 - [x] Halaman sukses dan daftar setoran responsif tanpa fitur draft
 
 ## Sprint 3 — Absensi Kelompok (Ustadz)
-- [ ] Presensi harian (Hadir/Izin/Sakit/Alpa)
-- [ ] Rekap absensi kelompok
+- [x] Presensi harian (Hadir/Izin/Sakit/Alpa)
+- [x] Rekap absensi kelompok
+- [x] Empty/loading/error states (R-27)
+- [x] Mobile 44px tap targets (R-03)
+- [x] Keyboard accessible modal (R-32, R-39)
 
 ## Sprint 4 — Dasbor Kepala Tahfidz
-- [ ] Statistik keseluruhan + grafik (Chart.js)
-- [ ] Daftar santri perlu perhatian
+- [x] Statistik keseluruhan + grafik (Chart.js)
+- [x] Daftar santri perlu perhatian
+- [x] 3 charts: Progress Juz (bar), Kehadiran 30 hari (line), Mutu (doughnut)
+- [x] Attention list with criteria: attendance < 75%, no murajaah > 14d, progress < 3 juz
 
 ## Sprint 5 — Dasbor Wali
 - [ ] Mutaba'ah anak (tab multi-anak)
