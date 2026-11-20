@@ -9,7 +9,7 @@
     </x-card>
 </div>
 
-<div class="bg-white rounded-2xl border border-neutral-200 p-4 sm:p-6">
+<div class="mt-4 bg-white rounded-2xl border border-neutral-200 p-4 sm:p-6">
     <div class="overflow-x-auto rounded-2xl border border-neutral-200">
         <table class="w-full" role="grid">
             <thead class="bg-neutral-50 border-b border-neutral-200">

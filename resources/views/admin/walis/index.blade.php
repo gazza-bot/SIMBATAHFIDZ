@@ -35,9 +35,9 @@
         <form data-admin-filter action="{{ route('admin.walis.index') }}" method="GET">
             <div class="bg-white rounded-2xl border border-neutral-200 p-4 sm:p-6">
                 <div class="mb-4">
-                    <x-input type="text" name="search" placeholder="Cari nama, username, atau nomor telepon..." value="{{ $filters['search'] ?? '' }}" />
+                    <x-input type="text" name="search" placeholder="Cari nama, username, atau nomor telepon (Kosongkan jika ingin melihat semua data)" value="{{ $filters['search'] ?? '' }}" />
                 </div>
-                <div class="flex justify-end gap-2">
+                <div class="flex justify-end gap-2 items-center">
                     <x-button type="submit" variant="primary">Terapkan</x-button>
                     <a href="{{ route('admin.walis.index') }}" class="text-sm text-primary-600 hover:underline">Reset</a>
                 </div>

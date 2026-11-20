@@ -36,7 +36,7 @@
             <div class="bg-white rounded-2xl border border-neutral-200 p-4 sm:p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                     <x-input type="text" name="search" placeholder="Cari nama atau tahun..." value="{{ $filters['search'] ?? '' }}" />
-                    <x-input type="select" name="status_aktif" placeholder="Semua Status" value="{{ $filters['status_aktif'] ?? '' }}">
+                    <x-input class="w-full px-2 py-2.5 rounded-2xl border border-gray-200 bg-white text-gray-500! focus:border-gray-300 focus:ring-0" type="select" name="status_aktif" placeholder="Semua Status" value="{{ $filters['status_aktif'] ?? '' }}">
                         <option value="">Semua Status</option>
                         <option value="1" {{ $filters['status_aktif'] ?? '' == '1' ? 'selected' : '' }}>Aktif</option>
                         <option value="0" {{ $filters['status_aktif'] ?? '' == '0' ? 'selected' : '' }}>Tidak Aktif</option>

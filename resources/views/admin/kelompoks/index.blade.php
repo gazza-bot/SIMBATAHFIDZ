@@ -40,7 +40,7 @@
             <div class="bg-white rounded-2xl border border-neutral-200 p-4 sm:p-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
                     <x-input type="text" name="search" placeholder="Cari nama kelompok..." value="{{ $filters['search'] ?? '' }}" />
-                    <x-input type="select" name="ustadz_id" placeholder="Semua Musyrif" value="{{ $filters['ustadz_id'] ?? '' }}">
+                    <x-input class="w-full px-2 py-2.5 rounded-2xl border border-gray-200 bg-white text-gray-500! focus:border-gray-300 focus:ring-0" type="select" name="ustadz_id" placeholder="Semua Musyrif" value="{{ $filters['ustadz_id'] ?? '' }}">
                         <option value="">Semua Musyrif</option>
                         @foreach ($ustadzs as $ustadz)
                             <option value="{{ $ustadz->id }}" {{ $filters['ustadz_id'] ?? '' == $ustadz->id ? 'selected' : '' }}>
@@ -48,7 +48,7 @@
                             </option>
                         @endforeach
                     </x-input>
-                    <x-input type="select" name="angkatan_id" placeholder="Semua Angkatan" value="{{ $filters['angkatan_id'] ?? '' }}">
+                    <x-input class="w-full px-2 py-2.5 rounded-2xl border border-gray-200 bg-white text-gray-500! focus:border-gray-300 focus:ring-0" type="select" name="angkatan_id" placeholder="Semua Angkatan" value="{{ $filters['angkatan_id'] ?? '' }}">
                         <option value="">Semua Angkatan</option>
                         @foreach ($angkatans as $angkatan)
                             <option value="{{ $angkatan->id }}" {{ $filters['angkatan_id'] ?? '' == $angkatan->id ? 'selected' : '' }}>
@@ -57,7 +57,8 @@
                         @endforeach
                     </x-input>
                 </div>
-                <div class="flex justify-end gap-2">
+                <p class="text-sm text-neutral-900">Biarkan Filter dan Klik Terapkan jika ingin melihat semua data!</p>
+                <div class="flex justify-end gap-2 items-center">
                     <x-button type="submit" variant="primary">Terapkan</x-button>
                     <a href="{{ route('admin.kelompoks.index') }}" class="text-sm text-primary-600 hover:underline">Reset</a>
                 </div>
