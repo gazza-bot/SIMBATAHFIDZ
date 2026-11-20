@@ -101,18 +101,8 @@ Route::middleware(['auth', 'role:ustadz'])->prefix('ustadz')->name('ustadz.')->g
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:kepala_tahfidz'])->prefix('kepala')->name('kepala.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('kepala.dashboard', [
-            'title' => 'Dashboard Kepala Tahfidz',
-            'pageTitle' => 'Dashboard',
-            'totalSantri' => \App\Models\Santri::count(),
-            'totalKelompok' => \App\Models\Kelompok::count(),
-            'totalSetoran' => \App\Models\Setoran::count(),
-        ]);
-    })->name('dashboard');
-
-    // Sprint 4: Dasbor Kepala
     Route::get('/dashboard', [\App\Http\Controllers\Kepala\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/juz-distribution', [\App\Http\Controllers\Kepala\DashboardController::class, 'juzDistribution'])->name('dashboard.juz-distribution');
 });
 
 /*

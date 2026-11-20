@@ -102,23 +102,10 @@ class DashboardController extends Controller
             $selectedAngkatan = null;
         }
 
-        $coverageScopeSantris = $selectedAngkatan
-            ? $santris->where('angkatan_id', $selectedAngkatan)
-            : $santris;
-        $coverageScopeIds = $coverageScopeSantris->pluck('id');
-
-        $juzRanges = $this->buildProgressDistribution($progressMap, $coverageScopeIds);
-        $belumMulai = $coverageScopeIds
-            ->filter(fn ($id) => ($progressMap[$id] ?? 0) === 0)
-            ->count();
-
-        $coverageFooter = [
-            'rata_juz' => $this->averageProgress($progressMap, $coverageScopeIds),
-            'siap_khatam' => $coverageScopeSantris->filter(
-                fn ($s) => ($progressMap[$s->id] ?? 0) >= 30
-            )->count(),
-            'jumlah_santri' => $coverageScopeSantris->count(),
-        ];
+        $histogram = $this->histogramData($santris, $progressMap, $selectedAngkatan);
+        $juzRanges = $histogram['juzRanges'];
+        $belumMulai = $histogram['belumMulai'];
+        $coverageFooter = $histogram['coverageFooter'];
 
         $activities = Setoran::with(['santri', 'surah', 'ustadz'])
             ->whereIn('santri_id', $santriIds)
@@ -169,6 +156,52 @@ class DashboardController extends Controller
             'attention' => $attention,
             'nearKhatam' => $nearKhatam,
         ]);
+    }
+
+    public function juzDistribution(Request $request)
+    {
+        $santris = Santri::where('status_aktif', 'aktif')->get(['id', 'angkatan_id']);
+
+        $progressMap = Setoran::whereIn('santri_id', $santris->pluck('id'))
+            ->where('jenis', 'ziyadah')
+            ->where('status', 'approved')
+            ->selectRaw('santri_id, max(juz) as max_juz')
+            ->groupBy('santri_id')
+            ->pluck('max_juz', 'santri_id');
+
+        $angkatanId = $request->integer('angkatan') ?: null;
+        if ($angkatanId && ! Angkatan::whereKey($angkatanId)->exists()) {
+            $angkatanId = null;
+        }
+
+        $data = $this->histogramData($santris, $progressMap, $angkatanId);
+
+        return response()->json([
+            'selected' => $angkatanId,
+            'html' => view('kepala.partials.juz-histogram', $data)->render(),
+        ]);
+    }
+
+    private function histogramData(Collection $santris, Collection $progressMap, ?int $angkatanId): array
+    {
+        $scope = $angkatanId
+            ? $santris->where('angkatan_id', $angkatanId)
+            : $santris;
+        $scopeIds = $scope->pluck('id');
+
+        return [
+            'juzRanges' => $this->buildProgressDistribution($progressMap, $scopeIds),
+            'belumMulai' => $scopeIds
+                ->filter(fn ($id) => ($progressMap[$id] ?? 0) === 0)
+                ->count(),
+            'coverageFooter' => [
+                'rata_juz' => $this->averageProgress($progressMap, $scopeIds),
+                'siap_khatam' => $scope->filter(
+                    fn ($s) => ($progressMap[$s->id] ?? 0) >= 30
+                )->count(),
+                'jumlah_santri' => $scope->count(),
+            ],
+        ];
     }
 
     private function scoreOf(?string $nilai): ?int
