@@ -21,6 +21,17 @@
             </div>
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <x-card padding="lg">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Total Ustadz</p>
+                <p class="mt-2 text-2xl font-bold text-neutral-900">{{ $summary['total'] }}</p>
+            </x-card>
+            <x-card padding="lg">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Bebas Kelompok</p>
+                <p class="mt-2 text-2xl font-bold text-error-600">{{ $summary['total'] - $summary['aktif'] }}</p>
+            </x-card>
+        </div>
+
         <form data-admin-filter action="{{ route('admin.ustadzs.index') }}" method="GET">
             <div class="bg-white rounded-2xl border border-neutral-200 p-4 sm:p-6">
                 <div class="mb-4">

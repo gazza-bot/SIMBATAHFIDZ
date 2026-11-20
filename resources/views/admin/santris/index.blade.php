@@ -21,6 +21,25 @@
             </div>
         </div>
 
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <x-card padding="lg">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Total Santri</p>
+                <p class="mt-2 text-2xl font-bold text-neutral-900">{{ $summary['total'] }}</p>
+            </x-card>
+            <x-card padding="lg">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Aktif</p>
+                <p class="mt-2 text-2xl font-bold text-success-600">{{ $summary['aktif'] }}</p>
+            </x-card>
+            <x-card padding="lg">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Nonaktif</p>
+                <p class="mt-2 text-2xl font-bold text-error-600">{{ $summary['nonaktif'] }}</p>
+            </x-card>
+            <x-card padding="lg">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Lulus</p>
+                <p class="mt-2 text-2xl font-bold text-secondary-600">{{ $summary['lulus'] }}</p>
+            </x-card>
+        </div>
+
         <form data-admin-filter action="{{ route('admin.santris.index') }}" method="GET">
             <div class="bg-white rounded-2xl border border-neutral-200 p-4 sm:p-6">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">

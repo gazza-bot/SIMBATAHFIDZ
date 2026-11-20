@@ -21,6 +21,17 @@
             </div>
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <x-card padding="lg">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Total Angkatan</p>
+                <p class="mt-2 text-2xl font-bold text-neutral-900">{{ $summary['total'] }}</p>
+            </x-card>
+            <x-card padding="lg">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Aktif</p>
+                <p class="mt-2 text-2xl font-bold text-success-600">{{ $summary['aktif'] }}</p>
+            </x-card>
+        </div>
+
         <form data-admin-filter action="{{ route('admin.angkatans.index') }}" method="GET">
             <div class="bg-white rounded-2xl border border-neutral-200 p-4 sm:p-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">

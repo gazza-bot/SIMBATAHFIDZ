@@ -21,6 +21,21 @@
             </div>
         </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <x-card padding="lg">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Total Kelompok</p>
+                <p class="mt-2 text-2xl font-bold text-neutral-900">{{ $summary['total'] }}</p>
+            </x-card>
+            <x-card padding="lg">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Memiliki Santri</p>
+                <p class="mt-2 text-2xl font-bold text-success-600">{{ $summary['aktif'] }}</p>
+            </x-card>
+            <x-card padding="lg">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Bebas Ustadz</p>
+                <p class="mt-2 text-2xl font-bold text-error-600">{{ $summary['ustadz'] }}</p>
+            </x-card>
+        </div>
+
         <form data-admin-filter action="{{ route('admin.kelompoks.index') }}" method="GET">
             <div class="bg-white rounded-2xl border border-neutral-200 p-4 sm:p-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
