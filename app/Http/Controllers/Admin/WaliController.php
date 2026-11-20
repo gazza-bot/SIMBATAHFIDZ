@@ -23,14 +23,28 @@ class WaliController extends Controller
             });
         }
 
+        $totalWali = (clone $query)->count();
+        $totalAktif = (clone $query)->where('status_aktif', 'aktif')->count();
+
         $walis = $query->latest()->paginate(15)->withQueryString();
 
-        return view('admin.walis.index', [
+        $viewData = [
             'title' => 'Data Wali Santri',
             'pageTitle' => 'Data Wali Santri',
             'walis' => $walis,
             'filters' => $request->only(['search']),
-        ]);
+            'summary' => [
+                'total' => $totalWali,
+                'aktif' => $totalAktif,
+            ],
+        ];
+
+        if ($request->boolean('partial')) {
+            $html = view('admin.walis.partials.results', $viewData)->render();
+            return response()->json(['html' => $html]);
+        }
+
+        return view('admin.walis.index', $viewData);
     }
 
     public function create()

@@ -24,15 +24,29 @@ class UstadzController extends Controller
             });
         }
 
+        $totalUstadz = (clone $query)->count();
+        $totalAktif = (clone $query)->whereHas('kelompoks')->count();
+
         $ustadzs = $query->latest()->paginate(15)->withQueryString();
 
-        return view('admin.ustadzs.index', [
+        $viewData = [
             'title' => 'Data Ustadz Musyrif',
             'pageTitle' => 'Data Ustadz Musyrif',
             'ustadzs' => $ustadzs,
             'filters' => $request->only(['search']),
             'angkatans' => Angkatan::orderBy('nama')->get(),
-        ]);
+            'summary' => [
+                'total' => $totalUstadz,
+                'aktif' => $totalAktif,
+            ],
+        ];
+
+        if ($request->boolean('partial')) {
+            $html = view('admin.ustadzs.partials.results', $viewData)->render();
+            return response()->json(['html' => $html]);
+        }
+
+        return view('admin.ustadzs.index', $viewData);
     }
 
     public function create()

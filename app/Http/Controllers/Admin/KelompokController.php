@@ -30,19 +30,35 @@ class KelompokController extends Controller
             $query->where('angkatan_id', $request->angkatan_id);
         }
 
+        $totalKelompok = (clone $query)->count();
+        $totalAktif = (clone $query)->whereHas('santris')->count();
+        $totalUstadz = (clone $query)->whereNotNull('ustadz_id')->count();
+
         $kelompoks = $query->latest()->paginate(15)->withQueryString();
 
         $ustadzs = Ustadz::with('user')->get();
         $angkatans = Angkatan::orderBy('nama')->get();
 
-        return view('admin.kelompoks.index', [
+        $viewData = [
             'title' => 'Kelompok Halaqah',
             'pageTitle' => 'Kelompok Halaqah',
             'kelompoks' => $kelompoks,
             'ustadzs' => $ustadzs,
             'angkatans' => $angkatans,
             'filters' => $request->only(['search', 'ustadz_id', 'angkatan_id']),
-        ]);
+            'summary' => [
+                'total' => $totalKelompok,
+                'aktif' => $totalAktif,
+                'ustadz' => $totalUstadz,
+            ],
+        ];
+
+        if ($request->boolean('partial')) {
+            $html = view('admin.kelompoks.partials.results', $viewData)->render();
+            return response()->json(['html' => $html]);
+        }
+
+        return view('admin.kelompoks.index', $viewData);
     }
 
     public function create()

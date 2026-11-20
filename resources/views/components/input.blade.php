@@ -14,6 +14,7 @@
     'iconLeft' => null,
     'iconRight' => null,
     'attributes' => [],
+    'multiple' => false,
 ])
 
 <?php
@@ -44,37 +45,47 @@ $iconRightClasses = $iconRight ? 'pr-10' : '';
     @endif
 
     <div class="relative">
-        @if ($iconLeft)
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-neutral-400" aria-hidden="true">
-                {!! $iconLeft !!}
-            </div>
-        @endif
+        @if ($type === 'select')
+            <select
+                id="{{ $inputId }}"
+                name="{{ $name }}"
+                @if ($multiple) multiple @endif
+                {{ $attributes->merge(['class' => $baseClasses . ' cursor-pointer']) }}
+                @if ($disabled) disabled @endif
+                @if ($required) required @endif
+            >
+                @if ($placeholder !== '')
+                    <option value="">{{ $placeholder }}</option>
+                @endif
+                {{ $slot }}
+            </select>
+        @else
+            <input
+                type="{{ $type }}"
+                id="{{ $inputId }}"
+                name="{{ $name }}"
+                value="{{ old($name, $value) }}"
+                placeholder="{{ $placeholder }}"
+                class="{{ $baseClasses }} {{ $stateClasses }} {{ $disabledClasses }} {{ $readonlyClasses }} {{ $paddingClasses }} {{ $iconLeftClasses }} {{ $iconRightClasses }} focus:outline-none focus:ring-2 focus:ring-offset-0"
+                @if ($describedBy) aria-describedby="{{ $describedBy }}" @endif
+                @if ($error) aria-invalid="true" @endif
+                @if ($disabled) disabled @endif
+                @if ($readonly) readonly @endif
+                @if ($required) required @endif
+                {{ $attributes->merge(['class' => $attributes->get('class', '')]) }}
+            />
 
-        <input
-            type="{{ $type }}"
-            id="{{ $inputId }}"
-            name="{{ $name }}"
-            value="{{ old($name, $value) }}"
-            placeholder="{{ $placeholder }}"
-            class="{{ $baseClasses }} {{ $stateClasses }} {{ $disabledClasses }} {{ $readonlyClasses }} {{ $paddingClasses }} {{ $iconLeftClasses }} {{ $iconRightClasses }} focus:outline-none focus:ring-2 focus:ring-offset-0"
-            @if ($describedBy) aria-describedby="{{ $describedBy }}" @endif
-            @if ($error) aria-invalid="true" @endif
-            @if ($disabled) disabled @endif
-            @if ($readonly) readonly @endif
-            @if ($required) required @endif
-            {{ $attributes->merge(['class' => $attributes->get('class', '')]) }}
-        />
+            @if ($iconRight)
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-neutral-400" aria-hidden="true">
+                    {!! $iconRight !!}
+                </div>
+            @endif
 
-        @if ($iconRight)
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-neutral-400" aria-hidden="true">
-                {!! $iconRight !!}
-            </div>
-        @endif
-
-        @if ($success && !$error)
-            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-success-500" aria-hidden="true">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-            </div>
+            @if ($success && !$error)
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-success-500" aria-hidden="true">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+            @endif
         @endif
     </div>
 

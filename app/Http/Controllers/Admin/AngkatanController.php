@@ -24,14 +24,28 @@ class AngkatanController extends Controller
             $query->where('status_aktif', $request->boolean('status_aktif'));
         }
 
+        $totalAngkatan = (clone $query)->count();
+        $totalAktif = (clone $query)->where('status_aktif', true)->count();
+
         $angkatans = $query->latest()->paginate(15)->withQueryString();
 
-        return view('admin.angkatans.index', [
+        $viewData = [
             'title' => 'Angkatan Kelas',
             'pageTitle' => 'Angkatan Kelas',
             'angkatans' => $angkatans,
             'filters' => $request->only(['search', 'status_aktif']),
-        ]);
+            'summary' => [
+                'total' => $totalAngkatan,
+                'aktif' => $totalAktif,
+            ],
+        ];
+
+        if ($request->boolean('partial')) {
+            $html = view('admin.angkatans.partials.results', $viewData)->render();
+            return response()->json(['html' => $html]);
+        }
+
+        return view('admin.angkatans.index', $viewData);
     }
 
     public function create()

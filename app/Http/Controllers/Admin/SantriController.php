@@ -35,19 +35,37 @@ class SantriController extends Controller
             $query->where('status_aktif', $request->status_aktif);
         }
 
+        $totalSantri = (clone $query)->count();
+        $totalAktif = (clone $query)->where('status_aktif', 'aktif')->count();
+        $totalNonaktif = (clone $query)->where('status_aktif', 'nonaktif')->count();
+        $totalLulus = (clone $query)->where('status_aktif', 'lulus')->count();
+
         $santris = $query->latest()->paginate(15)->withQueryString();
 
         $kelompoks = Kelompok::with('ustadz')->get();
         $angkatans = Angkatan::where('status_aktif', true)->get();
 
-        return view('admin.santris.index', [
+        $viewData = [
             'title' => 'Data Santri',
             'pageTitle' => 'Data Santri',
             'santris' => $santris,
             'kelompoks' => $kelompoks,
             'angkatans' => $angkatans,
             'filters' => $request->only(['search', 'kelompok_id', 'angkatan_id', 'status_aktif']),
-        ]);
+            'summary' => [
+                'total' => $totalSantri,
+                'aktif' => $totalAktif,
+                'nonaktif' => $totalNonaktif,
+                'lulus' => $totalLulus,
+            ],
+        ];
+
+        if ($request->boolean('partial')) {
+            $html = view('admin.santris.partials.results', $viewData)->render();
+            return response()->json(['html' => $html]);
+        }
+
+        return view('admin.santris.index', $viewData);
     }
 
     public function create()
