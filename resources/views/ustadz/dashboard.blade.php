@@ -130,7 +130,9 @@
                                 </div>
                             </td>
                             <td class="px-4 py-3 text-sm text-neutral-600">{{ $santri->angkatan->nama ?? '-' }}</td>
-                            <td class="px-4 py-3 text-sm text-neutral-600">Juz {{ $santri->progress_juz + 1 }}</td>
+                            <td class="px-4 py-3 text-sm text-neutral-600">
+                                {{ $santri->progress_juz < 30 ? 'Juz ' . ($santri->progress_juz + 1) : 'Lulus' }}
+                            </td>
                             <td class="px-4 py-3 text-center">
                                 @if ($setoranToday)
                                     <x-badge variant="{{ $setoranToday->jenis == 'ziyadah' ? 'info' : ($setoranToday->jenis == 'murajaah' ? 'secondary' : 'primary') }}" size="sm" dot>

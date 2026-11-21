@@ -27,7 +27,7 @@
     <div class="grid-3 mb-4">
         <div class="info-row">
             <span class="info-label">Target Juz</span>
-            <span class="info-value font-bold text-primary-600">Juz {{ $progressJuz + 1 }}</span>
+            <span class="info-value font-bold text-primary-600">{{ $progressJuz < 30 ? 'Juz ' . ($progressJuz + 1) : 'Lulus' }}</span>
         </div>
         <div class="info-row">
             <span class="info-label">Progres</span>

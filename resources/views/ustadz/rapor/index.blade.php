@@ -59,7 +59,7 @@
             <div class="grid grid-cols-2 gap-4 mb-6">
                 <x-card padding="sm">
                     <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Target Juz</p>
-                    <p class="mt-2 text-2xl font-bold text-primary-600">{{ $selectedSantri->progress_juz + 1 }}</p>
+                    <p class="mt-2 text-2xl font-bold text-primary-600">{{ $selectedSantri->progress_juz < 30 ? 'Juz ' . ($selectedSantri->progress_juz + 1) : 'Lulus' }}</p>
                 </x-card>
                 <x-card padding="sm">
                     <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Progres</p>
