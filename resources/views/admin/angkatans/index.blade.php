@@ -42,7 +42,7 @@
                         <option value="0" {{ $filters['status_aktif'] ?? '' == '0' ? 'selected' : '' }}>Tidak Aktif</option>
                     </x-input>
                 </div>
-                <div class="flex justify-end gap-2">
+                <div class="flex justify-end gap-2 items-center">
                     <x-button type="submit" variant="primary">Terapkan</x-button>
                     <a href="{{ route('admin.angkatans.index') }}" class="text-sm text-primary-600 hover:underline">Reset</a>
                 </div>
