@@ -34,13 +34,13 @@
                         <td class="px-4 py-3 text-sm text-neutral-500">{{ ($kelompoks->currentPage() - 1) * $kelompoks->perPage() + $loop->iteration }}</td>
                         <td class="px-4 py-3 text-sm font-medium text-neutral-900">{{ $kelompok->nama }}</td>
                         <td class="px-4 py-3 text-sm text-neutral-600">
-                            {{ $kelompok->ustadz?->nama ?? '—' }}
+                            {{ $kelompok->ustadz?->nama ?? '-' }}
                             @if ($kelompok->ustadz)
-                                ({{ $kelompok->ustadz->user->username ?? '—' }})
+                                ({{ $kelompok->ustadz->user->username ?? '-' }})
                             @endif
                         </td>
-                        <td class="px-4 py-3 text-sm text-neutral-600">{{ $kelompok->angkatan?->nama ?? '—' }}</td>
-                        <td class="px-4 py-3 text-sm text-neutral-600">{{ $kelompok->deskripsi ?? '—' }}</td>
+                        <td class="px-4 py-3 text-sm text-neutral-600">{{ $kelompok->angkatan?->nama ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm text-neutral-600">{{ $kelompok->deskripsi ?? '-' }}</td>
                         <td class="px-4 py-3 text-sm text-neutral-600">{{ $kelompok->santris->count() }}</td>
                         <td class="px-4 py-3">
                             @if ($kelompok->ustadz_id)

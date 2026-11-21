@@ -34,7 +34,7 @@
                             @forelse ($ustadz->kelompoks as $kelompok)
                                 <span class="block text-xs text-neutral-500">{{ $kelompok->nama }} ({{ $kelompok->angkatan->nama }})</span>
                             @empty
-                                <span class="text-xs text-neutral-400">—</span>
+                                <span class="text-xs text-neutral-400">-</span>
                             @endforelse
                         </td>
                         <td class="px-4 py-3 text-sm text-neutral-600">{{ $ustadz->kelompoks_count }}</td>

@@ -10,7 +10,7 @@
             </x-button>
             <div>
                 <h2 class="text-xl font-bold text-neutral-900">Detail Kelompok: {{ $kelompok->nama }}</h2>
-                <p class="mt-1 text-sm text-neutral-500">Musyrif: {{ $kelompok->ustadz->user->name ?? '—' }}</p>
+                <p class="mt-1 text-sm text-neutral-500">Musyrif: {{ $kelompok->ustadz->user->name ?? '-' }}</p>
             </div>
             <div class="ml-auto flex gap-2">
                 <x-button variant="ghost" href="{{ route('admin.kelompoks.edit', $kelompok) }}">Edit</x-button>
@@ -29,11 +29,11 @@
                         </div>
                         <div>
                             <dt class="text-sm text-neutral-500">Musyrif</dt>
-                            <dd class="mt-1 font-medium text-neutral-900">{{ $kelompok->ustadz->user->name ?? '—' }}</dd>
+                            <dd class="mt-1 font-medium text-neutral-900">{{ $kelompok->ustadz->user->name ?? '-' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm text-neutral-500">Angkatan</dt>
-                            <dd class="mt-1 font-medium text-neutral-900">{{ $kelompok->angkatan->nama ?? '—' }}</dd>
+                            <dd class="mt-1 font-medium text-neutral-900">{{ $kelompok->angkatan->nama ?? '-' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm text-neutral-500">Jumlah Santri</dt>
@@ -41,7 +41,7 @@
                         </div>
                         <div class="md:col-span-2">
                             <dt class="text-sm text-neutral-500">Deskripsi</dt>
-                            <dd class="mt-1 font-medium text-neutral-900 whitespace-pre-wrap">{{ $kelompok->deskripsi ?? '—' }}</dd>
+                            <dd class="mt-1 font-medium text-neutral-900 whitespace-pre-wrap">{{ $kelompok->deskripsi ?? '-' }}</dd>
                         </div>
                     </dl>
                 </x-card>
@@ -66,7 +66,7 @@
                                         <tr class="hover:bg-neutral-50">
                                             <td class="px-4 py-2 text-sm font-mono text-neutral-600">{{ $santri->nis }}</td>
                                             <td class="px-4 py-2 text-sm font-medium text-neutral-900">{{ $santri->nama }}</td>
-                                            <td class="px-4 py-2 text-sm text-neutral-600">{{ $santri->wali->user->name ?? '—' }}</td>
+                                            <td class="px-4 py-2 text-sm text-neutral-600">{{ $santri->wali->user->name ?? '-' }}</td>
                                             <td class="px-4 py-2"><x-badge variant="success" size="xs">{{ $santri->status_aktif }}</x-badge></td>
                                         </tr>
                                     @endforeach

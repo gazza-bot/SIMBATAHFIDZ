@@ -70,7 +70,7 @@
                                     @foreach ($angkatan->kelompoks as $kelompok)
                                         <tr class="hover:bg-neutral-50">
                                             <td class="px-4 py-2 text-sm font-medium text-neutral-900">{{ $kelompok->nama }}</td>
-                                            <td class="px-4 py-2 text-sm text-neutral-600">{{ $kelompok->ustadz->user->name ?? '—' }}</td>
+                                            <td class="px-4 py-2 text-sm text-neutral-600">{{ $kelompok->ustadz->user->name ?? '-' }}</td>
                                             <td class="px-4 py-2 text-sm text-neutral-600">{{ $kelompok->santris->count() }}</td>
                                         </tr>
                                     @endforeach

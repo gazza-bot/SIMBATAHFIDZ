@@ -10,7 +10,7 @@
             </x-button>
             <div>
                 <h2 class="text-xl font-bold text-neutral-900">Edit Kelompok: {{ $kelompok->nama }}</h2>
-                <p class="mt-1 text-sm text-neutral-500">Musyrif: {{ $kelompok->ustadz->user->name ?? '—' }}</p>
+                <p class="mt-1 text-sm text-neutral-500">Musyrif: {{ $kelompok->ustadz->user->name ?? '-' }}</p>
             </div>
         </div>
 

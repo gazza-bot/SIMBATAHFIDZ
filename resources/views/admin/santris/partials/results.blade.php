@@ -38,9 +38,9 @@
                         <td class="px-4 py-3 text-sm text-neutral-500">{{ ($santris->currentPage() - 1) * $santris->perPage() + $loop->iteration }}</td>
                         <td class="px-4 py-3 text-sm font-medium text-neutral-900">{{ $santri->nis }}</td>
                         <td class="px-4 py-3 text-sm font-medium text-neutral-900">{{ $santri->nama }}</td>
-                        <td class="px-4 py-3 text-sm text-neutral-600">{{ $santri->angkatan->nama ?? '—' }}</td>
-                        <td class="px-4 py-3 text-sm text-neutral-600">{{ $santri->kelompok->nama ?? '—' }}</td>
-                        <td class="px-4 py-3 text-sm text-neutral-600">{{ $santri->wali->user->name ?? '—' }}</td>
+                        <td class="px-4 py-3 text-sm text-neutral-600">{{ $santri->angkatan->nama ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm text-neutral-600">{{ $santri->kelompok->nama ?? '-' }}</td>
+                        <td class="px-4 py-3 text-sm text-neutral-600">{{ $santri->wali->user->name ?? '-' }}</td>
                         <td class="px-4 py-3">
                             @php
                                 $status = $santri->status_aktif;

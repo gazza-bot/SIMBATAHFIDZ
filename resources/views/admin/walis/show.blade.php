@@ -34,11 +34,11 @@
                             </div>
                             <div>
                                 <dt class="text-sm text-neutral-500">No. Telepon</dt>
-                                <dd class="mt-1 font-medium text-neutral-900">{{ $wali->telepon ?? '—' }}</dd>
+                                <dd class="mt-1 font-medium text-neutral-900">{{ $wali->telepon ?? '-' }}</dd>
                             </div>
                             <div>
                                 <dt class="text-sm text-neutral-500">Alamat</dt>
-                                <dd class="mt-1 font-medium text-neutral-900 whitespace-pre-wrap">{{ $wali->alamat ?? '—' }}</dd>
+                                <dd class="mt-1 font-medium text-neutral-900 whitespace-pre-wrap">{{ $wali->alamat ?? '-' }}</dd>
                             </div>
                         </div>
                     </dl>
@@ -65,8 +65,8 @@
                                         <tr class="hover:bg-neutral-50">
                                             <td class="px-4 py-2 text-sm font-mono text-neutral-600">{{ $santri->nis }}</td>
                                             <td class="px-4 py-2 text-sm font-medium text-neutral-900">{{ $santri->nama }}</td>
-                                            <td class="px-4 py-2 text-sm text-neutral-600">{{ $santri->angkatan->nama ?? '—' }}</td>
-                                            <td class="px-4 py-2 text-sm text-neutral-600">{{ $santri->kelompok->nama ?? '—' }}</td>
+                                            <td class="px-4 py-2 text-sm text-neutral-600">{{ $santri->angkatan->nama ?? '-' }}</td>
+                                            <td class="px-4 py-2 text-sm text-neutral-600">{{ $santri->kelompok->nama ?? '-' }}</td>
                                             <td class="px-4 py-2"><x-badge variant="success" size="xs">{{ $santri->status_aktif }}</x-badge></td>
                                         </tr>
                                     @endforeach

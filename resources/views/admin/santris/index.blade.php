@@ -52,7 +52,7 @@
                     <option value="">Semua Kelompok</option>
                     @foreach ($kelompoks as $kelompok)
                     <option value="{{ $kelompok->id }}" {{ $filters['kelompok_id'] ?? '' == $kelompok->id ? 'selected' : '' }}>
-                        {{ $kelompok->nama }} ({{ $kelompok->ustadz->user->name ?? '—' }})
+                        {{ $kelompok->nama }} ({{ $kelompok->ustadz->user->name ?? '-' }})
                     </option>
                     @endforeach
                 </x-input>

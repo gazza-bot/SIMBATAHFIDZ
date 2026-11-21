@@ -37,7 +37,7 @@
                         </div>
                         <div>
                             <dt class="text-sm text-neutral-500">No. Telepon</dt>
-                            <dd class="mt-1 font-medium text-neutral-900">{{ $ustadz->telepon ?? '—' }}</dd>
+                            <dd class="mt-1 font-medium text-neutral-900">{{ $ustadz->telepon ?? '-' }}</dd>
                         </div>
                     </dl>
                 </x-card>
@@ -60,7 +60,7 @@
                                     @foreach ($ustadz->kelompoks as $kelompok)
                                         <tr class="hover:bg-neutral-50">
                                             <td class="px-4 py-2 text-sm font-medium text-neutral-900">{{ $kelompok->nama }}</td>
-                                            <td class="px-4 py-2 text-sm text-neutral-600">{{ $kelompok->angkatan->nama ?? '—' }}</td>
+                                            <td class="px-4 py-2 text-sm text-neutral-600">{{ $kelompok->angkatan->nama ?? '-' }}</td>
                                             <td class="px-4 py-2 text-sm text-neutral-600">{{ $kelompok->santris->count() }}</td>
                                         </tr>
                                     @endforeach

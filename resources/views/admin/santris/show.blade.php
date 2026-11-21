@@ -33,19 +33,19 @@
                         </div>
                         <div>
                             <dt class="text-sm text-neutral-500">Angkatan</dt>
-                            <dd class="mt-1 font-medium text-neutral-900">{{ $santri->angkatan->nama ?? '—' }}</dd>
+                            <dd class="mt-1 font-medium text-neutral-900">{{ $santri->angkatan->nama ?? '-' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm text-neutral-500">Kelompok Halaqah</dt>
-                            <dd class="mt-1 font-medium text-neutral-900">{{ $santri->kelompok->nama ?? '—' }}</dd>
+                            <dd class="mt-1 font-medium text-neutral-900">{{ $santri->kelompok->nama ?? '-' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm text-neutral-500">Musyrif</dt>
-                            <dd class="mt-1 font-medium text-neutral-900">{{ $santri->kelompok->ustadz->user->name ?? '—' }}</dd>
+                            <dd class="mt-1 font-medium text-neutral-900">{{ $santri->kelompok->ustadz->user->name ?? '-' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm text-neutral-500">Wali Santri</dt>
-                            <dd class="mt-1 font-medium text-neutral-900">{{ $santri->wali->user->name ?? '—' }}</dd>
+                            <dd class="mt-1 font-medium text-neutral-900">{{ $santri->wali->user->name ?? '-' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm text-neutral-500">Status</dt>
@@ -55,7 +55,7 @@
                         </div>
                         <div>
                             <dt class="text-sm text-neutral-500">Tanggal Masuk</dt>
-                            <dd class="mt-1 font-medium text-neutral-900">{{ $santri->tanggal_masuk?->format('d M Y') ?? '—' }}</dd>
+                            <dd class="mt-1 font-medium text-neutral-900">{{ $santri->tanggal_masuk?->format('d M Y') ?? '-' }}</dd>
                         </div>
                     </dl>
                 </x-card>
@@ -65,7 +65,7 @@
                     <dl class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <dt class="text-sm text-neutral-500">Juz Terakhir Mutqin</dt>
-                            <dd class="mt-1 text-xl font-bold text-primary-600">{{ $santri->progress_juz ?? '—' }}</dd>
+                            <dd class="mt-1 text-xl font-bold text-primary-600">{{ $santri->progress_juz ?? '-' }}</dd>
                         </div>
                         <div>
                             <dt class="text-sm text-neutral-500">Persentase Capaian</dt>
@@ -73,7 +73,7 @@
                         </div>
                         <div>
                             <dt class="text-sm text-neutral-500">Mutu Terakhir</dt>
-                            <dd class="mt-1 font-medium text-neutral-900">{{ $santri->mutu_terakhir ?? '—' }}</dd>
+                            <dd class="mt-1 font-medium text-neutral-900">{{ $santri->mutu_terakhir ?? '-' }}</dd>
                         </div>
                     </dl>
                 </x-card>
