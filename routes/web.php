@@ -111,21 +111,10 @@ Route::middleware(['auth', 'role:kepala_tahfidz'])->prefix('kepala')->name('kepa
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'role:wali'])->prefix('wali')->name('wali.')->group(function () {
-    Route::get('/mutabaah/{santri?}', function () {
-        return view('wali.mutabaah', [
-            'title' => "Mutaba'ah Anak",
-            'pageTitle' => "Mutaba'ah Anak",
-            'anakans' => auth()->user()->wali?->santris ?? collect(),
-        ]);
-    })->name('mutabaah');
-
-    Route::get('/riwayat/{santri?}', function () {
-        return view('wali.riwayat', ['title' => 'Riwayat Setoran']);
-    })->name('riwayat');
-
-    Route::get('/peta-juz/{santri?}', function () {
-        return view('wali.peta-juz', ['title' => 'Peta Hafalan']);
-    })->name('peta-juz');
+    Route::get('/mutabaah/{santri?}', [\App\Http\Controllers\Wali\DashboardController::class, 'index'])->name('mutabaah');
+    Route::get('/riwayat/{santri?}', [\App\Http\Controllers\Wali\DashboardController::class, 'riwayat'])->name('riwayat');
+    Route::get('/peta-juz/{santri?}', [\App\Http\Controllers\Wali\DashboardController::class, 'petaJuz'])->name('peta-juz');
+    Route::post('/santri/{santri}/doa', [\App\Http\Controllers\Wali\DashboardController::class, 'storeDoa'])->name('doa.store');
 
     Route::get('/profile', function () {
         return view('wali.profile', ['title' => 'Profil Wali']);

@@ -36,7 +36,7 @@
     $iconDash = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>';
     $iconBook = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 4v12a4 4 0 00-4 4H8a4 4 0 00-4-4V4a2 2 0 012-2h8a2 2 0 012 2z"/></svg>';
 
-    // Sidebar: hanya admin, ustadz, kepala. Wali pakai bottom bar.
+    // Sidebar navigation per role
     $navigation = match ($role) {
         'admin' => [
             ['label' => 'Dashboard', 'url' => '/admin/dashboard', 'active' => 'admin.dashboard', 'icon' => $iconDash],
@@ -57,21 +57,34 @@
         'kepala_tahfidz' => [
             ['label' => 'Dashboard', 'url' => '/kepala/dashboard', 'active' => 'kepala.dashboard', 'icon' => $iconDash],
         ],
+        'wali' => [
+            ['label' => 'Ikhtisar Capaian', 'url' => '/wali/mutabaah', 'active' => 'wali.mutabaah*', 'icon' => $iconDash],
+            ['label' => 'Riwayat Setoran', 'url' => '/wali/riwayat', 'active' => 'wali.riwayat*', 'icon' => $iconClock],
+            ['label' => 'Peta 30 Juz', 'url' => '/wali/peta-juz', 'active' => 'wali.peta-juz*', 'icon' => $iconBook],
+        ],
         default => [],
     };
 
-    // Bottom bar mobile: diisi untuk ustadz
-    $bottomNav = $role === 'ustadz' ? [
-        ['label' => 'Dasbor', 'url' => '/ustadz/dashboard', 'active' => 'ustadz.dashboard', 'icon' => $iconDash],
-        ['label' => 'Presensi', 'url' => '/ustadz/absensis', 'active' => 'ustadz.absensis.*', 'icon' => $iconCheck],
-        ['label' => 'Setoran', 'url' => '/ustadz/setorans', 'active' => 'ustadz.setorans.*', 'icon' => $iconList],
-        ['label' => 'Rekap', 'url' => '/ustadz/rekap', 'active' => 'ustadz.rekap.*', 'icon' => $iconChart],
-        ['label' => 'Rapor', 'url' => '/ustadz/rapor', 'active' => 'ustadz.rapor.*', 'icon' => $iconPrinter],
-    ] : [];
+    // Bottom bar mobile
+    $bottomNav = match ($role) {
+        'ustadz' => [
+            ['label' => 'Dasbor', 'url' => '/ustadz/dashboard', 'active' => 'ustadz.dashboard', 'icon' => $iconDash],
+            ['label' => 'Presensi', 'url' => '/ustadz/absensis', 'active' => 'ustadz.absensis.*', 'icon' => $iconCheck],
+            ['label' => 'Setoran', 'url' => '/ustadz/setorans', 'active' => 'ustadz.setorans.*', 'icon' => $iconList],
+            ['label' => 'Rekap', 'url' => '/ustadz/rekap', 'active' => 'ustadz.rekap.*', 'icon' => $iconChart],
+            ['label' => 'Rapor', 'url' => '/ustadz/rapor', 'active' => 'ustadz.rapor.*', 'icon' => $iconPrinter],
+        ],
+        'wali' => [
+            ['label' => "Mutaba'ah", 'url' => '/wali/mutabaah', 'active' => 'wali.mutabaah*', 'icon' => $iconDash],
+            ['label' => 'Riwayat', 'url' => '/wali/riwayat', 'active' => 'wali.riwayat*', 'icon' => $iconClock],
+            ['label' => 'Peta Juz', 'url' => '/wali/peta-juz', 'active' => 'wali.peta-juz*', 'icon' => $iconBook],
+        ],
+        default => [],
+    };
 
-    $hasSidebar = $role && $role !== 'wali';
+    $hasSidebar = (bool) $role;
     $mainMargin = $hasSidebar ? 'lg:ml-64' : '';
-    $bottomPadding = $bottomNav ? 'pb-24' : 'pb-8';
+    $bottomPadding = !empty($bottomNav) ? 'pb-24' : 'pb-8';
 @endphp
 
     <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50 px-4 py-2 bg-primary-500 text-white rounded-lg">Lompat ke konten utama</a>
@@ -84,11 +97,29 @@
                         <div class="w-10 h-10 rounded-xl bg-primary-500 flex items-center justify-center flex-shrink-0">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
                         </div>
-                        <span class="text-base font-bold text-neutral-900">SIMBA TAHFIDZ</span>
+                        <div>
+                            <span class="text-base font-bold text-neutral-900 block leading-tight">SIMBA TAHFIDZ</span>
+                            <span class="text-[11px] text-neutral-500">Sistem Belajar Al-Qur'an</span>
+                        </div>
                     </a>
                 </div>
 
+                @if ($role === 'wali' && isset($selectedSantri) && $selectedSantri)
+                    <div class="p-3 mx-3 my-2 rounded-xl bg-primary-50/60 border border-primary-100 flex items-center gap-3">
+                        <x-avatar :name="$selectedSantri->nama" size="sm" :photo="$selectedSantri->foto ?? null" />
+                        <div class="flex-1 min-w-0">
+                            <p class="text-xs font-bold text-neutral-900 truncate">{{ $selectedSantri->nama }}</p>
+                            <p class="text-[11px] text-neutral-500 truncate">{{ $selectedSantri->kelompok->nama ?? 'Kelas Tahfidz' }}</p>
+                        </div>
+                    </div>
+                @endif
+
                 <nav class="flex-1 p-4 space-y-1 overflow-y-auto" aria-label="Menu utama">
+                    @if ($role === 'wali')
+                        <div class="px-3 pb-2 pt-1 text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                            Portal Wali Santri
+                        </div>
+                    @endif
                     @foreach ($navigation as $item)
                         <a href="{{ $item['url'] }}"
                            class="flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg transition-colors {{ request()->routeIs($item['active']) ? 'bg-primary-50 text-primary-600' : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50' }}"
@@ -98,6 +129,16 @@
                         </a>
                     @endforeach
                 </nav>
+
+                @if ($role === 'wali')
+                    <div class="px-4 py-2.5 border-t border-neutral-100 flex items-center justify-between text-xs text-neutral-500 bg-neutral-50/50">
+                        <span class="flex items-center gap-1.5 font-medium text-neutral-700">
+                            <span class="w-2 h-2 rounded-full bg-success-500 inline-block"></span>
+                            Ponpes Darut Taqwa
+                        </span>
+                        <x-badge variant="success" size="sm">Aktif</x-badge>
+                    </div>
+                @endif
 
                 <div class="p-4 border-t border-neutral-100">
                     <div class="flex items-center gap-3">
@@ -158,7 +199,7 @@
 
     @if ($bottomNav)
         <nav class="fixed bottom-0 left-0 right-0 z-20 bg-white border-t border-neutral-200 lg:hidden" style="padding-bottom: env(safe-area-inset-bottom)" aria-label="Navigasi mobile">
-            <div class="grid grid-cols-5 gap-1 px-2 py-1">
+            <div class="grid {{ count($bottomNav) === 3 ? 'grid-cols-3' : 'grid-cols-5' }} gap-1 px-2 py-1">
                 @foreach ($bottomNav as $item)
                     <a href="{{ $item['url'] }}"
                        class="flex flex-col items-center gap-0.5 px-1 py-2 rounded-xl min-h-[48px] justify-center transition-colors {{ request()->routeIs($item['active']) ? 'bg-primary-50 text-primary-600' : 'text-neutral-500 hover:text-neutral-700' }}"

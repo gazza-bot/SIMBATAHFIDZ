@@ -53,6 +53,11 @@ class Santri extends Model
         return $this->hasMany(Absensi::class);
     }
 
+    public function waliMessages(): HasMany
+    {
+        return $this->hasMany(WaliMessage::class);
+    }
+
     public function getProgressJuzAttribute(): ?int
     {
         return $this->setorans()

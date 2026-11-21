@@ -44,8 +44,11 @@ Sistem Informasi Mutaba'ah & Belajar Al-Qur'an — Pondok Pesantren Darut Taqwa 
 - [x] Layout disesuaikan dengan UI_SIMBATAHFIDZ (tanpa Chart.js)
 
 ## Sprint 5 — Dasbor Wali
-- [ ] Mutaba'ah anak (tab multi-anak)
-- [ ] Riwayat setoran & absensi
+- [x] Mutaba'ah anak (tab multi-anak)
+- [x] Riwayat setoran & absensi
+- [x] Peta Hafalan 30 Juz & amalan yaumiyah santri
+- [x] Pesan kasih orang tua interaktif (wali_messages)
+- [x] Layout desktop & mobile disesuaikan dengan UI_SIMBATAHFIDZ
 
 ## Sprint 6 — Peta Hafalan 30 Juz
 - [ ] Grid 30 juz (Mutqin cover penuh / parsial)

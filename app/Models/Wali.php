@@ -29,4 +29,9 @@ class Wali extends Model
     {
         return $this->hasMany(Santri::class);
     }
+
+    public function messages(): HasMany
+    {
+        return $this->hasMany(WaliMessage::class);
+    }
 }
