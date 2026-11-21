@@ -514,11 +514,22 @@
                                 "{{ $pesanTerbaru ? $pesanTerbaru->pesan : 'Semoga ananda senantiasa dimudahkan menjaga kalamullah, tetap rendah hati, menjaga adab kepada para asatidz, dan selalu istiqomah dalam kebaikan.' }}"
                             </p>
                             <div class="flex items-center justify-between text-[11px] text-neutral-500 pt-2 border-t border-neutral-200/60">
-                                <span class="flex items-center gap-1 text-success-700 font-medium">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                    Dibacakan Musyrif saat Halaqah
-                                </span>
-                                <span>{{ $pesanTerbaru ? $pesanTerbaru->created_at->diffForHumans() : 'Terkirim' }}</span>
+                                @if ($pesanTerbaru && $pesanTerbaru->dibacakan)
+                                    <span class="flex items-center gap-1 text-success-700 font-semibold" title="Dibacakan pada {{ $pesanTerbaru->dibacakan_at?->translatedFormat('d M Y, H:i') }}">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                        Dibacakan Musyrif saat Halaqah
+                                    </span>
+                                @elseif ($pesanTerbaru)
+                                    <span class="flex items-center gap-1 text-amber-700 font-medium">
+                                        <svg class="w-3.5 h-3.5 text-amber-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                        Menunggu dibacakan saat halaqah
+                                    </span>
+                                @else
+                                    <span class="flex items-center gap-1 text-neutral-400 font-medium">
+                                        Belum ada pesan terkirim
+                                    </span>
+                                @endif
+                                <span>{{ $pesanTerbaru ? $pesanTerbaru->created_at->diffForHumans() : '-' }}</span>
                             </div>
                         </div>
                     </div>

@@ -82,6 +82,7 @@ Route::middleware(['auth', 'role:ustadz'])->prefix('ustadz')->name('ustadz.')->g
     Route::get('/dashboard', [\App\Http\Controllers\Ustadz\DashboardController::class, 'index'])->name('dashboard');
 
     Route::post('dashboard/catatan', [\App\Http\Controllers\Ustadz\DashboardController::class, 'storeNote'])->name('dashboard.catatan');
+    Route::post('pesan-wali/{message}/bacakan', [\App\Http\Controllers\Ustadz\DashboardController::class, 'markPesanDibacakan'])->name('pesan-wali.bacakan');
     Route::get('setorans/sukses/{setoran}', [\App\Http\Controllers\Ustadz\SetoranController::class, 'sukses'])->name('setorans.sukses');
     Route::resource('setorans', \App\Http\Controllers\Ustadz\SetoranController::class)->whereNumber('setoran');
     Route::resource('absensis', \App\Http\Controllers\Ustadz\AbsensiController::class)->only(['index', 'create', 'store']);

@@ -95,7 +95,36 @@
                                 <div class="flex items-center gap-3">
                                     <x-avatar :name="$santri->nama" size="sm" />
                                     <div>
-                                        <p class="text-sm font-medium text-neutral-900">{{ $santri->nama }}</p>
+                                        <div class="flex items-center gap-1.5 flex-wrap">
+                                            <p class="text-sm font-medium text-neutral-900">{{ $santri->nama }}</p>
+                                            @php
+                                                $santriMsgs = $waliMessages->get($santri->id);
+                                                $latestMsg = $santriMsgs?->first();
+                                                $hasUnreadMsg = $santriMsgs?->contains(fn($m) => ! $m->dibacakan);
+                                            @endphp
+                                            @if ($latestMsg)
+                                                <button
+                                                    type="button"
+                                                    data-id="{{ $latestMsg->id }}"
+                                                    data-wali="{{ $latestMsg->wali->nama ?? 'Wali Santri' }}"
+                                                    data-santri="{{ $santri->nama }}"
+                                                    data-pesan="{{ $latestMsg->pesan }}"
+                                                    data-dibacakan="{{ $latestMsg->dibacakan ? '1' : '0' }}"
+                                                    data-dibacakan-at="{{ $latestMsg->dibacakan_at ? $latestMsg->dibacakan_at->translatedFormat('d M Y, H:i') : '' }}"
+                                                    data-waktu="{{ $latestMsg->created_at->diffForHumans() }}"
+                                                    data-url="{{ route('ustadz.pesan-wali.bacakan', $latestMsg->id) }}"
+                                                    onclick="openPesanModalFromBtn(this)"
+                                                    class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium transition-colors cursor-pointer {{ $hasUnreadMsg ? 'bg-amber-100 text-amber-900 hover:bg-amber-200 ring-1 ring-amber-300' : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200' }}"
+                                                    title="{{ $hasUnreadMsg ? 'Ada pesan doa baru dari orang tua' : 'Lihat doa dari orang tua' }}"
+                                                    aria-label="Pesan doa dari orang tua untuk {{ $santri->nama }}">
+                                                    <svg class="w-3.5 h-3.5 {{ $hasUnreadMsg ? 'text-amber-600 animate-pulse' : 'text-neutral-400' }}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
+                                                    @if ($hasUnreadMsg)
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
+                                                        <span class="text-[10px] font-bold">Doa Baru</span>
+                                                    @endif
+                                                </button>
+                                            @endif
+                                        </div>
                                         <p class="text-xs text-neutral-500">{{ $santri->nis }}</p>
                                     </div>
                                 </div>
@@ -199,5 +228,118 @@
             </x-button>
         </div>
     </form>
+
+    {{-- Modal Pesan Doa Wali Santri --}}
+    <div id="modal-pesan-wali" class="fixed inset-0 z-50 bg-neutral-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-pesan-title">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl">
+            <div class="flex items-center justify-between pb-3 border-b border-neutral-100">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <h3 id="modal-pesan-title" class="text-base font-bold text-neutral-900">Pesan Doa & Kasih Orang Tua</h3>
+                </div>
+                <button type="button" onclick="closePesanWaliModal()" class="text-neutral-400 hover:text-neutral-700 p-1 rounded-lg" aria-label="Tutup modal">
+                    ✕
+                </button>
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex items-center justify-between text-xs pb-1 border-b border-neutral-100">
+                    <p class="text-neutral-600">
+                        Dari: <span id="modal-wali-nama" class="font-bold text-neutral-900"></span>
+                    </p>
+                    <span id="modal-pesan-waktu" class="text-neutral-500 font-mono"></span>
+                </div>
+
+                <div class="text-xs text-neutral-600">
+                    Untuk ananda: <span id="modal-santri-nama" class="font-bold text-neutral-900"></span>
+                </div>
+
+                <div class="p-4 rounded-xl bg-amber-50/70 border border-amber-200/80 space-y-2">
+                    <p class="text-xs font-semibold text-amber-900 flex items-center gap-1.5">
+                        <svg class="w-4 h-4 text-amber-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                        Pesan Doa untuk Dibacakan saat Halaqah:
+                    </p>
+                    <blockquote id="modal-pesan-teks" class="text-sm text-neutral-800 italic leading-relaxed whitespace-pre-wrap"></blockquote>
+                </div>
+
+                <div id="modal-status-container" class="pt-1">
+                    {{-- Status Tag dynamically set --}}
+                </div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-neutral-100">
+                <button
+                    type="button"
+                    onclick="closePesanWaliModal()"
+                    class="px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-neutral-700 hover:bg-neutral-100 transition-colors">
+                    Tutup
+                </button>
+                <form id="form-bacakan-pesan" method="POST" action="">
+                    @csrf
+                    <button
+                        type="submit"
+                        id="btn-bacakan-pesan"
+                        class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-primary-600 text-white hover:bg-primary-700 transition-colors shadow-sm flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Tandai Sudah Dibacakan saat Halaqah
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    function openPesanModalFromBtn(btn) {
+        openPesanWaliModal({
+            id: btn.dataset.id,
+            wali_nama: btn.dataset.wali,
+            santri_nama: btn.dataset.santri,
+            pesan: btn.dataset.pesan,
+            dibacakan: btn.dataset.dibacakan === '1',
+            dibacakan_at: btn.dataset.dibacakanAt,
+            created_at: btn.dataset.waktu,
+            action_url: btn.dataset.url
+        });
+    }
+
+    function openPesanWaliModal(data) {
+        const modal = document.getElementById('modal-pesan-wali');
+        if (!modal) return;
+
+        document.getElementById('modal-wali-nama').textContent = data.wali_nama;
+        document.getElementById('modal-santri-nama').textContent = data.santri_nama;
+        document.getElementById('modal-pesan-teks').textContent = data.pesan;
+        document.getElementById('modal-pesan-waktu').textContent = data.created_at;
+
+        const form = document.getElementById('form-bacakan-pesan');
+        form.action = data.action_url;
+
+        const statusContainer = document.getElementById('modal-status-container');
+        const btnBacakan = document.getElementById('btn-bacakan-pesan');
+
+        if (data.dibacakan) {
+            statusContainer.innerHTML = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-success-50 text-success-700 border border-success-200"><span class="w-1.5 h-1.5 rounded-full bg-success-600"></span> Sudah dibacakan pada ' + (data.dibacakan_at || 'halaqah') + '</span>';
+            btnBacakan.classList.add('hidden');
+        } else {
+            statusContainer.innerHTML = '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Belum dibacakan saat halaqah</span>';
+            btnBacakan.classList.remove('hidden');
+        }
+
+        modal.classList.remove('hidden');
+    }
+
+    function closePesanWaliModal() {
+        const modal = document.getElementById('modal-pesan-wali');
+        if (modal) modal.classList.add('hidden');
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closePesanWaliModal();
+        }
+    });
+</script>
 @endsection

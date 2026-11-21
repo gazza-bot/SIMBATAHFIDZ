@@ -7,6 +7,7 @@ use App\Models\Absensi;
 use App\Models\HalaqahNote;
 use App\Models\Santri;
 use App\Models\Setoran;
+use App\Models\WaliMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -80,6 +81,12 @@ class DashboardController extends Controller
             ->where('tanggal', $today)
             ->first();
 
+        $waliMessages = WaliMessage::with('wali.user')
+            ->whereIn('santri_id', $allSantris->pluck('id'))
+            ->orderByDesc('id')
+            ->get()
+            ->groupBy('santri_id');
+
         $filter = $request->get('filter', 'semua');
         $allowedFilters = ['semua', 'belum', 'sudah'];
         if (!in_array($filter, $allowedFilters)) {
@@ -111,9 +118,27 @@ class DashboardController extends Controller
             'lastSetorans' => $lastSetorans,
             'targetSimaan' => $targetSimaan,
             'halaqahNote' => $halaqahNote,
+            'waliMessages' => $waliMessages,
             'filter' => $filter,
             'setoranHariIni' => $setoranHariIni,
         ]);
+    }
+
+    public function markPesanDibacakan(Request $request, WaliMessage $message)
+    {
+        $ustadz = Auth::user()->ustadz;
+        $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
+
+        if (! in_array($message->santri->kelompok_id, $kelompokIds)) {
+            abort(403, 'Pesan ini bukan milik santri di halaqah Anda.');
+        }
+
+        $message->update([
+            'dibacakan' => true,
+            'dibacakan_at' => now(),
+        ]);
+
+        return back()->with('success', "Pesan doa dari orang tua {$message->santri->nama} berhasil ditandai sudah dibacakan saat halaqah.");
     }
 
     public function storeNote(Request $request)
