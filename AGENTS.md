@@ -131,11 +131,12 @@ sm 640, md 768, lg 1024, xl 1280, 2xl 1536
 |-------|-------|
 | User | `username` unique, `role`, `foto`; hasOne Wali/Ustadz/KepalaTahfidz |
 | Santri | belongsTo kelompok/angkatan/wali; hasMany setorans/absensis; accessors `progress_juz`, `progress_percent`, `mutu_terakhir` |
-| Setoran | belongsTo santri/surah/ustadz; status: `menunggu_validasi`, `maqbul`, `jayyid`, `jayyid_jiddan`, `mumtaz` |
-| Surah | 114 seeded rows: `nama_arab`, `jumlah_ayat`, `juz` |
+| Setoran | belongsTo santri/surah/ustadz; status: `pending`, `approved`; nilai: `maqbul`, `jayyid`, `jayyid_jiddan`, `mumtaz` |
+| Surah | 114 seeded rows: `nama_arab`, `jumlah_ayat`, `juz_mulai`, `juz_selesai` |
 | Kelompok | belongsTo angkatan/ustadz; hasMany santris |
+| JuzCoverage | `app/Support/JuzCoverage.php`: strict per-juz ayat coverage via `juz_starts`; statuses `mutqin`, `parsial`, `belum` |
 
-**Mutqin (locked)**: a juz is Mutqin when every surah in it has a full-cover ziyadah setoran (`ayat_awal = 1`, `ayat_akhir = jumlah_ayat`).
+**Mutqin (locked)**: a juz is Mutqin when every ayat in the juz range (from `juz_starts`) is covered by at least one approved ziyadah setoran.
 
 ---
 
@@ -149,8 +150,8 @@ sm 640, md 768, lg 1024, xl 1280, 2xl 1536
 | 3 | Absensi Kelompok (Ustadz): presensi, rekap | Done |
 | 4 | Dasbor Kepala: stats + Chart.js, attention list | Done |
 | 5 | Dasbor Wali: mutaba'ah multi-anak, riwayat, peta 30 juz, pesan doa | Done |
-| 6 | Peta Hafalan 30 Juz | Next |
-| 7 | Murajaah Bulanan | Pending |
+| 6 | Peta Hafalan 30 Juz (strict Mutqin via juz_starts, embed admin/ustadz, page kepala) | Done |
+| 7 | Murajaah Bulanan | Next |
 | 8 | PDF export + accessibility audit | Pending |
 
 Work only inside the current sprint. Do not jump ahead or add navigation for unbuilt pages (R-24).
@@ -296,7 +297,7 @@ Every data view needs empty, loading, error states (R-27). Placeholder dashboard
 | PDF controllers | Not created | Sprint 8 |
 | Chart.js in views | Installed, not wired | Sprint 4 |
 | Empty/loading/error states | Missing | Sprint 1+ (R-27) |
-| Peta Juz Mutqin logic | Model accessors only | Sprint 6 |
+| Peta Juz Mutqin logic | Done (JuzCoverage service) | Sprint 6 |
 | Figma assets | Placeholders in use | Optional (R-23) |
 
 ---

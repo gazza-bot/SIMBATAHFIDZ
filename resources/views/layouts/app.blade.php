@@ -56,6 +56,7 @@
         ],
         'kepala_tahfidz' => [
             ['label' => 'Dashboard', 'url' => '/kepala/dashboard', 'active' => 'kepala.dashboard', 'icon' => $iconDash],
+            ['label' => 'Peta Hafalan', 'url' => '/kepala/peta-hafalan', 'active' => 'kepala.peta-hafalan', 'icon' => $iconGrid],
         ],
         'wali' => [
             ['label' => 'Ikhtisar Capaian', 'url' => '/wali/mutabaah', 'active' => 'wali.mutabaah*', 'icon' => $iconDash],

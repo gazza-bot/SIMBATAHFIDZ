@@ -172,8 +172,8 @@
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                                 </div>
                                 <div>
-                                    <p class="text-xs text-primary-200 font-medium">Ziyadah Baru (Sedang Berjalan)</p>
-                                    <p class="text-base font-bold text-white">{{ $juzCounts['ziyadah'] }} Juz Berjalan</p>
+                                     <p class="text-xs text-primary-200 font-medium">Parsial Baru (Sedang Berjalan)</p>
+                                    <p class="text-base font-bold text-white">{{ $juzCounts['parsial'] }} Juz Berjalan</p>
                                 </div>
                             </div>
                         </div>
@@ -283,19 +283,15 @@
                             </a>
                         </div>
 
-                        {{-- Legend --}}
+{{-- Legend --}}
                         <div class="flex flex-wrap items-center gap-3 text-xs text-neutral-600 pb-2 border-b border-neutral-100">
                             <span class="inline-flex items-center gap-1.5 font-medium">
-                                <span class="w-3 h-3 rounded-md bg-primary-700 inline-block"></span>
+                                <span class="w-3 h-3 rounded-md bg-success-500 inline-block"></span>
                                 Mutqin ({{ $juzCounts['mutqin'] }})
                             </span>
                             <span class="inline-flex items-center gap-1.5 font-medium">
-                                <span class="w-3 h-3 rounded-md bg-primary-500 inline-block"></span>
-                                Ziyadah ({{ $juzCounts['ziyadah'] }})
-                            </span>
-                            <span class="inline-flex items-center gap-1.5 font-medium">
                                 <span class="w-3 h-3 rounded-md bg-accent-500 inline-block"></span>
-                                Proses ({{ $juzCounts['proses'] }})
+                                Parsial ({{ $juzCounts['parsial'] }})
                             </span>
                             <span class="inline-flex items-center gap-1.5 font-medium">
                                 <span class="w-3 h-3 rounded-md bg-neutral-200 inline-block"></span>
@@ -309,9 +305,8 @@
                                 @php
                                     $st = $juzStatus[$j] ?? 'belum';
                                     $bgClass = match($st) {
-                                        'mutqin' => 'bg-primary-700 text-white hover:bg-primary-800',
-                                        'ziyadah' => 'bg-primary-500 text-white hover:bg-primary-600',
-                                        'proses' => 'bg-accent-500 text-neutral-900 hover:bg-accent-600',
+                                        'mutqin' => 'bg-success-500 text-white hover:bg-success-600',
+                                        'parsial' => 'bg-accent-500 text-neutral-900 hover:bg-accent-600',
                                         default => 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200',
                                     };
                                 @endphp
@@ -333,15 +328,11 @@
                                 <p class="text-sm font-bold text-primary-700 mt-0.5">{{ $juzCounts['mutqin'] }} Juz Lancar</p>
                             </div>
                             <div class="p-2.5 rounded-xl bg-neutral-50">
-                                <p class="text-xs text-neutral-500">Ziyadah Semester</p>
-                                <p class="text-sm font-bold text-primary-600 mt-0.5">{{ $juzCounts['ziyadah'] }} Juz Baru</p>
+                                <p class="text-xs text-neutral-500">Parsial Semester</p>
+                                <p class="text-sm font-bold text-accent-700 mt-0.5">{{ $juzCounts['parsial'] }} Juz Baru</p>
                             </div>
                             <div class="p-2.5 rounded-xl bg-neutral-50">
-                                <p class="text-xs text-neutral-500">Proses Hafalan</p>
-                                <p class="text-sm font-bold text-accent-700 mt-0.5">{{ $juzCounts['proses'] }} Juz Berjalan</p>
-                            </div>
-                            <div class="p-2.5 rounded-xl bg-neutral-50">
-                                <p class="text-xs text-neutral-500">Sisa Keseluruhan</p>
+                                <p class="text-xs text-neutral-500">Belum Mulai</p>
                                 <p class="text-sm font-bold text-neutral-700 mt-0.5">{{ $juzCounts['belum'] }} Juz Lagi</p>
                             </div>
                         </div>
@@ -693,8 +684,7 @@
                 } else {
                     let statusLabel = data.status.toUpperCase();
                     let badgeClass = data.status === 'mutqin' ? 'bg-success-100 text-success-800' :
-                                    (data.status === 'ziyadah' ? 'bg-info-100 text-info-800' :
-                                    (data.status === 'proses' ? 'bg-amber-100 text-amber-800' : 'bg-neutral-100 text-neutral-600'));
+                                    (data.status === 'parsial' ? 'bg-amber-100 text-amber-800' : 'bg-neutral-100 text-neutral-600');
 
                     let html = '<div class="flex items-center justify-between pb-2">' +
                         '<span class="text-xs text-neutral-600">Status Capaian:</span>' +

@@ -104,6 +104,7 @@ Route::middleware(['auth', 'role:ustadz'])->prefix('ustadz')->name('ustadz.')->g
 Route::middleware(['auth', 'role:kepala_tahfidz'])->prefix('kepala')->name('kepala.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Kepala\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/juz-distribution', [\App\Http\Controllers\Kepala\DashboardController::class, 'juzDistribution'])->name('dashboard.juz-distribution');
+    Route::get('/peta-hafalan', [\App\Http\Controllers\Kepala\PetaHafalanController::class, 'index'])->name('peta-hafalan');
 });
 
 /*

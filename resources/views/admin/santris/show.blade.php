@@ -79,6 +79,36 @@
                 </x-card>
 
                 <x-card padding="default">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-neutral-900">Peta Hafalan 30 Juz</h3>
+                        <span class="text-xs text-neutral-500">Cakupan ayat per juz (ziyadah approved)</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div class="p-3 rounded-xl bg-success-50 border border-success-200">
+                            <p class="text-xs text-success-700">Mutqin (100%)</p>
+                            <p class="text-xl font-bold text-success-600">{{ $juzCounts['mutqin'] }} Juz</p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-accent-50 border border-accent-200">
+                            <p class="text-xs text-accent-700">Parsial (1-99%)</p>
+                            <p class="text-xl font-bold text-accent-600">{{ $juzCounts['parsial'] }} Juz</p>
+                        </div>
+                        <div class="p-3 rounded-xl bg-neutral-100 border border-neutral-200">
+                            <p class="text-xs text-neutral-600">Belum mulai</p>
+                            <p class="text-xl font-bold text-neutral-600">{{ $juzCounts['belum'] }} Juz</p>
+                        </div>
+                    </div>
+                    <div class="rounded-xl border border-neutral-200 bg-white p-3">
+<x-peta-juz
+    :juzStatus="$juzStatus"
+    :percentages="$juzPercentages"
+    variant="status"
+    columns="3"
+    clickable="false"
+/>
+                    </div>
+                </x-card>
+
+                <x-card padding="default">
                     <h3 class="text-lg font-semibold text-neutral-900 mb-4">Riwayat Setoran Terbaru</h3>
                     @if ($santri->setorans->isEmpty())
                         <p class="text-neutral-500 text-center py-4">Belum ada riwayat setoran.</p>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Absensi;
 use App\Models\Santri;
 use App\Models\Setoran;
+use App\Support\JuzCoverage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -13,6 +14,13 @@ use PDF;
 
 class RaporController extends Controller
 {
+    private JuzCoverage $juzCoverage;
+
+    public function __construct(JuzCoverage $juzCoverage)
+    {
+        $this->juzCoverage = $juzCoverage;
+    }
+
     public function index(Request $request)
     {
         $ustadz = Auth::user()->ustadz;
@@ -45,16 +53,40 @@ class RaporController extends Controller
 
             $progressJuz = $selectedSantri->progress_juz;
             $progressPercent = $selectedSantri->progress_percent;
+
+            $juzMap = $this->juzCoverage->forSantri($selectedSantri);
+
+            $juzStatus = [];
+            $juzPercentages = [];
+            $juzCounts = [
+                'mutqin' => 0,
+                'parsial' => 0,
+                'belum' => 0,
+            ];
+
+            for ($juz = 1; $juz <= 30; $juz++) {
+                $juzStatus[$juz] = $juzMap[$juz]['status'];
+                $juzPercentages[$juz] = $juzMap[$juz]['percent'];
+                $juzCounts[$juzMap[$juz]['status']] = ($juzCounts[$juzMap[$juz]['status']] ?? 0) + 1;
+            }
         } else {
             $setorans = collect();
             $absensis = collect();
             $progressJuz = 0;
             $progressPercent = 0;
+            $juzStatus = [];
+            $juzPercentages = [];
+            $juzCounts = [
+                'mutqin' => 0,
+                'parsial' => 0,
+                'belum' => 0,
+            ];
         }
 
         return view('ustadz.rapor.index', compact(
             'santris', 'selectedSantri', 'setorans', 'absensis',
-            'progressJuz', 'progressPercent', 'start', 'end', 'santriId'
+            'progressJuz', 'progressPercent', 'start', 'end', 'santriId',
+            'juzStatus', 'juzPercentages', 'juzCounts'
         ));
     }
 

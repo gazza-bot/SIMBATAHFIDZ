@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Santri;
+use App\Support\JuzCoverage;
 use App\Models\Angkatan;
 use App\Models\Kelompok;
 use App\Models\Wali;
@@ -11,6 +12,13 @@ use Illuminate\Http\Request;
 
 class SantriController extends Controller
 {
+    private JuzCoverage $juzCoverage;
+
+    public function __construct(JuzCoverage $juzCoverage)
+    {
+        $this->juzCoverage = $juzCoverage;
+    }
+
     public function index(Request $request)
     {
         $query = Santri::with(['angkatan', 'kelompok.ustadz', 'wali.user']);
@@ -111,10 +119,29 @@ class SantriController extends Controller
     {
         $santri->load(['angkatan', 'kelompok.ustadz', 'wali.user', 'setorans.surah', 'absensis']);
 
+        $juzMap = $this->juzCoverage->forSantri($santri);
+
+        $juzStatus = [];
+        $juzPercentages = [];
+        $juzCounts = [
+            'mutqin' => 0,
+            'parsial' => 0,
+            'belum' => 0,
+        ];
+
+        for ($juz = 1; $juz <= 30; $juz++) {
+            $juzStatus[$juz] = $juzMap[$juz]['status'];
+            $juzPercentages[$juz] = $juzMap[$juz]['percent'];
+            $juzCounts[$juzMap[$juz]['status']] = ($juzCounts[$juzMap[$juz]['status']] ?? 0) + 1;
+        }
+
         return view('admin.santris.show', [
             'title' => 'Detail Santri: ' . $santri->nama,
             'pageTitle' => 'Detail Santri',
             'santri' => $santri,
+            'juzStatus' => $juzStatus,
+            'juzPercentages' => $juzPercentages,
+            'juzCounts' => $juzCounts,
         ]);
     }
 

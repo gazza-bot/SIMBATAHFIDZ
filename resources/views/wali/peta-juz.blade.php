@@ -38,19 +38,14 @@
     {{-- Stats Cards --}}
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div class="bg-white p-4 rounded-2xl border border-neutral-200 text-center">
-            <span class="inline-block w-3 h-3 rounded-full bg-primary-700 mb-1"></span>
-            <p class="text-xs text-neutral-500 font-medium">Mutqin (Lancar)</p>
-            <p class="text-xl font-bold text-primary-700 mt-1">{{ $juzCounts['mutqin'] }} Juz</p>
-        </div>
-        <div class="bg-white p-4 rounded-2xl border border-neutral-200 text-center">
-            <span class="inline-block w-3 h-3 rounded-full bg-primary-500 mb-1"></span>
-            <p class="text-xs text-neutral-500 font-medium">Ziyadah (Baru)</p>
-            <p class="text-xl font-bold text-primary-600 mt-1">{{ $juzCounts['ziyadah'] }} Juz</p>
+            <span class="inline-block w-3 h-3 rounded-full bg-success-500 mb-1"></span>
+            <p class="text-xs text-neutral-500 font-medium">Mutqin (100%)</p>
+            <p class="text-xl font-bold text-success-600 mt-1">{{ $juzCounts['mutqin'] }} Juz</p>
         </div>
         <div class="bg-white p-4 rounded-2xl border border-neutral-200 text-center">
             <span class="inline-block w-3 h-3 rounded-full bg-accent-500 mb-1"></span>
-            <p class="text-xs text-neutral-500 font-medium">Proses Berjalan</p>
-            <p class="text-xl font-bold text-accent-700 mt-1">{{ $juzCounts['proses'] }} Juz</p>
+            <p class="text-xs text-neutral-500 font-medium">Parsial (1-99%)</p>
+            <p class="text-xl font-bold text-accent-600 mt-1">{{ $juzCounts['parsial'] }} Juz</p>
         </div>
         <div class="bg-white p-4 rounded-2xl border border-neutral-200 text-center">
             <span class="inline-block w-3 h-3 rounded-full bg-neutral-300 mb-1"></span>
@@ -67,9 +62,8 @@
                 <p class="text-xs text-neutral-500">Klik kotak nomor juz untuk melihat rincian surah di dalamnya.</p>
             </div>
             <div class="flex items-center gap-3 text-xs text-neutral-600">
-                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-primary-700"></span> Mutqin</span>
-                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-primary-500"></span> Ziyadah</span>
-                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-accent-500"></span> Proses</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-success-500"></span> Mutqin</span>
+                <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-accent-500"></span> Parsial</span>
                 <span class="flex items-center gap-1.5"><span class="w-3 h-3 rounded bg-neutral-200"></span> Belum</span>
             </div>
         </div>
@@ -79,9 +73,8 @@
                 @php
                     $st = $juzStatus[$j] ?? 'belum';
                     $bgClass = match($st) {
-                        'mutqin' => 'bg-primary-700 text-white hover:bg-primary-800',
-                        'ziyadah' => 'bg-primary-500 text-white hover:bg-primary-600',
-                        'proses' => 'bg-accent-500 text-neutral-900 hover:bg-accent-600',
+                        'mutqin' => 'bg-success-500 text-white hover:bg-success-600',
+                        'parsial' => 'bg-accent-500 text-neutral-900 hover:bg-accent-600',
                         default => 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200',
                     };
                 @endphp
@@ -108,8 +101,7 @@
                         @php
                             $badgeVariant = match($jInfo['status']) {
                                 'mutqin' => 'success',
-                                'ziyadah' => 'info',
-                                'proses' => 'warning',
+                                'parsial' => 'warning',
                                 default => 'neutral',
                             };
                         @endphp
@@ -120,8 +112,8 @@
                     <div class="space-y-1 text-xs">
                         @foreach ($jInfo['surahs'] as $s)
                             <div class="flex items-center justify-between text-neutral-700">
-                                <span>{{ $s['nomor'] }}. QS. {{ $s['nama_latin'] }}</span>
-                                <span class="font-arabic text-neutral-500" dir="rtl">{{ $s['nama_arab'] }}</span>
+                                <span>{{ $s['surah_nomor'] }}. QS. {{ $s['surah_nama_latin'] }}</span>
+                                <span class="font-arabic text-neutral-500" dir="rtl">{{ $s['surah_nama_arab'] }}</span>
                             </div>
                         @endforeach
                     </div>
@@ -132,7 +124,7 @@
 
 </div>
 
-{{-- MODAL Detail Juz --}}
+ {{-- MODAL Detail Juz --}}
 <div id="modal-juz-detail" class="fixed inset-0 z-50 bg-neutral-950/50 backdrop-blur-sm hidden flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="modal-juz-title">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl">
         <div class="flex items-center justify-between pb-3 border-b border-neutral-100">
@@ -174,8 +166,7 @@
         } else {
             let statusLabel = data.status.toUpperCase();
             let badgeClass = data.status === 'mutqin' ? 'bg-success-100 text-success-800' :
-                            (data.status === 'ziyadah' ? 'bg-info-100 text-info-800' :
-                            (data.status === 'proses' ? 'bg-amber-100 text-amber-800' : 'bg-neutral-100 text-neutral-600'));
+                            (data.status === 'parsial' ? 'bg-amber-100 text-amber-800' : 'bg-neutral-100 text-neutral-600');
 
             let html = '<div class="flex items-center justify-between pb-2">' +
                 '<span class="text-xs text-neutral-600">Status Capaian:</span>' +

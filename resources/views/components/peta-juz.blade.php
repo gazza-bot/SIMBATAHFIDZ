@@ -11,8 +11,7 @@
 <?php
 $statusClasses = [
     'mutqin' => 'bg-success-500 text-white',
-    'ziyadah' => 'bg-info-500 text-white',
-    'proses' => 'bg-accent-500 text-neutral-900',
+    'parsial' => 'bg-accent-500 text-neutral-900',
     'belum' => 'bg-neutral-200 text-neutral-500',
 ];
 
@@ -36,9 +35,9 @@ $percentClass = function (int $pct): string {
     return 'bg-neutral-100 text-neutral-400';
 };
 
-$juzStatus = $juzStatus ?: array_fill(1, 30, 'belum');
 $isPercent = $variant === 'percent';
 $gridCols = in_array($columns, [3, 4, 5, 6], true) ? $columns : 6;
+$juzStatus = $juzStatus ?: array_fill(1, 30, 'belum');
 ?>
 
 <div class="space-y-4" {{ $attributes->merge(['class' => $attributes->get('class', '')]) }}>
@@ -49,7 +48,7 @@ $gridCols = in_array($columns, [3, 4, 5, 6], true) ? $columns : 6;
                 <span class="w-3 h-3 rounded-sm bg-primary-600"></span> Mutqin (85%+)
             </span>
             <span class="inline-flex items-center gap-1.5">
-                <span class="w-3 h-3 rounded-sm bg-primary-300"></span> Ziyadah (45-84%)
+                <span class="w-3 h-3 rounded-sm bg-primary-300"></span> Parsial (1-84%)
             </span>
             <span class="inline-flex items-center gap-1.5">
                 <span class="w-3 h-3 rounded-sm bg-neutral-200"></span> Belum mulai

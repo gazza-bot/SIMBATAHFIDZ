@@ -51,8 +51,12 @@ Sistem Informasi Mutaba'ah & Belajar Al-Qur'an — Pondok Pesantren Darut Taqwa 
 - [x] Layout desktop & mobile disesuaikan dengan UI_SIMBATAHFIDZ
 
 ## Sprint 6 — Peta Hafalan 30 Juz
-- [ ] Grid 30 juz (Mutqin cover penuh / parsial)
-- [ ] Read-only untuk wali
+- [x] Grid 30 juz (Mutqin cover penuh / parsial) menggunakan algoritma ketat dari juz_starts
+- [x] Read-only untuk wali
+- [x] Embed peta di Detail Santri Admin
+- [x] Embed peta di Pratinjau Rapor Ustadz
+- [x] Halaman Peta Hafalan 30 Juz untuk Kepala Tahfidz
+- [x] Komponen Peta Juz dibangun ulang dari komponen lama
 
 ## Sprint 7 — Murajaah Bulanan
 - [ ] Daftar murajaah bulanan + filter bulan

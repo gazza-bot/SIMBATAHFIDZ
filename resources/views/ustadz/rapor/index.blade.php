@@ -67,6 +67,34 @@
                 </x-card>
             </div>
 
+            <div class="rounded-xl border border-neutral-200 bg-white p-3 mb-6">
+                <div class="flex items-center justify-between mb-3">
+                    <h4 class="text-sm font-semibold text-neutral-900">Peta Hafalan 30 Juz</h4>
+                    <span class="text-xs text-neutral-500">Cakupan ayat per juz (ziyadah approved)</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                    <div class="p-2 rounded-lg bg-success-50 border border-success-200">
+                        <p class="text-xs text-success-700">Mutqin</p>
+                        <p class="text-lg font-bold text-success-600">{{ $juzCounts['mutqin'] }} Juz</p>
+                    </div>
+                    <div class="p-2 rounded-lg bg-accent-50 border border-accent-200">
+                        <p class="text-xs text-accent-700">Parsial</p>
+                        <p class="text-lg font-bold text-accent-600">{{ $juzCounts['parsial'] }} Juz</p>
+                    </div>
+                    <div class="p-2 rounded-lg bg-neutral-100 border border-neutral-200">
+                        <p class="text-xs text-neutral-600">Belum</p>
+                        <p class="text-lg font-bold text-neutral-600">{{ $juzCounts['belum'] }} Juz</p>
+                    </div>
+                </div>
+<x-peta-juz
+    :juzStatus="$juzStatus"
+    :percentages="$juzPercentages"
+    variant="status"
+    columns="3"
+    clickable="false"
+/>
+            </div>
+
             <h4 class="text-lg font-semibold text-neutral-900 mb-3">I. Capaian Hafalan (Ziyadah & Tasmi')</h4>
             <div class="overflow-x-auto">
                 <table class="w-full">

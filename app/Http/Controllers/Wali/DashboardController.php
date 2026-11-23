@@ -4,14 +4,13 @@ namespace App\Http\Controllers\Wali;
 
 use App\Http\Controllers\Controller;
 use App\Models\Absensi;
-use App\Models\JuzStart;
 use App\Models\Santri;
-use App\Models\Setoran;
 use App\Models\SimaanSchedule;
 use App\Models\Surah;
 use App\Models\Wali;
 use App\Models\WaliMessage;
 use App\Support\HijriDate;
+use App\Support\JuzCoverage;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -19,6 +18,13 @@ use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
+    private JuzCoverage $juzCoverage;
+
+    public function __construct(JuzCoverage $juzCoverage)
+    {
+        $this->juzCoverage = $juzCoverage;
+    }
+
     public function index(Request $request, ?Santri $santri = null)
     {
         $wali = $this->wali();
@@ -291,59 +297,29 @@ class DashboardController extends Controller
 
     private function buildJuzMap(Santri $santri): array
     {
-        $setorans = $santri->setorans()
-            ->where('status', 'approved')
-            ->get();
-
-        $maxZiyadah = (int) ($setorans->where('jenis', 'ziyadah')->max('juz') ?? 0);
-
-        $surahs = Surah::orderBy('nomor')->get(['id', 'nomor', 'nama_latin', 'nama_arab', 'jumlah_ayat', 'juz_mulai', 'juz_selesai']);
-        $starts = JuzStart::with('surah:id,nomor')->orderBy('juz')->get()
-            ->filter(fn ($s) => $s->surah !== null)
-            ->values();
+        $juzMap = $this->juzCoverage->forSantri($santri);
 
         $statusMap = [];
+        $percentages = [];
         $details = [];
 
         for ($juz = 1; $juz <= 30; $juz++) {
-            $juzSetorans = $setorans->where('juz', $juz);
-            $hasMutqin = $juzSetorans->contains(fn ($s) => $s->is_cover_penuh || $s->nilai === 'mumtaz');
-
-            if ($juz < $maxZiyadah) {
-                $status = 'mutqin';
-            } elseif ($juz === $maxZiyadah && $maxZiyadah > 0) {
-                $status = $hasMutqin ? 'mutqin' : 'ziyadah';
-            } elseif ($juz === $maxZiyadah + 1 && $juzSetorans->isNotEmpty()) {
-                $status = 'proses';
-            } else {
-                $status = $juzSetorans->isNotEmpty() ? 'proses' : 'belum';
-            }
-
-            $statusMap[$juz] = $status;
-
-            // Cari surah yang masuk di juz ini
-            $juzSurahs = $surahs->filter(function ($surah) use ($juz) {
-                return $juz >= $surah->juz_mulai && $juz <= $surah->juz_selesai;
-            })->values();
+            $statusMap[$juz] = $juzMap[$juz]['status'];
+            $percentages[$juz] = $juzMap[$juz]['percent'];
 
             $details[$juz] = [
                 'juz' => $juz,
-                'status' => $status,
-                'surahs' => $juzSurahs->map(fn ($surah) => [
-                    'nomor' => $surah->nomor,
-                    'nama_latin' => $surah->nama_latin,
-                    'nama_arab' => $surah->nama_arab,
-                    'jumlah_ayat' => $surah->jumlah_ayat,
-                ])->all(),
-                'setoran_count' => $juzSetorans->count(),
-                'last_setoran' => $juzSetorans->sortByDesc('tanggal')->first(),
+                'status' => $juzMap[$juz]['status'],
+                'surahs' => $juzMap[$juz]['surahs'],
+                'percent' => $juzMap[$juz]['percent'],
+                'covered_ayat' => $juzMap[$juz]['covered_ayat'],
+                'total_ayat' => $juzMap[$juz]['total_ayat'],
             ];
         }
 
         $counts = [
             'mutqin' => count(array_filter($statusMap, fn ($s) => $s === 'mutqin')),
-            'ziyadah' => count(array_filter($statusMap, fn ($s) => $s === 'ziyadah')),
-            'proses' => count(array_filter($statusMap, fn ($s) => $s === 'proses')),
+            'parsial' => count(array_filter($statusMap, fn ($s) => $s === 'parsial')),
             'belum' => count(array_filter($statusMap, fn ($s) => $s === 'belum')),
         ];
 
@@ -351,6 +327,7 @@ class DashboardController extends Controller
             'statusMap' => $statusMap,
             'counts' => $counts,
             'details' => $details,
+            'percentages' => $percentages,
         ];
     }
 }
