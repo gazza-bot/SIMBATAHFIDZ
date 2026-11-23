@@ -177,10 +177,10 @@
             data.surahs.forEach(s => {
                 html += '<div class="p-2.5 rounded-xl bg-neutral-50 border border-neutral-200/70 flex items-center justify-between text-xs">' +
                     '<div>' +
-                    '<span class="font-bold text-neutral-900">' + s.nomor + '. QS. ' + s.nama_latin + '</span>' +
-                    '<span class="text-neutral-500 block">' + s.jumlah_ayat + ' Ayat</span>' +
+                    '<span class="font-bold text-neutral-900">' + s.surah_nomor + '. QS. ' + s.surah_nama_latin + '</span>' +
+                    '<span class="text-neutral-500 block">' + s.surah_jumlah_ayat + ' Ayat</span>' +
                     '</div>' +
-                    '<span class="font-arabic text-sm text-neutral-700" dir="rtl">' + s.nama_arab + '</span>' +
+                    '<span class="font-arabic text-sm text-neutral-700" dir="rtl">' + s.surah_nama_arab + '</span>' +
                     '</div>';
             });
             html += '</div>';

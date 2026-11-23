@@ -151,7 +151,7 @@ sm 640, md 768, lg 1024, xl 1280, 2xl 1536
 | 4 | Dasbor Kepala: stats + Chart.js, attention list | Done |
 | 5 | Dasbor Wali: mutaba'ah multi-anak, riwayat, peta 30 juz, pesan doa | Done |
 | 6 | Peta Hafalan 30 Juz (strict Mutqin via juz_starts, embed admin/ustadz, page kepala) | Done |
-| 7 | Murajaah Bulanan | Next |
+| 7 | Murajaah Bulanan (derived dari setoran murajaah, filter bulan, tandai via form setoran) | Done |
 | 8 | PDF export + accessibility audit | Pending |
 
 Work only inside the current sprint. Do not jump ahead or add navigation for unbuilt pages (R-24).
@@ -298,6 +298,7 @@ Every data view needs empty, loading, error states (R-27). Placeholder dashboard
 | Chart.js in views | Installed, not wired | Sprint 4 |
 | Empty/loading/error states | Missing | Sprint 1+ (R-27) |
 | Peta Juz Mutqin logic | Done (JuzCoverage service) | Sprint 6 |
+| Murajaah Bulanan (derived) | Done (MurajaahMonthly) | Sprint 7 |
 | Figma assets | Placeholders in use | Optional (R-23) |
 
 ---

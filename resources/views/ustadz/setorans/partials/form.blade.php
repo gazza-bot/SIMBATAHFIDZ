@@ -1,6 +1,6 @@
 @php
     $isEdit = $mode === 'edit';
-    $jenisValue = old('jenis', $setoran->jenis ?? 'ziyadah');
+    $jenisValue = old('jenis', $setoran->jenis ?? ($defaultJenis ?? 'ziyadah'));
     $juzValue = old('juz_pilih', $setoran->juz ?? '');
     $surahValue = old('surah_id', $setoran->surah_id ?? '');
     $nilaiValue = old('nilai', $setoran->nilai ?? '');
@@ -462,18 +462,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             const jenisDefault = form.querySelector('input[name="jenis"][value="ziyadah"]');
             if (jenisDefault) jenisDefault.checked = true;
-            juzSelect.value = '';
-            surahSelect.value = '';
-            ayatAwal.value = '';
-            ayatAkhir.value = '';
-            const skor = document.getElementById('skor');
-            if (skor) skor.value = '';
-            const catatan = document.getElementById('catatan');
-            if (catatan) catatan.value = '';
-            fillSurahOptions('', '');
-            applyBounds(null);
-            updateSummary();
-        });
     }
 
     const initialJuz = juzSelect.value;

@@ -107,6 +107,13 @@ class JuzCoverageTest extends TestCase
         $this->assertEquals(100, $result[1]['percent']);
         $expectedTotal = $surah1->jumlah_ayat + 141;
         $this->assertEquals($expectedTotal, $result[1]['covered_ayat']);
+        $this->assertArrayHasKey('surahs', $result[1]);
+        $this->assertNotEmpty($result[1]['surahs']);
+        foreach ($result[1]['surahs'] as $surahDetail) {
+            $this->assertArrayHasKey('surah_jumlah_ayat', $surahDetail);
+            $this->assertIsInt($surahDetail['surah_jumlah_ayat']);
+            $this->assertGreaterThan(0, $surahDetail['surah_jumlah_ayat']);
+        }
     }
 
     public function test_partial_cover_juz_returns_parsial_with_correct_percent(): void

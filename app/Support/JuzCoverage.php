@@ -144,6 +144,7 @@ class JuzCoverage
                 'surah_nomor' => $surah?->nomor ?? 0,
                 'surah_nama_latin' => $surahName,
                 'surah_nama_arab' => $surahArab,
+                'surah_jumlah_ayat' => $surah?->jumlah_ayat ?? 0,
                 'required_start' => $needStart,
                 'required_end' => $needEnd,
                 'required_count' => $needCount,

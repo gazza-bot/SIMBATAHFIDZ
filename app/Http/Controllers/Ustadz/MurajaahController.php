@@ -18,19 +18,37 @@ class MurajaahController extends Controller
         $ustadz = Auth::user()->ustadz;
         $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
 
-        $filter = $request->get('filter', 'semua');
+        $bulan = $request->get('bulan');
+        if ($bulan) {
+            try {
+                Carbon::createFromFormat('Y-m', $bulan)->startOfMonth();
+            } catch (\Exception $e) {
+                $bulan = null;
+            }
+        }
+        if (! $bulan) {
+            $bulan = Carbon::now()->format('Y-m');
+        }
 
         $santris = Santri::whereIn('kelompok_id', $kelompokIds)
             ->where('status_aktif', 'aktif')
-            ->with(['setorans' => function ($q) {
-                $q->where('jenis', 'murajaah')
-                  ->where('status', 'approved')
-                  ->latest('tanggal')
-                  ->take(1);
-            }])
+            ->with([
+                'kelompok',
+                'angkatan',
+                'setorans' => function ($q) {
+                    $q->where('jenis', 'murajaah')
+                      ->where('status', 'approved')
+                      ->latest('tanggal')
+                      ->take(1);
+                }
+            ])
+            ->orderBy('nama')
             ->get();
 
         $santriData = [];
+        $sudahCount = 0;
+        $belumCount = 0;
+
         foreach ($santris as $santri) {
             $lastMurajaah = $santri->setorans()
                 ->where('jenis', 'murajaah')
@@ -38,29 +56,47 @@ class MurajaahController extends Controller
                 ->latest('tanggal')
                 ->first();
 
-            $daysSince = $lastMurajaah ? Carbon::parse($lastMurajaah->tanggal)->diffInDays(Carbon::now()) : null;
-            $priority = $daysSince !== null && $daysSince > 21 ? 'high' : ($daysSince !== null && $daysSince > 14 ? 'medium' : 'low');
+            $murajaahBulan = $santri->setorans()
+                ->where('jenis', 'murajaah')
+                ->where('status', 'approved')
+                ->whereMonth('tanggal', Carbon::parse($bulan . '-01')->month)
+                ->whereYear('tanggal', Carbon::parse($bulan . '-01')->year)
+                ->count();
 
-            if ($filter === 'prioritas' && $priority !== 'high') {
-                continue;
-            }
-            if ($filter === '3minggu' && $daysSince !== null && $daysSince <= 21) {
-                continue;
+            $status = $murajaahBulan > 0 ? 'sudah' : 'belum';
+            if ($status === 'sudah') {
+                $sudahCount++;
+            } else {
+                $belumCount++;
             }
 
             $santriData[] = [
                 'santri' => $santri,
                 'last_murajaah' => $lastMurajaah,
-                'days_since' => $daysSince,
-                'priority' => $priority,
+                'count_bulan' => $murajaahBulan,
+                'status' => $status,
             ];
         }
 
         usort($santriData, function ($a, $b) {
-            return ($b['days_since'] ?? 0) <=> ($a['days_since'] ?? 0);
+            // Sudah first, then by nama
+            if ($a['status'] !== $b['status']) {
+                return $a['status'] === 'sudah' ? -1 : 1;
+            }
+            return $a['santri']->nama <=> $b['santri']->nama;
         });
 
-        return view('ustadz.murajaahs.index', compact('santriData', 'filter'));
+        $total = $sudahCount + $belumCount;
+        $persen = $total > 0 ? round(($sudahCount / $total) * 100) : 0;
+
+        return view('ustadz.murajaahs.index', compact(
+            'santriData',
+            'bulan',
+            'sudahCount',
+            'belumCount',
+            'total',
+            'persen'
+        ));
     }
 
     public function store(Request $request)

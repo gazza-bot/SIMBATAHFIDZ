@@ -9,41 +9,47 @@
         </div>
     </div>
 
+    {{-- Filter Bulan --}}
+    <form method="GET" class="bg-white rounded-2xl border border-neutral-200 p-4 sm:p-6">
+        <div class="flex flex-col sm:flex-row sm:items-end gap-4">
+            <div class="flex-1">
+                <label for="bulan" class="block text-xs font-medium text-neutral-700 mb-1.5">Bulan</label>
+                <input type="month" name="bulan" id="bulan" value="{{ $bulan }}" class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2">
+            </div>
+            <div class="sm:w-auto">
+                <x-button type="submit" variant="primary" class="min-h-[44px]">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.293V4z"/></svg>
+                    Tampilkan
+                </x-button>
+            </div>
+        </div>
+    </form>
+
+    {{-- Ringkasan --}}
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <x-card padding="sm">
-            <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Tertunda</p>
-            <p class="mt-2 text-2xl font-bold text-error-600">{{ collect($santriData)->where('priority', 'high')->count() }}</p>
+            <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Sudah Murajaah</p>
+            <p class="mt-2 text-2xl font-bold text-success-600">{{ $sudahCount }}</p>
         </x-card>
         <x-card padding="sm">
-            <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Tuntas</p>
-            <p class="mt-2 text-2xl font-bold text-success-600">{{ collect($santriData)->where('priority', 'low')->count() }} / {{ count($santriData) }}</p>
+            <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Belum Murajaah</p>
+            <p class="mt-2 text-2xl font-bold text-error-600">{{ $belumCount }}</p>
         </x-card>
         <x-card padding="sm">
-            <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Batas</p>
-            <p class="mt-2 text-2xl font-bold text-warning-600">5 Hari Lagi</p>
+            <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Persentase</p>
+            <p class="mt-2 text-2xl font-bold text-primary-600">{{ $persen }}%</p>
         </x-card>
     </div>
 
+    {{-- Daftar Santri --}}
     <div class="bg-white rounded-2xl border border-neutral-200 p-4 sm:p-6">
-        <div class="flex flex-col sm:flex-row gap-3 mb-4">
-            <select name="filter" class="w-full sm:w-48 rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2">
-                <option value="semua" {{ $filter == 'semua' ? 'selected' : '' }}>Semua</option>
-                <option value="prioritas" {{ $filter == 'prioritas' ? 'selected' : '' }}>Prioritas >3 Minggu</option>
-                <option value="3minggu" {{ $filter == '3minggu' ? 'selected' : '' }}>Belum >3 Minggu</option>
-            </select>
-            <x-button variant="primary" type="button" onclick="openBulkModal()">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13l2 2 4-4m6-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                Kirim Pengingat Masal
-            </x-button>
-        </div>
-
         <div class="space-y-3">
             @forelse ($santriData as $item)
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-neutral-50 rounded-xl border border-neutral-100">
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-4 min-w-0">
                         <x-avatar name="{{ $item['santri']->nama }}" size="md" />
-                        <div>
-                            <p class="text-lg font-semibold text-neutral-900">{{ $item['santri']->nama }}</p>
+                        <div class="min-w-0">
+                            <p class="text-lg font-semibold text-neutral-900 truncate">{{ $item['santri']->nama }}</p>
                             <div class="flex items-center gap-3 text-sm text-neutral-500">
                                 <span>{{ $item['santri']->nis }}</span>
                                 <span>{{ $item['santri']->angkatan->nama ?? '-' }}</span>
@@ -51,12 +57,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:flex-wrap">
                         @if ($item['last_murajaah'])
                             <div>
                                 <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Terakhir Murajaah</p>
                                 <p class="text-sm font-medium text-neutral-900">{{ $item['last_murajaah']->tanggal->translatedFormat('d F Y') }}</p>
-                                <p class="text-xs text-neutral-500">{{ $item['days_since'] }} hari lalu</p>
                             </div>
                         @else
                             <div>
@@ -64,9 +69,19 @@
                                 <p class="text-sm font-medium text-error-600">Belum pernah</p>
                             </div>
                         @endif
-                        <x-badge variant="{{ $item['priority'] == 'high' ? 'error' : ($item['priority'] == 'medium' ? 'warning' : 'success') }}" size="sm" dot>
-                            {{ $item['priority'] == 'high' ? 'Prioritas' : ($item['priority'] == 'medium' ? 'Perlu Perhatian' : 'Tuntas') }}
+
+                        <x-badge variant="{{ $item['status'] === 'sudah' ? 'success' : 'error' }}" size="sm" dot>
+                            {{ $item['status'] === 'sudah' ? 'Sudah' : 'Belum' }} ({{ $item['count_bulan'] }})
                         </x-badge>
+
+                        @if ($item['status'] === 'belum')
+                            <a href="{{ route('ustadz.setorans.create', ['santri' => $item['santri']->id, 'jenis' => 'murajaah']) }}"
+                               class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-primary-600 text-white hover:bg-primary-700 transition-colors min-h-[44px]">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                Tandai Sudah
+                            </a>
+                        @endif
+
                         <x-button variant="ghost" size="sm" @click="openScheduleModal({{ $item['santri']->id }})">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             Jadwalkan Sima'an
@@ -90,9 +105,9 @@
 {{-- Schedule Modal --}}
 <div class="fixed inset-0 z-50 flex items-center justify-center" x-data="scheduleModal()" x-show="showModal" x-cloak>
     <div class="fixed inset-0 bg-neutral-950/70 backdrop-blur-sm" @click="closeModal" aria-hidden="true"></div>
-    <div class="relative w-full max-w-md bg-white rounded-2xl shadow-level-4 p-6" role="dialog" aria-modal="true">
+    <div class="relative w-full max-w-md bg-white rounded-2xl shadow-level-4 p-6" role="dialog" aria-modal="true" x-ref="form">
         <h3 class="text-lg font-semibold text-neutral-900 mb-4">Jadwalkan Sima'an</h3>
-        <form method="POST" action="{{ route('ustadz.murajaahs.store') }}" @submit.prevent="submitForm">
+        <form method="POST" action="{{ route('ustadz.murajaahs.store') }}" @submit.prevent="submitForm" x-ref="form">
             @csrf
             <input type="hidden" name="santri_id" :value="selectedSantriId">
             <div class="space-y-4">

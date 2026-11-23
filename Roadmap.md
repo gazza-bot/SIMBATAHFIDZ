@@ -59,12 +59,15 @@ Sistem Informasi Mutaba'ah & Belajar Al-Qur'an — Pondok Pesantren Darut Taqwa 
 - [x] Komponen Peta Juz dibangun ulang dari komponen lama
 
 ## Sprint 7 — Murajaah Bulanan
-- [ ] Daftar murajaah bulanan + filter bulan
-- [ ] Tandai sudah/belum murajaah
+- [x] Daftar murajaah bulanan + filter bulan (derived dari setoran murajaah)
+- [x] Tandai sudah murajaah (via form setoran murajaah)
+- [x] Perbaiki modal Rincian Juz (P1 warisan Sprint 6)
+- [x] Hapus tombol "Kirim Pengingat Masal" yang rusak
+- [x] Perbaiki "Tandai Sudah" (prefill jenis murajaah di form setoran)
 
 ## Sprint 8 — PDF & Penyempurnaan
-- [ ] Export Rapor Hafalan PDF
-- [ ] Export Sertifikat Khatam PDF
+- [ ] Export Rapor Hafalan PDF (Admin, full history)
+- [ ] Export Sertifikat Khatam PDF (Admin, tanpa nomor/tanggal, nama penandatangan)
 - [ ] Dark mode? (dirahalkan) — validasi aksesibilitas & responsif
 
 ---

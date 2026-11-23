@@ -68,6 +68,8 @@ class SetoranController extends Controller
             ->orderBy('nama')
             ->first();
 
+        $defaultJenis = $request->filled('jenis') ? $request->jenis : null;
+
         return view('ustadz.setorans.create', [
             'title' => 'Input Setoran',
             'pageTitle' => 'Input Setoran',
@@ -76,6 +78,7 @@ class SetoranController extends Controller
             'santriContext' => $selectedSantri ? $this->buildSantriContext($selectedSantri) : null,
             'todayStats' => $this->buildTodayStats($kelompokIds),
             'juzSurahMap' => $this->buildJuzSurahMap(),
+            'defaultJenis' => $defaultJenis,
         ]);
     }
 
