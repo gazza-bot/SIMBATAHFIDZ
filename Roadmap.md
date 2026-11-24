@@ -66,9 +66,9 @@ Sistem Informasi Mutaba'ah & Belajar Al-Qur'an — Pondok Pesantren Darut Taqwa 
 - [x] Perbaiki "Tandai Sudah" (prefill jenis murajaah di form setoran)
 
 ## Sprint 8 — PDF & Penyempurnaan
-- [ ] Export Rapor Hafalan PDF (Admin, full history)
-- [ ] Export Sertifikat Khatam PDF (Admin, tanpa nomor/tanggal, nama penandatangan)
-- [ ] Dark mode? (dirahalkan) — validasi aksesibilitas & responsif
+- [x] Export Rapor Hafalan PDF (Admin, full history)
+- [x] Export Sertifikat Khatam PDF (Admin, tanpa nomor/tanggal, nama penandatangan)
+- [x] Dark mode? (dirahalkan) — validasi aksesibilitas & responsif
 
 ---
 
