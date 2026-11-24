@@ -66,4 +66,9 @@ class User extends Authenticatable
     {
         return $this->role === 'wali';
     }
+
+    public function passwordReset()
+    {
+        return $this->hasOne(PasswordReset::class, 'username', 'username');
+    }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,24 +20,13 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 /*
 |--------------------------------------------------------------------------
-| Password Reset Routes
+| Password Reset Routes (admin-mediated, no email)
 |--------------------------------------------------------------------------
 */
-Route::get('/forgot-password', function () {
-    return view('auth.forgot-password', ['title' => 'Lupa Password']);
-})->name('password.request');
-
-Route::post('/forgot-password', function () {
-    return back()->with('success', 'Link reset password dikirim ke email.');
-})->name('password.email');
-
-Route::get('/reset-password/{token}', function ($token) {
-    return view('auth.reset-password', ['title' => 'Reset Password', 'token' => $token]);
-})->name('password.reset');
-
-Route::post('/reset-password', function () {
-    return redirect()->route('login')->with('success', 'Password berhasil direset.');
-})->name('password.update');
+Route::get('/forgot-password', [PasswordResetController::class, 'showRequest'])->name('password.request');
+Route::post('/forgot-password', [PasswordResetController::class, 'sendRequest'])->name('password.email');
+Route::get('/reset-password/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');
+Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 
 /*
 |--------------------------------------------------------------------------
@@ -67,6 +57,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/profile', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
 
     Route::resource('santris', \App\Http\Controllers\Admin\SantriController::class);
+
+    // Sprint 9: Reset Password (admin-mediated) — without email
+    Route::get('/password-requests', [\App\Http\Controllers\Admin\PasswordResetController::class, 'index'])->name('password-requests.index');
+    Route::post('/password-requests/{user}/issue', [\App\Http\Controllers\Admin\PasswordResetController::class, 'issue'])->name('password-requests.issue');
+    Route::delete('/password-requests/{user}', [\App\Http\Controllers\Admin\PasswordResetController::class, 'destroy'])->name('password-requests.destroy');
     Route::resource('walis', \App\Http\Controllers\Admin\WaliController::class);
     Route::resource('ustadzs', \App\Http\Controllers\Admin\UstadzController::class);
     Route::resource('kelompoks', \App\Http\Controllers\Admin\KelompokController::class);

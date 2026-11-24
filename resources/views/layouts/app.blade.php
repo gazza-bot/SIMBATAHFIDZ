@@ -45,6 +45,7 @@ $iconQuran = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 
             ['label' => 'Data Ustadz', 'url' => '/admin/ustadzs', 'active' => 'admin.ustadzs.*', 'icon' => $iconUsers],
             ['label' => 'Kelompok Halaqah', 'url' => '/admin/kelompoks', 'active' => 'admin.kelompoks.*', 'icon' => $iconGrid],
             ['label' => 'Angkatan Kelas', 'url' => '/admin/angkatans', 'active' => 'admin.angkatans.*', 'icon' => $iconBook],
+            ['label' => 'Permintaan Reset', 'url' => '/admin/password-requests', 'active' => 'admin.password-requests.*', 'icon' => $iconClock],
         ],
         'ustadz' => [
             ['label' => 'Dasbor Halaqah', 'url' => '/ustadz/dashboard', 'active' => 'ustadz.dashboard', 'icon' => $iconDash],
