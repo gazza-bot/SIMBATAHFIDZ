@@ -32,7 +32,7 @@ $sizeClass = $sizes[$size] ?? $sizes['md'];
 $disabledClass = $disabled || $loading ? 'opacity-50 cursor-not-allowed' : '';
 $widthClass = $fullWidth ? 'w-full' : '';
 
-$commonClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-fast ease-standard focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ' . $variantClass . ' ' . $sizeClass . ' ' . $disabledClass . ' ' . $widthClass;
+$commonClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-fast ease-standard focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 max-sm:min-h-11 max-sm:min-w-11 ' . $variantClass . ' ' . $sizeClass . ' ' . $disabledClass . ' ' . $widthClass;
 $finalClasses = trim($attributes->get('class', '') . ' ' . $commonClasses);
 
     $innerContent = '';

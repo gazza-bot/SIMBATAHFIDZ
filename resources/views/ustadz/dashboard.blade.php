@@ -222,7 +222,7 @@
             <h3 class="text-lg font-semibold text-neutral-900">Catatan Halaqah Hari Ini</h3>
             <span class="text-xs text-neutral-500">Simpan manual</span>
         </div>
-        <textarea name="catatan" rows="3" placeholder="Tulis catatan pembinaan, catatan khusus santri, atau informasi penting untuk hari ini..." class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 placeholder-neutral-400 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2 transition-all duration-fast ease-standard">{{ $halaqahNote->catatan ?? '' }}</textarea>
+        <textarea name="catatan" rows="3" placeholder="Tulis catatan pembinaan, catatan khusus santri, atau informasi penting untuk hari ini..." class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 placeholder-neutral-500 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2 transition-all duration-fast ease-standard">{{ $halaqahNote->catatan ?? '' }}</textarea>
         <div class="mt-4 flex justify-end">
             <x-button type="submit" variant="primary">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>

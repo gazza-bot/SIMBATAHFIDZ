@@ -234,7 +234,7 @@
                     max="100"
                     inputmode="numeric"
                     placeholder="0-100"
-                    class="min-h-11 w-full border-0 bg-transparent px-3 py-2 text-center text-sm font-semibold text-neutral-900 placeholder-neutral-400 focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                    class="min-h-11 w-full border-0 bg-transparent px-3 py-2 text-center text-sm font-semibold text-neutral-900 placeholder-neutral-500 focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                 >
                 <button type="button" class="flex min-h-11 w-11 flex-shrink-0 items-center justify-center border-l border-neutral-200 text-lg text-neutral-600 hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" data-stepper-target="skor" data-step="1" aria-label="Tambah skor">+</button>
             </div>
@@ -264,7 +264,7 @@
                 rows="4"
                 maxlength="1000"
                 placeholder="Tulis evaluasi bacaan atau arahan untuk santri."
-                class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 placeholder-neutral-400 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2 transition-all duration-fast ease-standard {{ $errors->first('catatan') ? 'border-error-500' : '' }}"
+                class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 placeholder-neutral-500 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2 transition-all duration-fast ease-standard {{ $errors->first('catatan') ? 'border-error-500' : '' }}"
             >{{ old('catatan', $setoran->catatan ?? '') }}</textarea>
             @error('catatan')
                 <p class="mt-1.5 text-sm text-error-600" role="alert">{{ $message }}</p>

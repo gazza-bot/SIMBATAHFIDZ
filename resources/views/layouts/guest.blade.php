@@ -161,7 +161,6 @@
                         <span class="h-6 w-6 flex-shrink-0 rounded-full border border-dashed border-neutral-300" aria-hidden="true"></span>
                         <span>Kendala masuk akun? Hubungi WhatsApp Center Pesantren</span>
                     </div>
-                    <span class="text-xs font-medium text-neutral-400">SIMBA v2.4</span>
                 </div>
             </footer>
         </main>

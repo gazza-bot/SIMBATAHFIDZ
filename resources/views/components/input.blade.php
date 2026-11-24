@@ -23,7 +23,7 @@ $errorId = $error ? $inputId . '-error' : null;
 $helpId = $help ? $inputId . '-help' : null;
 $describedBy = implode(' ', array_filter([$errorId, $helpId]));
 
-$baseClasses = 'w-full rounded-lg border bg-white text-neutral-900 placeholder-neutral-400 transition-all duration-fast ease-standard';
+$baseClasses = 'w-full rounded-lg border bg-white text-neutral-900 placeholder-neutral-500 transition-all duration-fast ease-standard';
 $stateClasses = $error
     ? 'border-error-500 focus:border-error-500 focus:ring-error-500'
     : ($success ? 'border-success-500 focus:border-success-500 focus:ring-success-500' : 'border-neutral-200 focus:border-primary-500 focus:ring-primary-500');

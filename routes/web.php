@@ -139,8 +139,8 @@ Route::middleware(['auth', 'role:ustadz|kepala_tahfidz|wali'])->group(function (
 | PDF Export Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
     // Sprint 8: PDF Export
-    // Route::get('/santri/{santri}/rapor/pdf', [\App\Http\Controllers\Admin\SantriController::class, 'exportRaporPdf'])->name('santris.rapor.pdf');
-    // Route::get('/santri/{santri}/sertifikat/pdf', [\App\Http\Controllers\Admin\SantriController::class, 'exportSertifikatPdf'])->name('santris.sertifikat.pdf');
+    Route::get('/santri/{santri}/rapor/pdf', [\App\Http\Controllers\Admin\SantriController::class, 'exportRaporPdf'])->name('santris.rapor.pdf');
+    Route::get('/santri/{santri}/sertifikat/pdf', [\App\Http\Controllers\Admin\SantriController::class, 'exportSertifikatPdf'])->name('santris.sertifikat.pdf');
 });

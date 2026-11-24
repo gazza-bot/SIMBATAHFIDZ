@@ -70,21 +70,21 @@ $sizeClass = $sizes[$size] ?? $sizes['md'];
                         </div>
 
                         @if ($closeable)
-                            <button
-                                type="button"
-                                data-modal-close
-                                class="p-1.5 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors"
-                                @if ($onClose)
-                                    wire:click="{{ $onClose }}"
-                                @else
-                                    onclick="this.closest('[data-modal-wrapper]').removeAttribute('open')"
-                                @endif
-                                aria-label="Tutup modal"
-                            >
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
-                            </button>
+                        <button
+                            type="button"
+                            data-modal-close
+                            class="p-2 rounded-lg text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 focus:outline-none focus:visible:ring-2 focus:ring-primary-500 transition-colors"
+                            @if ($onClose)
+                                wire:click="{{ $onClose }}"
+                            @else
+                                onclick="this.closest('[data-modal-wrapper]').removeAttribute('open')"
+                            @endif
+                            aria-label="Tutup modal"
+                        >
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
                         @endif
                     </div>
                 @endif

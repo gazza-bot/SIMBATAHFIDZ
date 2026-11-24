@@ -126,7 +126,7 @@
                 </div>
                 <div>
                     <label for="keterangan" class="block text-sm font-medium text-neutral-700 mb-1.5">Keterangan</label>
-                    <textarea name="keterangan" rows="3" placeholder="Catatan untuk sima'an..." class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 placeholder-neutral-400 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2"></textarea>
+                    <textarea name="keterangan" rows="3" placeholder="Catatan untuk sima'an..." class="w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 placeholder-neutral-500 focus:border-primary-500 focus:ring-primary-500 focus:outline-none focus:ring-2"></textarea>
                 </div>
             </div>
             <div class="mt-6 flex justify-end gap-2">

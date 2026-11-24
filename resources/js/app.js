@@ -230,6 +230,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Escape') closeSidebar();
     });
 
+    // Global: close open modal when Escape is pressed
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('[data-modal-wrapper][open]').forEach((wrapper) => {
+                wrapper.removeAttribute('open');
+                const closeButton = wrapper.querySelector('[data-modal-close]');
+                if (closeButton && typeof closeButton.focus === 'function') {
+                    // Fallback: return focus to the element that opened the modal if any
+                    const focusedBefore = document.activeElement;
+                    setTimeout(() => {
+                        if (document.activeElement === document.body) focusedBefore?.focus();
+                    }, 0);
+                }
+            });
+        }
+    });
+
     sidebar.querySelectorAll('a').forEach((link) => {
         link.addEventListener('click', () => {
             if (window.innerWidth < 1024) closeSidebar();

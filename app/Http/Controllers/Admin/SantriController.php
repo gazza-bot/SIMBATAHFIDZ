@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\KepalaTahfidz;
 use App\Models\Santri;
 use App\Support\JuzCoverage;
 use App\Models\Angkatan;
 use App\Models\Kelompok;
 use App\Models\Wali;
 use Illuminate\Http\Request;
+use PDF;
 
 class SantriController extends Controller
 {
@@ -143,6 +145,55 @@ class SantriController extends Controller
             'juzPercentages' => $juzPercentages,
             'juzCounts' => $juzCounts,
         ]);
+    }
+
+    public function exportRaporPdf(Santri $santri)
+    {
+        $santri->load(['angkatan', 'kelompok.ustadz.user', 'wali.user']);
+
+        $setorans = $santri->setorans()
+            ->with('surah')
+            ->where('status', 'approved')
+            ->where('is_draft', false)
+            ->orderBy('tanggal')
+            ->orderBy('id')
+            ->get();
+
+        $absensis = $santri->absensis()
+            ->get()
+            ->groupBy('status');
+
+        $progressPercent = $santri->progress_percent;
+        $kepala = KepalaTahfidz::with('user')->first();
+
+        $pdf = PDF::loadView('admin.santris.rapor.pdf', [
+            'santri' => $santri,
+            'setorans' => $setorans,
+            'absensis' => $absensis,
+            'progressPercent' => $progressPercent,
+            'kepala' => $kepala,
+        ]);
+
+        return $pdf->download('rapor_' . $santri->nis . '_lengkap.pdf');
+    }
+
+    public function exportSertifikatPdf(Santri $santri)
+    {
+        if ($santri->status_aktif !== 'lulus') {
+            return redirect()
+                ->route('admin.santris.show', $santri)
+                ->with('error', 'Sertifikat hanya dapat dicetak untuk santri berstatus lulus.');
+        }
+
+        $santri->load(['angkatan', 'kelompok.ustadz.user']);
+        $kepala = KepalaTahfidz::with('user')->first();
+
+        $pdf = PDF::loadView('admin.santris.sertifikat.pdf', [
+            'santri' => $santri,
+            'kepala' => $kepala,
+        ]);
+
+        return $pdf->download('sertifikat_khatam_' . $santri->nis . '.pdf');
     }
 
     public function edit(Santri $santri)

@@ -3,7 +3,7 @@
 @section('content')
 
     <div class="max-w-4xl mx-auto space-y-6" x-data="{ showDeleteModal: false, deleteItem: null, openDeleteModal(id, name) { this.deleteItem = { id, name }; this.showDeleteModal = true; }, closeDeleteModal() { this.showDeleteModal = false; this.deleteItem = null; } }">
-        <div class="flex items-center gap-4">
+        <div class="flex flex-wrap items-center gap-4">
             <x-button variant="ghost" href="{{ route('admin.santris.index') }}">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 Kembali
@@ -12,8 +12,12 @@
                 <h2 class="text-xl font-bold text-neutral-900">Detail Santri: {{ $santri->nama }}</h2>
                 <p class="mt-1 text-sm text-neutral-500">NIS: {{ $santri->nis }}</p>
             </div>
-            <div class="ml-auto flex gap-2">
+            <div class="ml-auto flex flex-wrap gap-2">
                 <x-button variant="ghost" href="{{ route('admin.santris.edit', $santri) }}">Edit</x-button>
+                <x-button variant="secondary" href="{{ route('santris.rapor.pdf', $santri) }}">Cetak Rapor</x-button>
+                @if ($santri->status_aktif === 'lulus')
+                    <x-button variant="primary" href="{{ route('santris.sertifikat.pdf', $santri) }}">Cetak Sertifikat</x-button>
+                @endif
                 <x-button variant="destructive" data-name="{{ $santri->nama }}" @click="openDeleteModal('{{ $santri->id }}', $event.currentTarget.dataset.name)">Hapus</x-button>
             </div>
         </div>

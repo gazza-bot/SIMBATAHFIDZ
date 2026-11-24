@@ -15,8 +15,8 @@
         <x-input
             name="username"
             id="username"
-            label="Username / Email / ID Pengguna"
-            placeholder="Masukkan NIP, NIS, atau Username"
+            label="Username"
+            placeholder="Masukkan Username Anda"
             type="text"
             autocomplete="username"
             required

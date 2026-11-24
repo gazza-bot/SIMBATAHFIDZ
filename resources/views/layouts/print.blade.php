@@ -15,7 +15,7 @@
             margin: 1.5cm;
             size: A4;
         }
-        
+
         @media print {
             .no-print { display: none !important; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -37,6 +37,30 @@
         
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+        .text-xs { font-size: 10px; }
+        .text-sm { font-size: 11px; }
+        .text-lg { font-size: 16px; }
+        .text-xl { font-size: 18px; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        .uppercase { text-transform: uppercase; }
+        .tracking-wide { letter-spacing: 0.04em; }
+        .mt-1 { margin-top: 4px; }
+        .mt-2 { margin-top: 8px; }
+        .mb-2 { margin-bottom: 8px; }
+        .mb-3 { margin-bottom: 12px; }
+        .w-full { width: 100%; }
+        .text-neutral-500 { color: #64746B; }
+        .text-neutral-600 { color: #4B5A52; }
+        .text-neutral-900 { color: #1E2922; }
+        .text-primary-600 { color: #3D6B4A; }
+        .text-success-600 { color: #15803D; }
+        .text-info-600 { color: #1D4ED8; }
+        .text-warning-600 { color: #B45309; }
+        .text-error-600 { color: #B91C1C; }
         
         .info-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #F1F4F2; }
         .info-row:last-child { border-bottom: none; }

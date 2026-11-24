@@ -3,9 +3,9 @@
 @section('content')
 <div class="page-header">
     <div class="logo">
-        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-        </svg>
+        <div style="width: 22px; height: 16px; border: 2px solid #FFFFFF; border-radius: 2px; margin: 20px auto 0;">
+            <div style="width: 2px; height: 100%; background: #FFFFFF; margin: 0 auto;"></div>
+        </div>
     </div>
     <h1>Rapor Hafalan Santri</h1>
     <p>Pondok Pesantren Darut Taqwa Ponorogo</p>
