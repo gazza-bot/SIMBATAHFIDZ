@@ -17,6 +17,11 @@ class RekapController extends Controller
         $ustadz = Auth::user()->ustadz;
         $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
 
+        $request->validate([
+            'tanggal_mulai' => 'nullable|date',
+            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
+        ]);
+
         $period = $request->get('periode', 'hari_ini');
         $santriId = $request->get('santri_id');
         $jenis = $request->get('jenis');
@@ -105,6 +110,11 @@ class RekapController extends Controller
     {
         $ustadz = Auth::user()->ustadz;
         $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
+
+        $request->validate([
+            'tanggal_mulai' => 'nullable|date',
+            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
+        ]);
 
         $period = $request->get('periode', 'hari_ini');
         $santriId = $request->get('santri_id');
@@ -198,6 +208,11 @@ class RekapController extends Controller
     {
         $ustadz = Auth::user()->ustadz;
         $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
+
+        $request->validate([
+            'tanggal_mulai' => 'nullable|date',
+            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
+        ]);
 
         $period = $request->get('periode', 'hari_ini');
         $santriId = $request->get('santri_id');

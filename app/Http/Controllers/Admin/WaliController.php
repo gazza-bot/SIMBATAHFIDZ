@@ -133,7 +133,6 @@ class WaliController extends Controller
     public function destroy(Wali $wali)
     {
         $wali->user->delete();
-        $wali->delete();
 
         return redirect()->route('admin.walis.index')
             ->with('success', 'Wali santri berhasil dihapus.');

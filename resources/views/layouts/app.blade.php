@@ -76,6 +76,10 @@ $iconQuran = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 
             ['label' => 'Rekap', 'url' => '/ustadz/rekap', 'active' => 'ustadz.rekap.*', 'icon' => $iconChart],
             ['label' => 'Rapor', 'url' => '/ustadz/rapor', 'active' => 'ustadz.rapor.*', 'icon' => $iconPrinter],
         ],
+        'kepala_tahfidz' => [
+            ['label' => 'Dasbor', 'url' => '/kepala/dashboard', 'active' => 'kepala.dashboard', 'icon' => $iconDash],
+            ['label' => 'Peta Hafalan', 'url' => '/kepala/peta-hafalan', 'active' => 'kepala.peta-hafalan', 'icon' => $iconGrid],
+        ],
         'wali' => [
             ['label' => "Mutaba'ah", 'url' => '/wali/mutabaah', 'active' => 'wali.mutabaah*', 'icon' => $iconDash],
             ['label' => 'Riwayat', 'url' => '/wali/riwayat', 'active' => 'wali.riwayat*', 'icon' => $iconClock],
@@ -164,8 +168,8 @@ $iconQuran = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 
         <div id="sidebar-overlay" class="fixed inset-0 z-30 bg-neutral-950/50 hidden lg:hidden" aria-hidden="true"></div>
     @endif
 
-    <header class="sticky top-0 z-20 bg-white border-b border-neutral-200 {{ $mainMargin }}">
-        <div class="flex items-center justify-between h-16 px-4 sm:px-6">
+    <header class="fixed top-0 right-0 left-0 z-20  bg-white border-b border-neutral-200 {{ $mainMargin }}">
+        <div class="flex items-center justify-between h-16 px-4 sm:px-6 w-full">
             @if ($hasSidebar)
                 <button type="button" id="sidebar-toggle" class="lg:hidden p-2 rounded-lg text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100" aria-label="Buka menu" aria-expanded="false" aria-controls="sidebar">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -201,7 +205,7 @@ $iconQuran = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 
 
     @if ($bottomNav)
         <nav class="fixed bottom-0 left-0 right-0 z-20 bg-white border-t border-neutral-200 lg:hidden" style="padding-bottom: env(safe-area-inset-bottom)" aria-label="Navigasi mobile">
-            <div class="grid {{ count($bottomNav) === 3 ? 'grid-cols-3' : 'grid-cols-5' }} gap-1 px-2 py-1">
+            <div class="grid {{ match(count($bottomNav)) { 2 => 'grid-cols-2', 3 => 'grid-cols-3', 4 => 'grid-cols-4', default => 'grid-cols-5' } }} gap-1 px-2 py-1">
                 @foreach ($bottomNav as $item)
                     <a href="{{ $item['url'] }}"
                        class="flex flex-col items-center gap-0.5 px-1 py-2 rounded-xl min-h-[48px] justify-center transition-colors {{ request()->routeIs($item['active']) ? 'bg-primary-50 text-primary-600' : 'text-neutral-500 hover:text-neutral-700' }}"
@@ -222,6 +226,9 @@ $iconQuran = '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 
 
     @if (session('success') || session('error') || session('warning') || session('info') || $errors->any())
         <div class="fixed top-20 right-4 left-4 sm:left-auto sm:right-6 z-30 flex max-w-md flex-col gap-3 pointer-events-none" aria-live="polite">
+            @if (session('toast'))
+                <x-alert :variant="session('toast.type') === 'success' ? 'success' : 'error'" class="pointer-events-auto animate-notification-in">{{ session('toast.message') }}</x-alert>
+            @endif
             @if (session('success'))
                 <x-alert variant="success" class="pointer-events-auto animate-notification-in">{{ session('success') }}</x-alert>
             @endif

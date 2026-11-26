@@ -93,6 +93,56 @@
     </table>
 </div>
 
+<div class="card">
+    <h3 class="card-title">III. Penilaian Tilawah, Tajwid, dan Adab</h3>
+    <table class="table w-full">
+        <thead>
+            <tr class="border-b border-neutral-300">
+                <th class="text-left py-2 px-3">Aspek Penilaian</th>
+                <th class="text-center py-2 px-3">Predikat</th>
+                <th class="text-center py-2 px-3">Keterangan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="border-b border-neutral-200">
+                <td class="py-2 px-3">Tilawah (Kelancaran & Makhraj)</td>
+                <td class="text-center py-2 px-3">{{ $santri->penilaian_tilawah ?? '-' }}</td>
+                <td class="py-2 px-3">{{ $santri->catatan_tilawah ?? '-' }}</td>
+            </tr>
+            <tr class="border-b border-neutral-200">
+                <td class="py-2 px-3">Tajwid (Idgham, Ikhfa, Qalqalah, dll)</td>
+                <td class="text-center py-2 px-3">{{ $santri->penilaian_tajwid ?? '-' }}</td>
+                <td class="py-2 px-3">{{ $santri->catatan_tajwid ?? '-' }}</td>
+            </tr>
+            <tr class="border-b border-neutral-200">
+                <td class="py-2 px-3">Adab & Khusyuk</td>
+                <td class="text-center py-2 px-3">{{ $santri->penilaian_adab ?? '-' }}</td>
+                <td class="py-2 px-3">{{ $santri->catatan_adab ?? '-' }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="card">
+    <h3 class="card-title">IV. Pengesahan</h3>
+    <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+        <tr>
+            <td style="width: 33%; vertical-align: bottom; padding-bottom: 40px;">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Wali Santri</p>
+                <p class="mt-8 font-medium text-neutral-900 border-t border-neutral-400 pt-2">{{ $santri->wali?->user?->name ?? '________________________' }}</p>
+            </td>
+            <td style="width: 34%; text-align: center; vertical-align: bottom; padding-bottom: 40px;">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Musyrif</p>
+                <p class="mt-8 font-medium text-neutral-900 border-t border-neutral-400 pt-2">{{ $santri->kelompok?->ustadz?->user?->name ?? '________________________' }}</p>
+            </td>
+            <td style="width: 33%; text-align: right; vertical-align: bottom; padding-bottom: 40px;">
+                <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Kepala Tahfidz</p>
+                <p class="mt-8 font-medium text-neutral-900 border-t border-neutral-400 pt-2">{{ $kepala?->nama ?? '________________________' }}</p>
+            </td>
+        </tr>
+    </table>
+</div>
+
 <div class="page-footer">
     Dicetak pada {{ now()->translatedFormat('d F Y H:i') }} oleh Admin {{ auth()->user()->name ?? 'Admin' }} | SIMBA TAHFIDZ
 </div>

@@ -100,7 +100,7 @@
                     </div>
 
                     {{-- Grid 30 Juz --}}
-                    <div class="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-10 gap-1.5">
+                    <div class="grid grid-cols-6 sm:grid-cols-10 gap-1.5">
                         @for ($j = 1; $j <= 30; $j++)
                             @php
                                 $st = $map['statusMap'][$j] ?? 'belum';

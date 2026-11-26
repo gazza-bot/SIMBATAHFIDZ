@@ -88,6 +88,7 @@ Route::middleware(['auth', 'role:ustadz'])->prefix('ustadz')->name('ustadz.')->g
     Route::get('rapor', [\App\Http\Controllers\Ustadz\RaporController::class, 'index'])->name('rapor.index');
     Route::get('rapor/pdf', [\App\Http\Controllers\Ustadz\RaporController::class, 'exportPdf'])->name('rapor.pdf');
     Route::get('murajaahs', [\App\Http\Controllers\Ustadz\MurajaahController::class, 'index'])->name('murajaahs.index');
+    Route::get('murajaahs/export-pdf', [\App\Http\Controllers\Ustadz\MurajaahController::class, 'exportPdf'])->name('murajaahs.export-pdf');
     Route::post('murajaahs', [\App\Http\Controllers\Ustadz\MurajaahController::class, 'store'])->name('murajaahs.store');
 });
 

@@ -121,7 +121,7 @@
                                         <svg class="w-8 h-8 text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 10-4-4 4 4 0 004 4zm0 0a4 4 0 014 4v1h-8v-1a4 4 0 014-4z"/></svg>
                                     </div>
                                     <p class="text-neutral-500">Belum ada santri di halaqah ini.</p>
-                                    <x-button variant="primary" size="sm" href="{{ route('admin.santris.create') }}">Tambah Santri</x-button>
+                                    <p class="text-xs text-neutral-400">Silakan hubungi administrator pesantren untuk penempatan santri ke halaqah ini.</p>
                                 </div>
                             </td>
                         </tr>
@@ -277,7 +277,10 @@ function presensiModal() {
             this.currentSantriId = null;
         },
         async savePresensi() {
-            if (!this.selectedSantri) { alert('Pilih santri'); return; }
+            if (!this.selectedSantri) {
+                alert('Pilih santri');
+                return;
+            }
             const formData = new FormData();
             formData.append('_token', '{{ csrf_token() }}');
             formData.append('_method', 'POST');
@@ -290,7 +293,6 @@ function presensiModal() {
 
             try {
                 const res = await fetch('{{ route('ustadz.absensis.store') }}', { method: 'POST', body: formData });
-                const text = await res.text();
                 if (res.ok) {
                     window.location.href = '{{ route('ustadz.absensis.index', ['tanggal' => $date, 'sesi' => $sesi]) }}';
                 } else {

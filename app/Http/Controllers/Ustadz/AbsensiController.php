@@ -7,6 +7,7 @@ use App\Models\Absensi;
 use App\Models\Santri;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Carbon\Carbon;
 
 class AbsensiController extends Controller
@@ -48,20 +49,22 @@ class AbsensiController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'tanggal' => 'required|date',
-            'sesi' => 'required|in:subuh,ashar,maghrib',
-            'absensi' => 'required|array',
-            'absensi.*.santri_id' => 'required|exists:santris,id',
-            'absensi.*.status' => 'required|in:hadir,izin,sakit,alpa',
-            'absensi.*.waktu_tiba' => 'nullable|date_format:H:i',
-            'absensi.*.catatan' => 'nullable|string|max:500',
-        ]);
-
         $ustadz = Auth::user()->ustadz;
         if (!$ustadz) {
             abort(403);
         }
+
+        $kelompokIds = $ustadz->kelompoks->pluck('id')->toArray();
+
+        $validated = $request->validate([
+            'tanggal' => 'required|date',
+            'sesi' => 'required|in:subuh,ashar,maghrib',
+            'absensi' => 'required|array',
+            'absensi.*.santri_id' => ['required', Rule::exists('santris', 'id')->whereIn('kelompok_id', $kelompokIds)],
+            'absensi.*.status' => 'required|in:hadir,izin,sakit,alpa',
+            'absensi.*.waktu_tiba' => 'nullable|date_format:H:i',
+            'absensi.*.catatan' => 'nullable|string|max:500',
+        ]);
 
         foreach ($validated['absensi'] as $item) {
             Absensi::updateOrCreate(

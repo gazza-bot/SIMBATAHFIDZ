@@ -28,19 +28,19 @@
 
     {{-- Stat Cards --}}
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <x-card padding="8" class="bg-white border border-neutral-200">
+        <x-card padding="default" class="bg-white border border-neutral-200">
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Santri Hadir</p>
             <p class="mt-2 text-2xl font-bold text-neutral-900">{{ $hadirToday }}/{{ $totalSantri }}</p>
         </x-card>
-        <x-card padding="8" class="bg-white border border-neutral-200">
+        <x-card padding="default" class="bg-white border border-neutral-200">
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Sudah Setor</p>
             <p class="mt-2 text-2xl font-bold text-success-600">{{ $sudahSetorToday }}/{{ $totalSantri }} ({{ $totalSantri > 0 ? round(($sudahSetorToday/$totalSantri)*100) : 0 }}%)</p>
         </x-card>
-        <x-card padding="8" class="bg-white border border-neutral-200">
+        <x-card padding="default" class="bg-white border border-neutral-200">
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Belum Setor</p>
             <p class="mt-2 text-2xl font-bold text-error-600">{{ $belumSetorToday }}</p>
         </x-card>
-        <x-card padding="8" class="bg-white border border-neutral-200">
+        <x-card padding="default" class="bg-white border border-neutral-200">
             <p class="text-xs font-medium text-neutral-500 uppercase tracking-wide">Rata-rata Mutu</p>
             <p class="mt-2 text-2xl font-bold text-success-600">{{ $mutuScore }}%</p>
         </x-card>

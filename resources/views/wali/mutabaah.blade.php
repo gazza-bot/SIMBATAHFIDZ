@@ -223,16 +223,16 @@
 
                                 <div class="flex items-center gap-4 text-xs border-t sm:border-t-0 pt-3 sm:pt-0 border-neutral-200">
                                     <div class="text-center sm:text-right">
-                                        <p class="text-neutral-500">Tajwid</p>
-                                        <p class="font-bold text-neutral-900">Fasih (95)</p>
+                                        <p class="text-neutral-500">Jenis</p>
+                                        <p class="font-bold text-neutral-900">{{ $lastSetoran->jenis_label }}</p>
                                     </div>
                                     <div class="text-center sm:text-right">
-                                        <p class="text-neutral-500">Kelancaran</p>
-                                        <p class="font-bold text-neutral-900">Mumtaz (96)</p>
+                                        <p class="text-neutral-500">Volume</p>
+                                        <p class="font-bold text-neutral-900">{{ max(1, ($lastSetoran->ayat_akhir - $lastSetoran->ayat_awal + 1)) }} Ayat</p>
                                     </div>
                                     <div class="text-center sm:text-right">
-                                        <p class="text-neutral-500">Makhraj</p>
-                                        <p class="font-bold text-neutral-900">Sangat Baik (93)</p>
+                                        <p class="text-neutral-500">Predikat</p>
+                                        <p class="font-bold text-primary-700">{{ $lastSetoran->nilai_label }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -424,63 +424,50 @@
                             </p>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2 pt-2">
-                            <button
-                                type="button"
-                                onclick="alert('Kehadiran Anda telah dikonfirmasi ke musyrif halaqah.')"
-                                class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-700 text-white hover:bg-amber-800 transition-colors text-center cursor-pointer min-h-[40px]">
-                                Konfirmasi Hadir
-                            </button>
-                            <button
-                                type="button"
-                                onclick="alert('Panduan Ujian Tasmi\': Santri memperdengarkan hafalan sekali duduk di hadapan penguji dan wali dapat menyaksikan secara daring.')"
-                                class="px-3 py-2 rounded-xl text-xs font-bold bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-50 transition-colors text-center cursor-pointer min-h-[40px]">
-                                Buka Panduan
-                            </button>
+                        <div class="flex flex-wrap items-center gap-2 pt-2">
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-white text-amber-900 border border-amber-200">
+                                <svg class="w-3.5 h-3.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Agenda Resmi Pesantren
+                            </span>
+                            @if ($waLink)
+                                <a href="{{ $waLink }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-primary-600 text-white hover:bg-primary-700 transition-colors min-h-[44px]">
+                                    Konfirmasi Musyrif
+                                </a>
+                            @endif
                         </div>
                     </div>
 
-                    {{-- Amalan Yaumiyah Santri (Hari Ini) --}}
+                    {{-- Pembiasaan Ibadah Harian Asrama --}}
                     <div class="bg-white rounded-2xl border border-neutral-200 p-5 space-y-4">
                         <div class="flex items-center justify-between">
                             <h3 class="text-sm font-bold text-neutral-900 flex items-center gap-2">
                                 <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                Amalan Yaumiyah Santri
+                                Pembiasaan Ibadah Asrama
                             </h3>
-                            <x-badge variant="success" size="sm">4/4 Tuntas</x-badge>
+                            <x-badge variant="default" size="sm">Program Harian</x-badge>
                         </div>
 
+                        <p class="text-xs text-neutral-500">Rangkaian amalan yaumiyah rutin yang dibina di asrama santri:</p>
+
                         <div class="space-y-2.5">
-                            <div class="p-3 rounded-xl bg-success-50/60 border border-success-200/60 flex items-center justify-between">
-                                <div class="flex items-center gap-2.5">
-                                    <span class="w-5 h-5 rounded-full bg-success-500 text-white flex items-center justify-center text-xs">✓</span>
-                                    <span class="text-xs font-semibold text-neutral-900">Shalat Berjamaah 5 Waktu</span>
-                                </div>
-                                <span class="text-xs text-success-700 font-medium font-mono">5/5 Waktu</span>
+                            <div class="p-3 rounded-xl bg-neutral-50 border border-neutral-200/60 flex items-center justify-between">
+                                <span class="text-xs font-semibold text-neutral-900">Shalat Berjamaah 5 Waktu</span>
+                                <span class="text-xs text-neutral-500 font-medium">Wajib Berjamaah</span>
                             </div>
 
-                            <div class="p-3 rounded-xl bg-success-50/60 border border-success-200/60 flex items-center justify-between">
-                                <div class="flex items-center gap-2.5">
-                                    <span class="w-5 h-5 rounded-full bg-success-500 text-white flex items-center justify-center text-xs">✓</span>
-                                    <span class="text-xs font-semibold text-neutral-900">Dzikir Pagi & Petang</span>
-                                </div>
-                                <span class="text-xs text-success-700 font-medium">Selesai</span>
+                            <div class="p-3 rounded-xl bg-neutral-50 border border-neutral-200/60 flex items-center justify-between">
+                                <span class="text-xs font-semibold text-neutral-900">Dzikir Pagi & Petang</span>
+                                <span class="text-xs text-neutral-500 font-medium">Ba'da Subuh & Ashar</span>
                             </div>
 
-                            <div class="p-3 rounded-xl bg-success-50/60 border border-success-200/60 flex items-center justify-between">
-                                <div class="flex items-center gap-2.5">
-                                    <span class="w-5 h-5 rounded-full bg-success-500 text-white flex items-center justify-center text-xs">✓</span>
-                                    <span class="text-xs font-semibold text-neutral-900">Qiyamul Lail (Tahajjud)</span>
-                                </div>
-                                <span class="text-xs text-success-700 font-medium">Terlaksana</span>
+                            <div class="p-3 rounded-xl bg-neutral-50 border border-neutral-200/60 flex items-center justify-between">
+                                <span class="text-xs font-semibold text-neutral-900">Qiyamul Lail (Tahajjud)</span>
+                                <span class="text-xs text-neutral-500 font-medium">Sepertiga Malam</span>
                             </div>
 
-                            <div class="p-3 rounded-xl bg-success-50/60 border border-success-200/60 flex items-center justify-between">
-                                <div class="flex items-center gap-2.5">
-                                    <span class="w-5 h-5 rounded-full bg-success-500 text-white flex items-center justify-center text-xs">✓</span>
-                                    <span class="text-xs font-semibold text-neutral-900">Tilawah Mandiri 1 Juz</span>
-                                </div>
-                                <span class="text-xs text-success-700 font-medium">Tuntas</span>
+                            <div class="p-3 rounded-xl bg-neutral-50 border border-neutral-200/60 flex items-center justify-between">
+                                <span class="text-xs font-semibold text-neutral-900">Tilawah Mandiri Harian</span>
+                                <span class="text-xs text-neutral-500 font-medium">Target Halaqah</span>
                             </div>
                         </div>
                     </div>

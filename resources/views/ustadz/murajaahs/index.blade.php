@@ -1,7 +1,7 @@
 @extends('layouts.app', ['title' => 'Murajaah Bulanan', 'pageTitle' => 'Murajaah Bulanan'])
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="max-w-4xl mx-auto space-y-6" x-data="scheduleModal()">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h2 class="text-xl font-bold text-neutral-900">Murajaah Bulanan</h2>
@@ -82,7 +82,7 @@
                             </a>
                         @endif
 
-                        <x-button variant="ghost" size="sm" @click="openScheduleModal({{ $item['santri']->id }})">
+                        <x-button variant="ghost" size="sm" @click="openModal({{ $item['santri']->id }})">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             Jadwalkan Sima'an
                         </x-button>
@@ -102,8 +102,8 @@
     </div>
 </div>
 
-{{-- Schedule Modal --}}
-<div class="fixed inset-0 z-50 flex items-center justify-center" x-data="scheduleModal()" x-show="showModal" x-cloak>
+ {{-- Schedule Modal --}}
+<div class="fixed inset-0 z-50 flex items-center justify-center" x-show="showModal" x-cloak>
     <div class="fixed inset-0 bg-neutral-950/70 backdrop-blur-sm" @click="closeModal" aria-hidden="true"></div>
     <div class="relative w-full max-w-md bg-white rounded-2xl shadow-level-4 p-6" role="dialog" aria-modal="true" x-ref="form">
         <h3 class="text-lg font-semibold text-neutral-900 mb-4">Jadwalkan Sima'an</h3>
@@ -157,6 +157,10 @@ function scheduleModal() {
         },
         submitForm() {
             this.$refs.form.submit();
+        },
+        downloadPdf() {
+            const url = '{{ route("ustadz.murajaahs.index") }}' + '?bulan={{ $bulan }}&pdf=1';
+            window.open(url, '_blank');
         }
     }
 }

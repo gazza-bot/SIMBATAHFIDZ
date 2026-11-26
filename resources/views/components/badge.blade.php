@@ -58,7 +58,7 @@ $sizeClass = $sizes[$size] ?? $sizes['md'];
         <button
             type="button"
             class="ml-1.5 -mr-1 p-0.5 rounded hover:bg-black/10 focus:outline-none focus:ring-2 focus:ring-current focus:ring-offset-2"
-            @if ($onDismiss) wire:click="{{ $onDismiss }}" @else onclick="this.parentElement.remove()" @endif
+            @if ($onDismiss) x-on:click="{{ $onDismiss }}" @else onclick="this.parentElement.remove()" @endif
             aria-label="Tutup"
         >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>

@@ -31,6 +31,11 @@ class RaporController extends Controller
             ->orderBy('nama')
             ->get();
 
+        $request->validate([
+            'tanggal_mulai' => 'nullable|date',
+            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
+        ]);
+
         $santriId = $request->get('santri_id');
         $start = $request->filled('tanggal_mulai') ? Carbon::parse($request->tanggal_mulai)->startOfDay() : Carbon::now()->startOfMonth();
         $end = $request->filled('tanggal_selesai') ? Carbon::parse($request->tanggal_selesai)->endOfDay() : Carbon::now()->endOfMonth();
@@ -94,6 +99,12 @@ class RaporController extends Controller
     {
         $ustadz = Auth::user()->ustadz;
         $kelompokIds = $ustadz?->kelompoks->pluck('id')->toArray() ?? [];
+
+        $request->validate([
+            'santri_id' => 'required|exists:santris,id',
+            'tanggal_mulai' => 'nullable|date',
+            'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
+        ]);
 
         $santriId = $request->get('santri_id');
         if (!$santriId) {

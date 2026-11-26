@@ -119,7 +119,11 @@ class SantriController extends Controller
 
     public function show(Santri $santri)
     {
-        $santri->load(['angkatan', 'kelompok.ustadz', 'wali.user', 'setorans.surah', 'absensis']);
+        $santri->load(['angkatan', 'kelompok.ustadz', 'wali.user']);
+        $santri->load([
+            'setorans' => fn($q) => $q->with('surah')->latest()->take(10),
+            'absensis' => fn($q) => $q->latest()->take(10),
+        ]);
 
         $juzMap = $this->juzCoverage->forSantri($santri);
 

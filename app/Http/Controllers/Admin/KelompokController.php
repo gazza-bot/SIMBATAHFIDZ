@@ -75,8 +75,8 @@ class KelompokController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:100',
-            'ustadz_id' => 'nullable|exists:ustadzs,id',
-            'angkatan_id' => 'nullable|exists:angkatans,id',
+            'ustadz_id' => 'required|exists:ustadzs,id',
+            'angkatan_id' => 'required|exists:angkatans,id',
             'deskripsi' => 'nullable|string|max:500',
         ]);
 
@@ -112,8 +112,8 @@ class KelompokController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:100',
-            'ustadz_id' => 'nullable|exists:ustadzs,id',
-            'angkatan_id' => 'nullable|exists:angkatans,id',
+            'ustadz_id' => 'required|exists:ustadzs,id',
+            'angkatan_id' => 'required|exists:angkatans,id',
             'deskripsi' => 'nullable|string|max:500',
         ]);
 

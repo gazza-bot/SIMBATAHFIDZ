@@ -462,6 +462,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             const jenisDefault = form.querySelector('input[name="jenis"][value="ziyadah"]');
             if (jenisDefault) jenisDefault.checked = true;
+        });
     }
 
     const initialJuz = juzSelect.value;

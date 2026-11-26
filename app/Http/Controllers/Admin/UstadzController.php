@@ -140,7 +140,6 @@ class UstadzController extends Controller
     public function destroy(Ustadz $ustadz)
     {
         $ustadz->user->delete();
-        $ustadz->delete();
 
         return redirect()->route('admin.ustadzs.index')
             ->with('success', 'Ustadz musyrif berhasil dihapus.');
